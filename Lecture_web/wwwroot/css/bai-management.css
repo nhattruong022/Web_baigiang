@@ -1,0 +1,151 @@
+.assignment-management-container {
+  max-width: 1400px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 2rem 2.5rem;
+}
+.assignment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+.assignment-header h2 {
+  color: #333;
+  margin: 0;
+}
+.assignment-actions {
+  display: flex;
+  gap: 1rem;
+}
+.assignment-list {
+  margin-top: 1rem;
+}
+.assignment-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+.assignment-table th, .assignment-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+.assignment-table th {
+  background: #f8f9fa;
+  color: #333;
+}
+.assignment-table tr:hover {
+  background: #f4f8fb;
+}
+.assignment-actions-btns {
+  display: flex;
+  gap: 0.5rem;
+}
+.label-assignment {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  color: #fff;
+  background: #17a2b8;
+}
+@media (max-width: 900px) {
+  .assignment-management-container { padding: 1rem; }
+  .assignment-header { flex-direction: column; gap: 1rem; align-items: flex-start; }
+}
+@media (max-width: 600px) {
+  .assignment-management-container { padding: 0.5rem; }
+  .assignment-table th, .assignment-table td { padding: 0.5rem; font-size: 0.95rem; }
+}
+.bai-modal-content {
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(52,152,219,0.18), 0 1.5px 8px rgba(0,0,0,0.08);
+  padding: 0;
+  overflow: hidden;
+  max-width: 480px;
+  min-width: 340px;
+  background: #fff;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+.bai-modal-header {
+  background: #3498db;
+  color: #fff;
+  border-radius: 16px 16px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 24px 28px;
+}
+.bai-modal-header i.fas.fa-file-alt {
+  font-size: 1.7rem;
+}
+.bai-modal-header h2 {
+  flex: 1;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+.bai-modal-header .close-modal {
+  color: #fff;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  margin-left: 8px;
+  transition: color 0.2s;
+}
+.bai-modal-header .close-modal:hover {
+  color: #e74c3c;
+}
+.bai-modal-form {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  max-height: 60vh;
+  padding: 32px 28px 24px 28px;
+  background: #f8f9fa;
+  border-radius: 0 0 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.bai-modal-form .form-group label {
+  font-weight: 500;
+  color: #2c3e50;
+  margin-bottom: 7px;
+  display: block;
+}
+.bai-modal-form .form-group .required {
+  color: #e74c3c;
+  font-size: 1.1em;
+}
+.bai-modal-form input,
+.bai-modal-form textarea,
+.bai-modal-form select {
+  padding: 13px 16px;
+  border-radius: 7px;
+  border: 1.5px solid #d0d7de;
+  font-size: 1rem;
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+  margin-bottom: 0;
+}
+.bai-modal-form input:focus,
+.bai-modal-form textarea:focus,
+.bai-modal-form select:focus {
+  border-color: #3498db;
+  outline: none;
+  box-shadow: 0 0 0 2px #cce4ff;
+  background: #fff;
+}
+.bai-modal-form textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+.bai-modal-form .form-actions {
+  position: sticky;
+}

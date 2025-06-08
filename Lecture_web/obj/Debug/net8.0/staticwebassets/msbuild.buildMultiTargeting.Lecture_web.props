@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\Lecture_web.props" />
+</Project>

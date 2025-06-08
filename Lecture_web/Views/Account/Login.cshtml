@@ -1,0 +1,74 @@
+@{
+Layout = null;
+}
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng nhập - Hệ Thống Quản Lý Bài Giảng</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body class="login-page">
+  <div class="login-container">
+    <div class="login-box">
+      <div class="login-header">
+        <img src="/images/logo.png" alt="Logo" class="logo">
+        <h1>E-Learning</h1>
+        <p>Hệ thống quản lý bài giảng</p>
+      </div>
+      <form class="login-form" method="post">
+        <div class="form-group">
+          <label for="username">Tên đăng nhập</label>
+          <div class="input-group">
+            <i class="fas fa-user"></i>
+            <input type="text" id="username" name="username" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="password">Mật khẩu</label>
+          <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="password" name="password" required>
+            <i class="fas fa-eye toggle-password" onclick="togglePassword()"></i>
+          </div>
+        </div>
+        <div class="form-options">
+          <label class="remember-me">
+            <input type="checkbox" name="remember">
+            <span>Ghi nhớ đăng nhập</span>
+          </label>
+          <a href="/Account/ForgotPassword" class="forgot-password">Quên mật khẩu?</a>
+        </div>
+        <button type="submit" class="btn-login">
+          <i class="fas fa-sign-in-alt"></i>
+          Đăng nhập
+        </button>
+      </form>
+      <div class="login-footer">
+        <p>Chưa có tài khoản? <a href="#">Liên hệ quản trị viên</a></p>
+      </div>
+    </div>
+  </div>
+  <script>
+    function togglePassword() {
+      const passwordInput = document.getElementById('password');
+      const toggleIcon = document.querySelector('.toggle-password');
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleIcon.classList.remove('fa-eye');
+        toggleIcon.classList.add('fa-eye-slash');
+      } else {
+        passwordInput.type = 'password';
+        toggleIcon.classList.remove('fa-eye-slash');
+        toggleIcon.classList.add('fa-eye');
+      }
+    }
+  </script>
+</body>
+
+</html>

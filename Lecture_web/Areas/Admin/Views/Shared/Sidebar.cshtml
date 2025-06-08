@@ -1,0 +1,38 @@
+<nav class="sidebar">
+  <div class="logo">
+    <img src="/images/logo.png" alt="Logo" class="logo-img">
+    <h1>E-Learning</h1>
+  </div>
+  <ul class="nav-links">
+    <li class="@(ViewContext.RouteData.Values["controller"]?.ToString()=="Dashboard" ? "active" : "" )">
+      <a href="@Url.Action("Index", "Dashboard" , new { area="Admin" })">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>Tổng quan</span>
+      </a>
+    </li>
+    <li class="@(ViewContext.RouteData.Values["controller"]?.ToString()=="QuanLyNguoiDung" ? "active" : "" )">
+      <a href="@Url.Action("Index", "QuanLyNguoiDung" , new { area="Admin" })">
+        <i class="fas fa-user-cog"></i>
+        <span>Quản lý tài khoản người dùng</span>
+      </a>
+    </li>
+    <li class="@(ViewContext.RouteData.Values["controller"]?.ToString()=="QuanLyHocPhan" ? "active" : "" )">
+      <a href="@Url.Action("Index", "QuanLyHocPhan" , new { area="Admin" })">
+        <i class="fas fa-book-open"></i>
+        <span>Quản lý học phần</span>
+      </a>
+    </li>
+    <li class="@(ViewContext.RouteData.Values["controller"]?.ToString()=="QuanLyKhoa" ? "active" : "" )">
+      <a href="@Url.Action("Index", "QuanLyKhoa" , new { area="Admin" })">
+        <i class="fas fa-university"></i>
+        <span>Quản lý khoa</span>
+      </a>
+    </li>
+    <li class="@(ViewContext.RouteData.Values["controller"]?.ToString()=="QuanLyBoMon" ? "active" : "" )">
+      <a href="@Url.Action("Index", "QuanLyBoMon" , new { area="Admin" })">
+        <i class="fas fa-sitemap"></i>
+        <span>Quản lý bộ môn</span>
+      </a>
+    </li>
+  </ul>
+</nav>
