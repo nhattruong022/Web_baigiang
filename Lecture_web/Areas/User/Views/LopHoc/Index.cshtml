@@ -1,0 +1,165 @@
+@{
+ViewData["Title"] = "Quản lý lớp học";
+Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+var userRole = ViewBag.UserRole as string;
+}
+
+<div class="class-management">
+  <div class="class-header">
+    <h2>Quản lý lớp học</h2>
+    <div class="search-bar">
+      <input type="text" placeholder="Tìm kiếm lớp học...">
+      </i>
+    </div>
+
+    @if (userRole == "Giangvien")
+    {
+    <button class="btn-primary" onclick="showAddClassModal()">
+      <i class="fas fa-plus"></i>
+      Thêm lớp học mới
+    </button>
+    }
+  </div>
+
+  <div class="class-list">
+    <div class="class-card">
+      <div class="class-info">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <img src="~/images/avatar.jpg" alt="GV" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+          <div>
+            <a href="/User/ChiTietHocPhan/Index">
+              <h3 style="margin:0;">C# Cơ bản</h3>
+            </a>
+            <div style="font-size:0.98rem;color:#555;">GV: Nguyễn Văn A</div>
+          </div>
+        </div>
+        <div class="class-meta">
+          <span><i class="fas fa-users"></i> 45 sinh viên</span>
+        </div>
+        <div class="class-desc" style="margin-top:8px;color:#444;">
+          Lớp học nhập môn lập trình C# cho người mới bắt đầu.
+        </div>
+      </div>
+      <div class="class-actions">
+        @if (userRole == "Giangvien")
+        {
+        <button class="btn-primary" onclick="editClass(1)">
+          <i class="fas fa-edit"></i>
+          Chỉnh sửa
+        </button>
+        <button class="btn-danger" onclick="deleteClass(this)">
+          <i class="fas fa-trash"></i>
+          Xóa
+        </button>
+        }
+        else if (userRole == "Sinhvien")
+        {
+        <button style="background: linear-gradient(90deg, #f39c12 60%, #f7b731 100%); color: #fff; border: none; border-radius: 6px; padding: 10px 22px; font-size: 1.08rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 10px rgba(243,156,18,0.13); 
+        transition: background 0.2s, box-shadow 0.2s, transform 0.15s; letter-spacing: 0.5px;" class="btn-leave" onclick="leaveClass(1)">
+          <i class="fas fa-sign-out-alt"></i>
+          Rời lớp
+        </button>
+        }
+      </div>
+    </div>
+    <div class="class-card">
+      <div class="class-info">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <img src="~/images/avatar.jpg" alt="GV" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+          <div>
+            <a href="/User/ChiTietHocPhan/Index">
+              <h3 style="margin:0;">Cơ sở dữ liệu - INT1235.1</h3>
+            </a>
+            <div style="font-size:0.98rem;color:#555;">GV: Nguyễn Thị B</div>
+          </div>
+        </div>
+        <div class="class-meta">
+          <span><i class="fas fa-users"></i> 40 sinh viên</span>
+        </div>
+        <div class="class-desc" style="margin-top:8px;color:#444;">
+          Lớp học nhập môn cơ sở dữ liệu cho người mới bắt đầu.
+        </div>
+      </div>
+      <div class="class-actions">
+        @if (userRole == "Giangvien")
+        {
+        <button class="btn-primary" onclick="editClass(2)">
+          <i class="fas fa-edit"></i>
+          Chỉnh sửa
+        </button>
+        <button class="btn-danger" onclick="deleteClass(this)">
+          <i class="fas fa-trash"></i>
+          Xóa
+        </button>
+        }
+        else if (userRole == "Sinhvien")
+        {
+        <button style="background: linear-gradient(90deg, #f39c12 60%, #f7b731 100%); color: #fff; border: none; border-radius: 6px; padding: 10px 22px; font-size: 1.08rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 10px rgba(243,156,18,0.13); 
+        transition: background 0.2s, box-shadow 0.2s, transform 0.15s; letter-spacing: 0.5px;" class="btn-leave" onclick="leaveClass(1)">
+          <i class="fas fa-sign-out-alt"></i>
+          Rời lớp
+        </button>
+        }
+      </div>
+    </div>
+  </div>
+  <!-- Các modal, tab, JS... bạn có thể thêm tiếp nếu muốn -->
+
+  <!-- Add/Edit Class Modal -->
+  <div class="modal" id="classModal">
+    <div class="modal-content" style="border-radius:16px; box-shadow:0 8px 32px rgba(52,152,219,0.18),0 1.5px 8px rgba(0,0,0,0.08); padding:0; overflow:hidden;">
+      <div class="modal-header" style="background:#3498db; color:#fff; border-radius:16px 16px 0 0; display:flex; align-items:center; gap:12px; padding:24px 28px;">
+        <i class="fas fa-chalkboard-teacher" style="font-size:1.6rem;"></i>
+        <h2 style="flex:1; font-size:1.3rem; font-weight:600; margin:0;">Thêm lớp học mới</h2>
+        <button type="button" class="close-modal" onclick="closeModal('classModal')" style="color:#fff; background:none; border:none; font-size:1.5rem; margin-left:8px;">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body" style="padding:32px 28px 24px 28px; background:#f8f9fa; border-radius:0 0 16px 16px;">
+        <form class="class-form" onsubmit="event.preventDefault();" style="display:flex; flex-direction:column; gap:22px;">
+          <div class="form-group">
+            <label style="font-weight:500; color:#2c3e50; margin-bottom:7px;">Tên lớp học <span style='color:#e74c3c'>*</span></label>
+            <input type="text" placeholder="Nhập tên lớp học" style="padding:13px 16px; border-radius:7px; border:1.5px solid #d0d7de; font-size:1rem; background:#fff; transition:border-color 0.2s;">
+          </div>
+          <div class="form-group">
+            <label style="font-weight:500; color:#2c3e50; margin-bottom:7px;">Mô tả</label>
+            <textarea placeholder="Nhập mô tả lớp học" style="padding:13px 16px; border-radius:7px; border:1.5px solid #d0d7de; font-size:1rem; background:#fff; min-height:80px; transition:border-color 0.2s;"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Chọn học phần <span style='color:#e74c3c'>*</span></label>
+            <select style="padding: 0.5rem 1rem; border-radius: 5px; border: 1px solid #ddd;" required>
+              <option value="">-- Chọn học phần --</option>
+              <option value="LTWEB01">Lập trình Web</option>
+              <option value="LTJAVA01">Lập trình Java</option>
+              <option value="INT1235.1">Cơ sở dữ liệu</option>
+              <!-- Thêm các học phần khác nếu cần -->
+            </select>
+          </div>
+          <div class="form-actions" style="display:flex; justify-content:flex-end; gap:12px; margin-top:10px;">
+            <button type="button" class="btn-secondary" onclick="closeModal('classModal')" style="min-width:110px;">Hủy</button>
+            <button type="submit" class="btn-primary" style="min-width:140px; font-size:1.08rem; font-weight:600; box-shadow:0 2px 8px rgba(52,152,219,0.10);">Lưu <i class="fas fa-save" style="margin-left:7px;"></i></button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Modal xác nhận xóa lớp học phần -->
+  <div class="modal" id="confirmDeleteModal">
+    <div class="modal-content">
+      <div class="modal-header" style="justify-content:center;">
+        <h2 style="font-size:1.1rem; margin:0 auto;">Xác nhận xóa</h2>
+      </div>
+      <div class="modal-form" style="padding:20px;">
+        <p>Bạn có chắc chắn muốn xóa lớp học phần này?</p>
+        <div style="display:flex; justify-content:center; gap:16px; margin-top:20px;">
+          <button class="btn-secondary" onclick="closeConfirmDelete()">Hủy</button>
+          <button class="btn-danger" onclick="confirmDeleteClass()">Xóa</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>

@@ -324,9 +324,7 @@ C:\Users\Nhat Truong\Downloads\Lecture_web\Lecture_web\obj\Debug\net8.0\Lecture_
 C:\Users\Nhat Truong\Downloads\Lecture_web\Lecture_web\obj\Debug\net8.0\Lecture_web.RazorAssemblyInfo.cache
 C:\Users\Nhat Truong\Downloads\Lecture_web\Lecture_web\obj\Debug\net8.0\Lecture_web.RazorAssemblyInfo.cs
 C:\Users\Nhat Truong\Downloads\Lecture_web\Lecture_web\obj\Debug\net8.0\Lecture_web.sourcelink.json
-C:\Users\Nhat Truong\Downloads\Lecture_web\Lecture_web\obj\Debug\net8.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
 C:\Users\Nhat Truong\Downloads\Lecture_web\Lecture_web\obj\Debug\net8.0\scopedcss\bundle\Lecture_web.styles.css
-C:\Users\Nhat Truong\Downloads\Lecture_web\Lecture_web\obj\Debug\net8.0\scopedcss\projectbundle\Lecture_web.bundle.scp.css
 C:\Users\Nhat Truong\Downloads\Lecture_web\Lecture_web\obj\Debug\net8.0\staticwebassets.build.json
 C:\Users\Nhat Truong\Downloads\Lecture_web\Lecture_web\obj\Debug\net8.0\staticwebassets.development.json
 C:\Users\Nhat Truong\Downloads\Lecture_web\Lecture_web\obj\Debug\net8.0\staticwebassets.build.endpoints.json

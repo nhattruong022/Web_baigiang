@@ -4,8 +4,6 @@ function showModal(modalId) {
 }
 
 function closeModal(modalId) {
-    event.preventDefault();
-    event.stopPropagation();
     document.getElementById(modalId).classList.remove('active');
 }
 
@@ -172,16 +170,6 @@ function deleteMaterial(materialId) {
     }
 }
 
-function editQuiz(quizId) {
-    showModal('quizModal');
-}
-
-function deleteQuiz(quizId) {
-    if (confirm('Bạn có chắc chắn muốn xóa đề thi này?')) {
-        // Logic to delete quiz
-    }
-}
-
 // User menu functions
 function toggleUserMenu() {
     document.querySelector('.user-dropdown').classList.toggle('active');
@@ -202,7 +190,7 @@ function logout() {
     }
 }
 
-function toggleSubMenu(anchor) {
+function toggleSubMenu(event, anchor) {
     event.preventDefault();
     const submenu = anchor.parentElement.querySelector('.submenu');
     if (submenu) {
@@ -262,23 +250,26 @@ function confirmDeleteClass() {
     closeConfirmDelete();
 }
 
-
-
-
 // Search
-document.getElementById('searchAssignmentInput').addEventListener('input', function () {
-    const value = this.value.toLowerCase();
-    document.querySelectorAll('#assignmentTable tbody tr').forEach(row => {
-        row.style.display = row.textContent.toLowerCase().includes(value) ? '' : 'none';
+var searchAssignmentInput = document.getElementById('searchAssignmentInput');
+if (searchAssignmentInput) {
+    searchAssignmentInput.addEventListener('input', function () {
+        const value = this.value.toLowerCase();
+        document.querySelectorAll('#assignmentTable tbody tr').forEach(row => {
+            row.style.display = row.textContent.toLowerCase().includes(value) ? '' : 'none';
+        });
     });
-});
+}
+
 // Modal functions
 function openAddAssignmentModal() {
     document.getElementById('addAssignmentModal').classList.add('active');
 }
+
 function closeAddAssignmentModal() {
     document.getElementById('addAssignmentModal').classList.remove('active');
 }
+
 // Đóng modal khi click ra ngoài
 document.querySelectorAll('.modal').forEach(modal => {
     modal.addEventListener('click', function (e) {
@@ -287,6 +278,7 @@ document.querySelectorAll('.modal').forEach(modal => {
         }
     });
 });
+
 // Đăng xuất
 function logout() {
     if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
@@ -294,14 +286,14 @@ function logout() {
     }
 }
 
-
-function toggleSubMenu(anchor) {
+function toggleSubMenu(event, anchor) {
     event.preventDefault();
     const submenu = anchor.parentElement.querySelector('.submenu');
     if (submenu) {
         submenu.classList.toggle('open');
     }
 }
+
 function selectHocPhan(maHocPhan) {
     alert('Chọn học phần: ' + maHocPhan);
     // Xử lý hiển thị nội dung học phần bên phải
@@ -340,19 +332,6 @@ function saveEditAssignment() {
     closeEditAssignmentModal();
 }
 
-// Gắn sự kiện cho nút chỉnh sửa trong bảng (demo)
-document.querySelectorAll('.assignment-actions-btns .btn-secondary[title="Chỉnh sửa"]').forEach((btn, idx) => {
-    btn.onclick = function () {
-        // Lấy dữ liệu từ dòng tương ứng (demo)
-        const row = btn.closest('tr');
-        const name = row.children[0].innerText;
-        const desc = row.children[1].innerText;
-        const course = row.children[2].innerText;
-        const classCode = row.children[3].innerText;
-        openEditAssignmentModal(name, desc, course, classCode);
-    }
-});
-
 let chapterRowToDelete = null;
 document.querySelectorAll('.assignment-actions-btns .btn-danger[title="Xóa"]').forEach((btn) => {
     btn.onclick = function () {
@@ -364,6 +343,7 @@ function closeConfirmDeleteChapter() {
     document.getElementById('confirmDeleteChapterModal').classList.remove('active');
     chapterRowToDelete = null;
 }
+
 function confirmDeleteChapter() {
     if (chapterRowToDelete) {
         chapterRowToDelete.remove();
@@ -392,15 +372,6 @@ function logout() {
     }
 }
 
-
-
-
-
-
-
-
-
-//bai giang js
 // Tab switching for content type
 function switchContentTab(type) {
     document.querySelectorAll('.content-tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -413,20 +384,27 @@ function switchContentTab(type) {
     }
     document.querySelector(`.content-tab-btn[onclick*="${type}"]`).classList.add('active');
 }
+
 // Search
-document.getElementById('searchInput').addEventListener('input', function () {
-    const value = this.value.toLowerCase();
-    document.querySelectorAll('#contentTable tbody tr').forEach(row => {
-        row.style.display = row.textContent.toLowerCase().includes(value) ? '' : 'none';
+var searchInput = document.getElementById('searchInput');
+if (searchInput) {
+    searchInput.addEventListener('input', function () {
+        const value = this.value.toLowerCase();
+        document.querySelectorAll('#contentTable tbody tr').forEach(row => {
+            row.style.display = row.textContent.toLowerCase().includes(value) ? '' : 'none';
+        });
     });
-});
+}
+
 // Modal functions
 function openAddContentModal() {
     document.getElementById('addContentModal').classList.add('active');
 }
+
 function closeAddContentModal() {
     document.getElementById('addContentModal').classList.remove('active');
 }
+
 // Đóng modal khi click ra ngoài
 document.querySelectorAll('.modal').forEach(modal => {
     modal.addEventListener('click', function (e) {
@@ -436,19 +414,26 @@ document.querySelectorAll('.modal').forEach(modal => {
     });
 });
 
+// Đăng xuất
+function logout() {
+    if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+        window.location.href = 'login.html';
+    }
+}
 
-
-function toggleSubMenu(anchor) {
+function toggleSubMenu(event, anchor) {
     event.preventDefault();
     const submenu = anchor.parentElement.querySelector('.submenu');
     if (submenu) {
         submenu.classList.toggle('open');
     }
 }
+
 function selectHocPhan(maHocPhan) {
     alert('Chọn học phần: ' + maHocPhan);
     // Xử lý hiển thị nội dung học phần bên phải
 }
+
 // Mở popup chỉnh sửa bài giảng và điền dữ liệu
 function openEditContentModal(title = '', desc = '', classCode = '') {
     document.getElementById('editLectureTitle').value = title;
@@ -456,10 +441,12 @@ function openEditContentModal(title = '', desc = '', classCode = '') {
     document.getElementById('editLectureClass').value = classCode;
     document.getElementById('editContentModal').classList.add('active');
 }
+
 // Đóng popup chỉnh sửa bài giảng
 function closeEditContentModal() {
     document.getElementById('editContentModal').classList.remove('active');
 }
+
 // Xử lý lưu chỉnh sửa (demo, bạn có thể thay bằng logic thực tế)
 function saveEditContent() {
     const title = document.getElementById('editLectureTitle').value;
@@ -468,31 +455,41 @@ function saveEditContent() {
     alert('Đã lưu chỉnh sửa bài giảng: ' + title);
     closeEditContentModal();
 }
-// Gắn sự kiện cho nút chỉnh sửa trong bảng (demo)
-document.querySelectorAll('.content-actions-btns .btn-secondary[title="Chỉnh sửa"]').forEach((btn, idx) => {
-    btn.onclick = function () {
+
+// Gắn sự kiện cho nút chỉnh sửa trong bảng bài giảng (chỉ cho bảng bài giảng)
+function bindContentTableEvents() {
+    const table = document.getElementById('contentTable');
+    if (!table) return;
+    table.onclick = function (e) {
+        const btn = e.target.closest('button');
+        if (!btn) return;
         const row = btn.closest('tr');
-        const title = row.children[0].innerText;
-        const desc = row.children[1].innerText;
-        const classCode = row.children[4].innerText;
-        openEditContentModal(title, desc, classCode);
+        if (!row) return;
+        // Chỉnh sửa
+        if (btn.classList.contains('btn-secondary') && btn.title === 'Chỉnh sửa') {
+            const title = row.children[0].innerText;
+            const desc = row.children[1].innerText;
+            const classCode = row.children[2].innerText;
+            document.getElementById('editLectureTitle').value = title;
+            document.getElementById('editLectureDesc').value = desc;
+            document.getElementById('editLectureClass').value = classCode;
+            document.getElementById('editContentModal').classList.add('active');
+        }
+        // Xóa
+        if (btn.classList.contains('btn-danger') && btn.title === 'Xóa') {
+            contentRowToDelete = row;
+            document.getElementById('confirmDeleteContentModal').classList.add('active');
+        }
     }
-});
-let contentRowToDelete = null;
+}
+document.addEventListener('DOMContentLoaded', bindContentTableEvents);
 
-// Gắn lại sự kiện cho nút xóa sau khi trang load
-document.querySelectorAll('.content-actions-btns .btn-danger[title="Xóa"]').forEach((btn) => {
-    btn.onclick = function () {
-        contentRowToDelete = btn.closest('tr');
-        document.getElementById('confirmDeleteContentModal').classList.add('active');
-    }
-});
-
+// Đóng modal xác nhận xóa
 function closeConfirmDeleteContent() {
     document.getElementById('confirmDeleteContentModal').classList.remove('active');
     contentRowToDelete = null;
 }
-
+// Xác nhận xóa
 function confirmDeleteContent() {
     if (contentRowToDelete) {
         contentRowToDelete.remove();
@@ -501,8 +498,12 @@ function confirmDeleteContent() {
     closeConfirmDeleteContent();
 }
 
+// Đóng popup chỉnh sửa bài giảng
+function closeEditContentModal() {
+    document.getElementById('editContentModal').classList.remove('active');
+}
 
-//Profile
+// User menu
 function toggleUserMenu() {
     document.querySelector('.user-dropdown').classList.toggle('active');
 }
@@ -516,17 +517,19 @@ document.addEventListener('click', function (event) {
     }
 });
 
-
-
 //QuanLybai
 
 // Search
-document.getElementById('searchBaiInput').addEventListener('input', function () {
-    const value = this.value.toLowerCase();
-    document.querySelectorAll('#baiTable tbody tr').forEach(row => {
-        row.style.display = row.textContent.toLowerCase().includes(value) ? '' : 'none';
+var searchBaiInput = document.getElementById('searchBaiInput');
+if (searchBaiInput) {
+    searchBaiInput.addEventListener('input', function () {
+        const value = this.value.toLowerCase();
+        document.querySelectorAll('#baiTable tbody tr').forEach(row => {
+            row.style.display = row.textContent.toLowerCase().includes(value) ? '' : 'none';
+        });
     });
-});
+}
+
 // Đóng modal khi click ra ngoài
 document.querySelectorAll('.modal').forEach(modal => {
     modal.addEventListener('click', function (e) {
@@ -535,6 +538,7 @@ document.querySelectorAll('.modal').forEach(modal => {
         }
     });
 });
+
 // Đăng xuất
 function logout() {
     if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
@@ -542,37 +546,17 @@ function logout() {
     }
 }
 
-
-function toggleSubMenu(anchor) {
+function toggleSubMenu(event, anchor) {
     event.preventDefault();
     const submenu = anchor.parentElement.querySelector('.submenu');
     if (submenu) {
         submenu.classList.toggle('open');
     }
 }
+
 function selectHocPhan(maHocPhan) {
     alert('Chọn học phần: ' + maHocPhan);
     // Xử lý hiển thị nội dung học phần bên phải
-}
-
-
-function toggleUserMenu() {
-    document.querySelector('.user-dropdown').classList.toggle('active');
-}
-
-// Close dropdown when clicking outside
-document.addEventListener('click', function (event) {
-    const userProfile = document.querySelector('.user-profile');
-    const dropdown = document.querySelector('.user-dropdown');
-    if (!userProfile.contains(event.target)) {
-        dropdown.classList.remove('active');
-    }
-});
-
-function logout() {
-    if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
-        window.location.href = 'login.html';
-    }
 }
 
 let baiRowToDelete = null;
@@ -587,7 +571,6 @@ function closeConfirmDeleteBai() {
     baiRowToDelete = null;
 }
 
-
 function confirmDeleteBai() {
     if (baiRowToDelete) {
         baiRowToDelete.remove();
@@ -596,10 +579,30 @@ function confirmDeleteBai() {
     closeConfirmDeleteBai();
 }
 
-
-
-
-
+function bindAssignmentTableEvents() {
+    const table = document.getElementById('assignmentTable');
+    if (!table) return;
+    table.onclick = function (e) {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        const row = btn.closest('tr');
+        if (!row) return;
+        // Chỉnh sửa
+        if (btn.classList.contains('btn-secondary') && btn.title === 'Chỉnh sửa') {
+            const name = row.children[0].innerText;
+            const desc = row.children[1].innerText;
+            const course = row.children[2].innerText;
+            const classCode = row.children[3].innerText;
+            openEditAssignmentModal(name, desc, course, classCode);
+        }
+        // Xóa
+        if (btn.classList.contains('btn-danger') && btn.title === 'Xóa') {
+            chapterRowToDelete = row;
+            document.getElementById('confirmDeleteChapterModal').classList.add('active');
+        }
+    }
+}
+document.addEventListener('DOMContentLoaded', bindAssignmentTableEvents);
 
 
 

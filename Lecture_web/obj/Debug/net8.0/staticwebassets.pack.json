@@ -1,10 +1,6 @@
 {
   "Files": [
     {
-      "Id": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\Lecture_web.bundle.scp.css",
-      "PackagePath": "staticwebassets\\Lecture_web.8n3wol2xg3.bundle.scp.css"
-    },
-    {
       "Id": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\css\\admin-dashboard.css",
       "PackagePath": "staticwebassets\\css\\admin-dashboard.css"
     },
@@ -17,6 +13,10 @@
       "PackagePath": "staticwebassets\\css\\baigiang-management.css"
     },
     {
+      "Id": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\css\\bomon-management.css",
+      "PackagePath": "staticwebassets\\css\\bomon-management.css"
+    },
+    {
       "Id": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\css\\chitiethocphan.css",
       "PackagePath": "staticwebassets\\css\\chitiethocphan.css"
     },
@@ -25,8 +25,12 @@
       "PackagePath": "staticwebassets\\css\\chuong-management.css"
     },
     {
-      "Id": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\css\\course-detail.css",
-      "PackagePath": "staticwebassets\\css\\course-detail.css"
+      "Id": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\css\\hocphan-management.css",
+      "PackagePath": "staticwebassets\\css\\hocphan-management.css"
+    },
+    {
+      "Id": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\css\\khoa-management.css",
+      "PackagePath": "staticwebassets\\css\\khoa-management.css"
     },
     {
       "Id": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\css\\site.css",

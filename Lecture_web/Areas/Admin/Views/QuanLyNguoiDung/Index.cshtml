@@ -1,251 +1,247 @@
 @model List<Lecture_web.Models.TaiKhoanModels>
   @{
   Layout = null;
+  ViewData["Title"] = "Quản lý người dùng";
+  <link rel="stylesheet" href="~/css/style.css">
+  <link rel="stylesheet" href="~/css/admin-dashboard.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   }
-  <!DOCTYPE html>
-  <html lang="vi">
 
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý người dùng - Hệ Thống Quản Lý Bài Giảng</title>
-    <link rel="stylesheet" href="~/css/style.css">
-    <link rel="stylesheet" href="~/css/admin-dashboard.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-  </head>
 
-  <body>
-    <div class="app-container">
-      @await Html.PartialAsync("Sidebar")
+
+
+
+  <div class="app-container">
+    @await Html.PartialAsync("~/Views/Shared/navbar.cshtml")
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Navigation Bar -->
+      @await Html.PartialAsync("~/Views/Shared/top_bar.cshtml")
       <!-- Main Content Area -->
-      <main class="main-content">
-        <!-- Top Navigation Bar -->
-        @await Html.PartialAsync("Topbar")
-        <!-- Main Content Area -->
-        <!-- User Table -->
-        <div class="dashboard-card">
-          <!-- User Management Content -->
-          <div class="dashboard">
-            <!-- Quick Actions -->
-            <div class="quick-actions" style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
-              <button class="btn-primary" onclick="openAddUserModal()">
-                <i class="fas fa-user-plus"></i>
-                Thêm người dùng mới
-              </button>
-            </div>
-            <!-- Filters -->
-            <div class="filters-section" style="display:flex; align-items:center; gap:24px; justify-content:space-between;">
-              <div style="display:flex; align-items:center; gap:24px;">
-                <div class="filter-group">
-                  <label>Vai trò:</label>
-                  <select class="role-filter">
-                    <option value="all">Tất cả vai trò</option>
-                    <option value="admin">Quản trị viên</option>
-                    <option value="teacher">Giảng viên</option>
-                    <option value="student">Sinh viên</option>
-                  </select>
-                </div>
-                <div class="filter-group">
-                  <label>Trạng thái:</label>
-                  <select class="status-filter">
-                    <option value="all">Tất cả trạng thái</option>
-                    <option value="active">Đang hoạt động</option>
-                    <option value="inactive">Không hoạt động</option>
-                  </select>
-                </div>
+      <!-- User Table -->
+      <div class="dashboard-card">
+        <!-- User Management Content -->
+        <div class="dashboard">
+          <!-- Quick Actions -->
+          <div class="quick-actions" style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+            <button class="btn-primary" onclick="openAddUserModal()">
+              <i class="fas fa-user-plus"></i>
+              Thêm người dùng mới
+            </button>
+          </div>
+          <!-- Filters -->
+          <div class="filters-section" style="display:flex; align-items:center; gap:24px; justify-content:space-between;">
+            <div style="display:flex; align-items:center; gap:24px;">
+              <div class="filter-group">
+                <label>Vai trò:</label>
+                <select class="role-filter">
+                  <option value="all">Tất cả vai trò</option>
+                  <option value="admin">Quản trị viên</option>
+                  <option value="teacher">Giảng viên</option>
+                  <option value="student">Sinh viên</option>
+                </select>
               </div>
-              <div class="search-bar" style="width:260px;">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Tìm kiếm học phần...">
+              <div class="filter-group">
+                <label>Trạng thái:</label>
+                <select class="status-filter">
+                  <option value="all">Tất cả trạng thái</option>
+                  <option value="active">Đang hoạt động</option>
+                  <option value="inactive">Không hoạt động</option>
+                </select>
               </div>
             </div>
-            <div class="table-container">
-              <table class="user-table">
-                <thead>
-                  <tr>
-                    <th><input type="checkbox" class="select-all"></th>
-                    <th>Tên đăng nhập</th>
-                    <th>Họ và tên</th>
-                    <th>Vai trò</th>
-                    <th>Email</th>
-                    <th>Số điện thoại</th>
-                    <th>Ảnh đại diện</th>
-                    <th>Trạng thái</th>
-                    <th>Ngày tạo</th>
-                    <th>Thao tác</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @foreach (var user in Model)
-                  {
-                  <tr>
-                    <td><input type="checkbox" class="user-select"></td>
-                    <td>@user.TenDangNhap</td>
-                    <td>@user.HoTen</td>
-                    <td>@user.VaiTro</td>
-                    <td>@user.Email</td>
-                    <td>@user.SoDienThoai</td>
-                    <td>
-                      @if (!string.IsNullOrEmpty(user.AnhDaiDien))
-                      {
-                      <img src="@user.AnhDaiDien" alt="User" style="width:52px; height:52px; border-radius:50%;">
-                      }
-                    </td>
-                    <td><span class="status @(user.TrangThai == " HoatDong" ? "active" : "inactive" )">@user.TrangThai</span></td>
-                    <td>@(user.NgayTao.HasValue ? user.NgayTao.Value.ToString("dd/MM/yyyy") : "")</td>
-                    <td>
-                      <div class="actions">
-                        <button class="btn-icon" title="Chỉnh sửa" onclick="openEditUserModal()">
-                          <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn-icon" title="Xóa" onclick="openConfirmDeleteModal('@user.TenDangNhap')">
-                          <i class="fas fa-trash"></i>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                  }
-                </tbody>
-              </table>
-            </div>
-            <!-- Pagination -->
-            <div class="pagination">
-              <button class="btn-page" disabled>
-                <i class="fas fa-chevron-left"></i>
-              </button>
-              <button class="btn-page active">1</button>
-              <button class="btn-page">2</button>
-              <button class="btn-page">3</button>
-              <button class="btn-page">
-                <i class="fas fa-chevron-right"></i>
-              </button>
+            <div class="search-bar" style="width:260px;">
+              <i class="fas fa-search"></i>
+              <input type="text" placeholder="Tìm kiếm học phần...">
             </div>
           </div>
-        </div>
-      </main>
-    </div>
-    <!-- Add User Modal -->
-    <div class="modal" id="addUserModal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2>Thêm người dùng mới</h2>
-          <button class="close-modal" onclick="closeAddUserModal()">
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-        <form class="modal-form">
-          <div class="form-group">
-            <label>Tên đăng nhập</label>
-            <input type="text" name="tenDangNhap" required>
+          <div class="table-container">
+            <table class="user-table">
+              <thead>
+                <tr>
+                  <th><input type="checkbox" class="select-all"></th>
+                  <th>Tên đăng nhập</th>
+                  <th>Họ và tên</th>
+                  <th>Vai trò</th>
+                  <th>Email</th>
+                  <th>Số điện thoại</th>
+                  <th>Ảnh đại diện</th>
+                  <th>Trạng thái</th>
+                  <th>Ngày tạo</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                @foreach (var user in Model)
+                {
+                <tr>
+                  <td><input type="checkbox" class="user-select"></td>
+                  <td>@user.TenDangNhap</td>
+                  <td>@user.HoTen</td>
+                  <td>@user.VaiTro</td>
+                  <td>@user.Email</td>
+                  <td>@user.SoDienThoai</td>
+                  <td>
+                    @if (!string.IsNullOrEmpty(user.AnhDaiDien))
+                    {
+                    <img src="@user.AnhDaiDien" alt="User" style="width:52px; height:52px; border-radius:50%;">
+                    }
+                  </td>
+                  <td><span class="status @(user.TrangThai == " HoatDong" ? "active" : "inactive" )">@user.TrangThai</span></td>
+                  <td>@(user.NgayTao.HasValue ? user.NgayTao.Value.ToString("dd/MM/yyyy") : "")</td>
+                  <td>
+                    <div class="actions">
+                      <button class="btn-icon" title="Chỉnh sửa" onclick="openEditUserModal()">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="btn-icon" title="Xóa" onclick="openConfirmDeleteModal('@user.TenDangNhap')">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                }
+              </tbody>
+            </table>
           </div>
-          <div class="form-group">
-            <label>Mật khẩu</label>
-            <input type="password" name="matKhau" required>
+          <!-- Pagination -->
+          <div class="pagination">
+            <button class="btn-page" disabled>
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="btn-page active">1</button>
+            <button class="btn-page">2</button>
+            <button class="btn-page">3</button>
+            <button class="btn-page">
+              <i class="fas fa-chevron-right"></i>
+            </button>
           </div>
-          <div class="form-group">
-            <label>Họ và tên</label>
-            <input type="text" name="hoTen" required>
-          </div>
-          <div class="form-group">
-            <label>Vai trò</label>
-            <select name="vaiTro" required>
-              <option value="admin">Quản trị viên</option>
-              <option value="teacher">Giảng viên</option>
-              <option value="student">Sinh viên</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" name="email" required>
-          </div>
-          <div class="form-group">
-            <label>Số điện thoại</label>
-            <input type="text" name="soDienThoai">
-          </div>
-          <div class="form-group">
-            <label>Ảnh đại diện</label>
-            <input type="file" name="anhDaiDien" accept="image/*">
-          </div>
-          <div class="form-actions">
-            <button type="button" class="btn-secondary" onclick="closeAddUserModal()">Hủy</button>
-            <button type="submit" class="btn-primary">Thêm người dùng</button>
-          </div>
-        </form>
-      </div>
-    </div>
-    <!-- Edit User Modal -->
-    <div class="modal" id="editUserModal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2>Chỉnh sửa người dùng</h2>
-          <button class="close-modal" onclick="closeEditUserModal()">
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-        <form class="modal-form">
-          <div class="form-group">
-            <label>Tên đăng nhập</label>
-            <input type="text" name="tenDangNhap" required>
-          </div>
-          <div class="form-group">
-            <label>Mật khẩu</label>
-            <input type="password" name="matKhau" required>
-          </div>
-          <div class="form-group">
-            <label>Họ và tên</label>
-            <input type="text" name="hoTen" required>
-          </div>
-          <div class="form-group">
-            <label>Vai trò</label>
-            <select name="vaiTro" required>
-              <option value="admin">Quản trị viên</option>
-              <option value="teacher">Giảng viên</option>
-              <option value="student">Sinh viên</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" name="email" required>
-          </div>
-          <div class="form-group">
-            <label>Số điện thoại</label>
-            <input type="text" name="soDienThoai">
-          </div>
-          <div class="form-group">
-            <label>Ảnh đại diện</label>
-            <input type="file" name="anhDaiDien" accept="image/*">
-          </div>
-          <div class="form-group">
-            <label>Trạng thái</label>
-            <select name="trangThai" required>
-              <option value="active">Hoạt động</option>
-              <option value="inactive">Không hoạt động</option>
-            </select>
-          </div>
-          <div class="form-actions">
-            <button type="button" class="btn-secondary" onclick="closeEditUserModal()">Hủy</button>
-            <button type="submit" class="btn-primary">Lưu</button>
-          </div>
-        </form>
-      </div>
-    </div>
-    <!-- Confirm Delete Modal -->
-    <div class="modal" id="confirmDeleteModal">
-      <div class="modal-content" style="max-width: 350px;">
-        <div class="modal-header">
-          <h2>Xác nhận xóa</h2>
-        </div>
-        <div class="modal-body" style="padding: 16px 0;">
-          <p>Bạn có chắc chắn muốn xóa người dùng này không?</p>
-        </div>
-        <div class="form-actions" style="justify-content: flex-end;">
-          <button class="btn-secondary" onclick="closeConfirmDeleteModal()">Hủy</button>
-          <button class="btn-danger" id="confirmDeleteBtn">Xóa</button>
         </div>
       </div>
+    </main>
+  </div>
+  <!-- Add User Modal -->
+  <div class="modal" id="addUserModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Thêm người dùng mới</h2>
+        <button class="close-modal" onclick="closeAddUserModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <form class="modal-form">
+        <div class="form-group">
+          <label>Tên đăng nhập</label>
+          <input type="text" name="tenDangNhap" required>
+        </div>
+        <div class="form-group">
+          <label>Mật khẩu</label>
+          <input type="password" name="matKhau" required>
+        </div>
+        <div class="form-group">
+          <label>Họ và tên</label>
+          <input type="text" name="hoTen" required>
+        </div>
+        <div class="form-group">
+          <label>Vai trò</label>
+          <select name="vaiTro" required>
+            <option value="admin">Quản trị viên</option>
+            <option value="teacher">Giảng viên</option>
+            <option value="student">Sinh viên</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" name="email" required>
+        </div>
+        <div class="form-group">
+          <label>Số điện thoại</label>
+          <input type="text" name="soDienThoai">
+        </div>
+        <div class="form-group">
+          <label>Ảnh đại diện</label>
+          <input type="file" name="anhDaiDien" accept="image/*">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" onclick="closeAddUserModal()">Hủy</button>
+          <button type="submit" class="btn-primary">Thêm người dùng</button>
+        </div>
+      </form>
     </div>
-  </body>
+  </div>
+  <!-- Edit User Modal -->
+  <div class="modal" id="editUserModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Chỉnh sửa người dùng</h2>
+        <button class="close-modal" onclick="closeEditUserModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <form class="modal-form">
+        <div class="form-group">
+          <label>Tên đăng nhập</label>
+          <input type="text" name="tenDangNhap" required>
+        </div>
+        <div class="form-group">
+          <label>Mật khẩu</label>
+          <input type="password" name="matKhau" required>
+        </div>
+        <div class="form-group">
+          <label>Họ và tên</label>
+          <input type="text" name="hoTen" required>
+        </div>
+        <div class="form-group">
+          <label>Vai trò</label>
+          <select name="vaiTro" required>
+            <option value="admin">Quản trị viên</option>
+            <option value="teacher">Giảng viên</option>
+            <option value="student">Sinh viên</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" name="email" required>
+        </div>
+        <div class="form-group">
+          <label>Số điện thoại</label>
+          <input type="text" name="soDienThoai">
+        </div>
+        <div class="form-group">
+          <label>Ảnh đại diện</label>
+          <input type="file" name="anhDaiDien" accept="image/*">
+        </div>
+        <div class="form-group">
+          <label>Trạng thái</label>
+          <select name="trangThai" required>
+            <option value="active">Hoạt động</option>
+            <option value="inactive">Không hoạt động</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" onclick="closeEditUserModal()">Hủy</button>
+          <button type="submit" class="btn-primary">Lưu</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- Confirm Delete Modal -->
+  <div class="modal" id="confirmDeleteModal">
+    <div class="modal-content" style="max-width: 350px;">
+      <div class="modal-header">
+        <h2>Xác nhận xóa</h2>
+      </div>
+      <div class="modal-body" style="padding: 16px 0;">
+        <p>Bạn có chắc chắn muốn xóa người dùng này không?</p>
+      </div>
+      <div class="form-actions" style="justify-content: flex-end;">
+        <button class="btn-secondary" onclick="closeConfirmDeleteModal()">Hủy</button>
+        <button class="btn-danger" id="confirmDeleteBtn">Xóa</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     function toggleUserMenu() {
       document.querySelector('.user-dropdown').classList.toggle('active');
@@ -313,5 +309,3 @@
       }
     };
   </script>
-
-  </html>

@@ -1,0 +1,43 @@
+    @{
+    ViewData["Title"] = "Chỉnh sửa bài";
+    Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+    }
+
+
+    <main class="main-content">
+      <div class="assignment-management-container">
+        <div class="assignment-header">
+          <h2>Chỉnh sửa bài</h2>
+        </div>
+        <form class="bai-modal-form" style="max-width:1300px; margin:30px auto; background:#f8f9fa; border-radius:16px; box-shadow:0 2px 8px rgba(52,152,219,0.08); padding:48px 56px 40px 56px;">
+          <div class="form-group">
+            <label>Tiêu đề <span class="required">*</span></label>
+            <input type="text" required placeholder="Nhập tiêu đề bài" value="Bài 1: Giới thiệu HTML">
+          </div>
+          <div class="form-group">
+            <label>Nội dung</label>
+            <textarea rows="7" style="min-height:160px; font-size:1.08rem; padding:16px;" placeholder="Nhập nội dung bài">Giới thiệu về HTML và cấu trúc cơ bản của một trang web.</textarea>
+          </div>
+          <div class="form-group">
+            <label>Bài giảng <span class="required">*</span></label>
+            <select class="styled-select" required>
+              <option value="">-- Chọn bài giảng --</option>
+              <option value="lecture1" selected>Lập trình web</option>
+              <option value="lecture2">Cơ sở dữ liệu</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Chương <span class="required">*</span></label>
+            <select class="styled-select" required>
+              <option value="">-- Chọn chương --</option>
+              <option value="1" selected>HTML Cơ bản</option>
+              <option value="2">CSS Cơ bản</option>
+            </select>
+          </div>
+          <div class="form-actions" style="display:flex; justify-content:flex-end; gap:12px; margin-top:10px;">
+            <button type="button" class="btn-secondary" onclick="window.location.href='assignment-management.html'">Hủy</button>
+            <button type="submit" class="btn-primary">Lưu <i class="fas fa-save"></i></button>
+          </div>
+        </form>
+      </div>
+    </main>
