@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "5HTSmn2RHHl/9fAOaOzKiy9CUXa62NSQJ7Kw5EwSSKY=",
+  "Hash": "QuEx3IsByXkSj7PQ/G/yoRfMVyniOUSSVX3sDAVuNwI=",
   "Source": "Lecture_web",
   "BasePath": "_content/Lecture_web",
   "Mode": "Default",
@@ -269,12 +269,12 @@
       "OriginalItemSpec": "wwwroot\\favicon.ico"
     },
     {
-      "Identity": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\images\\avartar.jpg",
+      "Identity": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\images\\avatar.jpg",
       "SourceId": "Lecture_web",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\",
       "BasePath": "_content/Lecture_web",
-      "RelativePath": "images/avartar#[.{fingerprint}]?.jpg",
+      "RelativePath": "images/avatar#[.{fingerprint}]?.jpg",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -287,7 +287,7 @@
       "Integrity": "z3uPY3Sy/BcwOfZsHmZShVRR0zwjZuw+IZXfuMeogsU=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\images\\avartar.jpg"
+      "OriginalItemSpec": "wwwroot\\images\\avatar.jpg"
     },
     {
       "Identity": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\js\\script.js",
@@ -2515,8 +2515,8 @@
       ]
     },
     {
-      "Route": "images/avartar.jpg",
-      "AssetFile": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\images\\avartar.jpg",
+      "Route": "images/avatar.jpg",
+      "AssetFile": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\images\\avatar.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -2552,8 +2552,8 @@
       ]
     },
     {
-      "Route": "images/avartar.v8t3tyopeg.jpg",
-      "AssetFile": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\images\\avartar.jpg",
+      "Route": "images/avatar.v8t3tyopeg.jpg",
+      "AssetFile": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\images\\avatar.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -2588,7 +2588,7 @@
         },
         {
           "Name": "label",
-          "Value": "images/avartar.jpg"
+          "Value": "images/avatar.jpg"
         },
         {
           "Name": "integrity",

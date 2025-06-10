@@ -144,16 +144,16 @@
       <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-Jtxf9L\u002B5ITKRc1gIRl4VbUpGkRNfOBXjYTdhJD4facM="}]]]></EndpointProperties>
       <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"5430"},{"Name":"Content-Type","Value":"image/x-icon"},{"Name":"ETag","Value":"\u0022Jtxf9L\u002B5ITKRc1gIRl4VbUpGkRNfOBXjYTdhJD4facM=\u0022"},{"Name":"Last-Modified","Value":"Sat, 07 Jun 2025 02:30:46 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
-    <StaticWebAssetEndpoint Include="_content/Lecture_web/images/avartar.jpg">
-      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\avartar.jpg'))</AssetFile>
+    <StaticWebAssetEndpoint Include="_content/Lecture_web/images/avatar.jpg">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\avatar.jpg'))</AssetFile>
       <Selectors><![CDATA[[]]]></Selectors>
       <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-z3uPY3Sy/BcwOfZsHmZShVRR0zwjZuw\u002BIZXfuMeogsU="}]]]></EndpointProperties>
       <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"4985"},{"Name":"Content-Type","Value":"image/jpeg"},{"Name":"ETag","Value":"\u0022z3uPY3Sy/BcwOfZsHmZShVRR0zwjZuw\u002BIZXfuMeogsU=\u0022"},{"Name":"Last-Modified","Value":"Fri, 06 Jun 2025 12:30:25 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
-    <StaticWebAssetEndpoint Include="_content/Lecture_web/images/avartar.v8t3tyopeg.jpg">
-      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\avartar.jpg'))</AssetFile>
+    <StaticWebAssetEndpoint Include="_content/Lecture_web/images/avatar.v8t3tyopeg.jpg">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\avatar.jpg'))</AssetFile>
       <Selectors><![CDATA[[]]]></Selectors>
-      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"v8t3tyopeg"},{"Name":"integrity","Value":"sha256-z3uPY3Sy/BcwOfZsHmZShVRR0zwjZuw\u002BIZXfuMeogsU="},{"Name":"label","Value":"_content/Lecture_web/images/avartar.jpg"}]]]></EndpointProperties>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"v8t3tyopeg"},{"Name":"integrity","Value":"sha256-z3uPY3Sy/BcwOfZsHmZShVRR0zwjZuw\u002BIZXfuMeogsU="},{"Name":"label","Value":"_content/Lecture_web/images/avatar.jpg"}]]]></EndpointProperties>
       <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"4985"},{"Name":"Content-Type","Value":"image/jpeg"},{"Name":"ETag","Value":"\u0022z3uPY3Sy/BcwOfZsHmZShVRR0zwjZuw\u002BIZXfuMeogsU=\u0022"},{"Name":"Last-Modified","Value":"Fri, 06 Jun 2025 12:30:25 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="_content/Lecture_web/js/script.git89be9va.js">

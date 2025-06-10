@@ -987,8 +987,8 @@
       ]
     },
     {
-      "Route": "images/avartar.jpg",
-      "AssetFile": "images/avartar.jpg",
+      "Route": "images/avatar.jpg",
+      "AssetFile": "images/avatar.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1024,8 +1024,8 @@
       ]
     },
     {
-      "Route": "images/avartar.v8t3tyopeg.jpg",
-      "AssetFile": "images/avartar.jpg",
+      "Route": "images/avatar.v8t3tyopeg.jpg",
+      "AssetFile": "images/avatar.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1064,7 +1064,7 @@
         },
         {
           "Name": "label",
-          "Value": "images/avartar.jpg"
+          "Value": "images/avatar.jpg"
         }
       ]
     },
