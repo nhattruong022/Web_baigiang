@@ -9,5 +9,11 @@ namespace Lecture_web.Areas.Admin.Controllers
         {
             return View();
         }
+
+
+        
     }
+
+
+
 } 
