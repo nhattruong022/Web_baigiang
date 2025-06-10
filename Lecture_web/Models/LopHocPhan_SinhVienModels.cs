@@ -7,6 +7,7 @@ namespace Lecture_web.Models
     public class LopHocPhan_SinhVienModels
     {
         [Key]
+        public int idLop_SinhVien { get; set; }
         public int IdLopHocPhan { get; set; }
         public int IdTaiKhoan { get; set; }
 
