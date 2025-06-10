@@ -21,6 +21,12 @@
       <!-- Main Content Area -->
       <!-- User Table -->
       <div class="dashboard-card">
+        <div id="success-alert" style="display:none;position:relative;margin-bottom:18px;">
+          <div style="display:flex;align-items:center;gap:10px;justify-content:center;background:#e6ffed;border:1.5px solid #27ae60;color:#219150;padding:12px 28px;border-radius:8px;font-size:1.08rem;font-weight:500;box-shadow:0 2px 8px rgba(39,174,96,0.08);transition:opacity 0.5s;">
+            <i class="fas fa-check-circle" style="font-size:1.3rem;color:#27ae60;"></i>
+            <span>Thêm người dùng thành công!</span>
+          </div>
+        </div>
         <!-- User Management Content -->
         <div class="dashboard">
           <!-- Quick Actions -->
@@ -35,25 +41,25 @@
             <div style="display:flex; align-items:center; gap:24px;">
               <div class="filter-group">
                 <label>Vai trò:</label>
-                <select class="role-filter">
+                <select class="role-filter" onchange="filterUsersAjax()">
                   <option value="all">Tất cả vai trò</option>
                   <option value="admin">Quản trị viên</option>
-                  <option value="teacher">Giảng viên</option>
-                  <option value="student">Sinh viên</option>
+                  <option value="Sinhvien">Sinh viên</option>
+                  <option value="Giangvien">Giảng viên</option>
                 </select>
               </div>
               <div class="filter-group">
                 <label>Trạng thái:</label>
-                <select class="status-filter">
+                <select class="status-filter" onchange="filterUsersAjax()">
                   <option value="all">Tất cả trạng thái</option>
-                  <option value="active">Đang hoạt động</option>
-                  <option value="inactive">Không hoạt động</option>
+                  <option value="HoatDong">Đang hoạt động</option>
+                  <option value="KhongHoatDong">Không hoạt động</option>
                 </select>
               </div>
             </div>
             <div class="search-bar" style="width:260px;">
               <i class="fas fa-search"></i>
-              <input type="text" placeholder="Tìm kiếm học phần...">
+              <input type="text" placeholder="Tìm kiếm tên đăng nhập..." onchange="filterUsersAjax()">
             </div>
           </div>
           <div class="table-container">
@@ -72,50 +78,13 @@
                   <th>Thao tác</th>
                 </tr>
               </thead>
-              <tbody>
-                @foreach (var user in Model)
-                {
-                <tr>
-                  <td><input type="checkbox" class="user-select"></td>
-                  <td>@user.TenDangNhap</td>
-                  <td>@user.HoTen</td>
-                  <td>@user.VaiTro</td>
-                  <td>@user.Email</td>
-                  <td>@user.SoDienThoai</td>
-                  <td>
-                    @if (!string.IsNullOrEmpty(user.AnhDaiDien))
-                    {
-                    <img src="@user.AnhDaiDien" alt="User" style="width:52px; height:52px; border-radius:50%;">
-                    }
-                  </td>
-                  <td><span class="status @(user.TrangThai == " HoatDong" ? "active" : "inactive" )">@user.TrangThai</span></td>
-                  <td>@(user.NgayTao.HasValue ? user.NgayTao.Value.ToString("dd/MM/yyyy") : "")</td>
-                  <td>
-                    <div class="actions">
-                      <button class="btn-icon" title="Chỉnh sửa" onclick="openEditUserModal()">
-                        <i class="fas fa-edit"></i>
-                      </button>
-                      <button class="btn-icon" title="Xóa" onclick="openConfirmDeleteModal('@user.TenDangNhap')">
-                        <i class="fas fa-trash"></i>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-                }
+              <tbody id="user-table-body">
+                <!-- Sẽ được load bằng AJAX -->
               </tbody>
             </table>
           </div>
-          <!-- Pagination -->
-          <div class="pagination">
-            <button class="btn-page" disabled>
-              <i class="fas fa-chevron-left"></i>
-            </button>
-            <button class="btn-page active">1</button>
-            <button class="btn-page">2</button>
-            <button class="btn-page">3</button>
-            <button class="btn-page">
-              <i class="fas fa-chevron-right"></i>
-            </button>
+          <div id="pagination-container">
+            <!-- Sẽ được load bằng AJAX -->
           </div>
         </div>
       </div>
@@ -130,42 +99,48 @@
           <i class="fas fa-times"></i>
         </button>
       </div>
-      <form class="modal-form">
+      <form class="modal-form" id="addUserForm" enctype="multipart/form-data">
         <div class="form-group">
           <label>Tên đăng nhập</label>
-          <input type="text" name="tenDangNhap" required>
+          <input type="text" name="TenDangNhap" id="TenDangNhap">
+          <span class="field-error" id="error-TenDangNhap" style="color:#c0392b;font-size:0.95em"></span>
         </div>
         <div class="form-group">
           <label>Mật khẩu</label>
-          <input type="password" name="matKhau" required>
+          <input type="password" name="MatKhau" id="MatKhau">
+          <span class="field-error" id="error-MatKhau" style="color:#c0392b;font-size:0.95em"></span>
         </div>
         <div class="form-group">
           <label>Họ và tên</label>
-          <input type="text" name="hoTen" required>
+          <input type="text" name="HoTen" id="HoTen">
+          <span class="field-error" id="error-HoTen" style="color:#c0392b;font-size:0.95em"></span>
         </div>
         <div class="form-group">
           <label>Vai trò</label>
-          <select name="vaiTro" required>
+          <select name="VaiTro" id="VaiTro">
             <option value="admin">Quản trị viên</option>
-            <option value="teacher">Giảng viên</option>
-            <option value="student">Sinh viên</option>
+            <option value="Giangvien">Giảng viên</option>
+            <option value="Sinhvien">Sinh viên</option>
           </select>
         </div>
         <div class="form-group">
           <label>Email</label>
-          <input type="email" name="email" required>
+          <input type="email" name="Email" id="Email">
+          <span class="field-error" id="error-Email" style="color:#c0392b;font-size:0.95em"></span>
         </div>
         <div class="form-group">
           <label>Số điện thoại</label>
-          <input type="text" name="soDienThoai">
+          <input type="text" name="SoDienThoai" id="SoDienThoai">
+          <span class="field-error" id="error-SoDienThoai" style="color:#c0392b;font-size:0.95em"></span>
         </div>
         <div class="form-group">
           <label>Ảnh đại diện</label>
-          <input type="file" name="anhDaiDien" accept="image/*">
+          <input type="file" name="AnhDaiDien" accept="image/*" id="AnhDaiDien">
+          <span class="field-error" id="error-AnhDaiDien" style="color:#c0392b;font-size:0.95em"></span>
         </div>
         <div class="form-actions">
           <button type="button" class="btn-secondary" onclick="closeAddUserModal()">Hủy</button>
-          <button type="submit" class="btn-primary">Thêm người dùng</button>
+          <button id="addUserBtn" type="submit" class="btn-primary">Thêm người dùng</button>
         </div>
       </form>
     </div>
@@ -182,41 +157,41 @@
       <form class="modal-form">
         <div class="form-group">
           <label>Tên đăng nhập</label>
-          <input type="text" name="tenDangNhap" required>
+          <input type="text" name="TenDangNhap">
         </div>
         <div class="form-group">
           <label>Mật khẩu</label>
-          <input type="password" name="matKhau" required>
+          <input type="password" name="MatKhau">
         </div>
         <div class="form-group">
           <label>Họ và tên</label>
-          <input type="text" name="hoTen" required>
+          <input type="text" name="HoTen">
         </div>
         <div class="form-group">
           <label>Vai trò</label>
-          <select name="vaiTro" required>
+          <select name="VaiTro">
             <option value="admin">Quản trị viên</option>
-            <option value="teacher">Giảng viên</option>
-            <option value="student">Sinh viên</option>
+            <option value="Giangvien">Giảng viên</option>
+            <option value="Sinhvien">Sinh viên</option>
           </select>
         </div>
         <div class="form-group">
           <label>Email</label>
-          <input type="email" name="email" required>
+          <input type="email" name="Email">
         </div>
         <div class="form-group">
           <label>Số điện thoại</label>
-          <input type="text" name="soDienThoai">
+          <input type="text" name="SoDienThoai">
         </div>
         <div class="form-group">
           <label>Ảnh đại diện</label>
-          <input type="file" name="anhDaiDien" accept="image/*">
+          <input type="file" name="AnhDaiDien" accept="image/*">
         </div>
         <div class="form-group">
           <label>Trạng thái</label>
-          <select name="trangThai" required>
-            <option value="active">Hoạt động</option>
-            <option value="inactive">Không hoạt động</option>
+          <select name="TrangThai" required>
+            <option value="HoatDong">Hoạt động</option>
+            <option value="KhongHoatDong">Không hoạt động</option>
           </select>
         </div>
         <div class="form-actions">
@@ -283,6 +258,7 @@
         openAddUserModal();
       }
     });
+
     window.addEventListener('DOMContentLoaded', function() {
       const params = new URLSearchParams(window.location.search);
       if (params.get('open') === 'edit') {
@@ -308,4 +284,118 @@
         // Hiện thông báo hoặc cập nhật lại bảng nếu cần
       }
     };
+
+
+    //AddUserAjax
+    function filterUsersAjax() {
+      var role = document.querySelector('.role-filter').value;
+      var status = document.querySelector('.status-filter').value;
+      var search = document.querySelector('.search-bar input').value;
+      fetch(`/Admin/QuanLyNguoiDung/FilterAjax?role=${role}&status=${status}&search=${search}`, {
+          method: 'GET',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        })
+        .then(response => response.text())
+        .then(html => {
+          document.getElementById('user-table-body').outerHTML = html;
+        });
+    }
+    document.querySelector('.role-filter').addEventListener('change', filterUsersAjax);
+    document.querySelector('.status-filter').addEventListener('change', filterUsersAjax);
+
+    // Gửi form bằng AJAX
+    document.addEventListener('DOMContentLoaded', function() {
+      var form = document.getElementById('addUserForm');
+      if (form) {
+        form.onsubmit = function(e) {
+          e.preventDefault();
+          var formData = new FormData(form);
+          fetch('/Admin/QuanLyNguoiDung/AddUserAjax', {
+              method: 'POST',
+              body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+              var alert = document.getElementById('success-alert');
+              // Xóa hết lỗi cũ
+              document.querySelectorAll('.field-error').forEach(e => e.innerHTML = '');
+              if (data.success) {
+                loadUserList(1);
+                closeAddUserModal();
+                form.reset();
+                // Hiện thông báo thành công như cũ
+                alert.querySelector('span').innerHTML = "Thêm người dùng thành công!";
+                alert.style.background = "#e6ffed";
+                alert.style.color = "#219150";
+                alert.style.display = 'block';
+                alert.style.opacity = 1;
+                setTimeout(function() {
+                  alert.style.opacity = 0;
+                  setTimeout(function() {
+                    alert.style.display = 'none';
+                  }, 500);
+                }, 2000);
+              } else {
+                // Hiện lỗi từng trường vào đúng <span>
+                if (data.errors) {
+                  Object.keys(data.errors).forEach(function(key) {
+                    var errSpan = document.getElementById('error-' + key);
+                    if (errSpan) errSpan.innerHTML = data.errors[key];
+                  });
+                }
+              }
+            });
+        }
+      }
+    });
+
+    function loadUserList(page = 1) {
+      var role = document.querySelector('.role-filter').value;
+      var status = document.querySelector('.status-filter').value;
+      var search = document.querySelector('.search-bar input').value;
+      fetch(`/Admin/QuanLyNguoiDung/FilterAjax?role=${role}&status=${status}&search=${search}&page=${page}`, {
+          method: 'GET',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        })
+        .then(response => response.text())
+        .then(html => {
+          document.getElementById('user-table-body').outerHTML = html;
+          // Load lại phân trang
+          fetch(`/Admin/QuanLyNguoiDung/PaginationPartial?role=${role}&status=${status}&search=${search}&page=${page}`, {
+              method: 'GET',
+              headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+              }
+            })
+            .then(response => response.text())
+            .then(paginationHtml => {
+              document.getElementById('pagination-container').innerHTML = paginationHtml;
+            });
+        });
+    }
+
+    // Gọi khi trang vừa load
+    document.addEventListener('DOMContentLoaded', function() {
+      loadUserList(1);
+    });
+
+    // Gọi lại khi filter thay đổi
+    document.querySelector('.role-filter').addEventListener('change', function() {
+      loadUserList(1);
+    });
+    document.querySelector('.status-filter').addEventListener('change', function() {
+      loadUserList(1);
+    });
+    document.querySelector('.search-bar input').addEventListener('input', function() {
+      loadUserList(1);
+    });
+
+    // Hàm chuyển trang
+    function changePage(page) {
+      loadUserList(page);
+    }
   </script>
