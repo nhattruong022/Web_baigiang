@@ -1,100 +1,90 @@
 @{
 Layout = null;
+ViewData["Title"] = "Trang chủ quản trị";
+
+<link rel="stylesheet" href="~/css/admin-dashboard.css">
+<link rel="stylesheet" href="~/css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 }
-<!DOCTYPE html>
-<html lang="vi">
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quản trị - Hệ Thống Quản Lý Bài Giảng</title>
-  <link rel="stylesheet" href="~/css/style.css">
-  <link rel="stylesheet" href="~/css/admin-dashboard.css">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-</head>
-
-<body>
-  <div class="app-container">
-    @await Html.PartialAsync("Sidebar")
+<div class="app-container">
+  @await Html.PartialAsync("~/Views/Shared/navbar.cshtml")
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <!-- Top Navigation Bar -->
+    @await Html.PartialAsync("~/Views/Shared/top_bar.cshtml")
     <!-- Main Content Area -->
-    <main class="main-content">
-      <!-- Top Navigation Bar -->
-      @await Html.PartialAsync("Topbar")
-      <!-- Main Content Area -->
-      <!-- Dashboard Content -->
+    <!-- Dashboard Content -->
 
 
-      <div class="dashboard">
-        <!-- Tổng quan nhanh -->
-        <div class="dashboard-grid" style="margin-bottom: 30px; grid-template-columns: repeat(2, 1fr);">
-          <div class="dashboard-card">
-            <div class="card-header">
-              <h2>Tổng số khoa</h2>
-            </div>
-            <div style="font-size: 2.5rem; color: #3498db; font-weight: bold;">12</div>
+    <div class="dashboard">
+      <!-- Tổng quan nhanh -->
+      <div class="dashboard-grid" style="margin-bottom: 30px; grid-template-columns: repeat(2, 1fr);">
+        <div class="dashboard-card">
+          <div class="card-header">
+            <h2>Tổng số khoa</h2>
           </div>
-          <div class="dashboard-card">
-            <div class="card-header">
-              <h2>Tổng số tài khoản</h2>
-            </div>
-            <div style="font-size: 2.5rem; color: #27ae60; font-weight: bold;">320</div>
-          </div>
-          <div class="dashboard-card">
-            <div class="card-header">
-              <h2>Tổng số học phần</h2>
-            </div>
-            <div style="font-size: 2.5rem; color: #e67e22; font-weight: bold;">45</div>
-          </div>
-          <div class="dashboard-card">
-            <div class="card-header">
-              <h2>Tổng số bộ môn</h2>
-            </div>
-            <div style="font-size: 2.5rem; color: #9b59b6; font-weight: bold;">20</div>
-          </div>
+          <div style="font-size: 2.5rem; color: #3498db; font-weight: bold;">12</div>
         </div>
+        <div class="dashboard-card">
+          <div class="card-header">
+            <h2>Tổng số tài khoản</h2>
+          </div>
+          <div style="font-size: 2.5rem; color: #27ae60; font-weight: bold;">320</div>
+        </div>
+        <div class="dashboard-card">
+          <div class="card-header">
+            <h2>Tổng số học phần</h2>
+          </div>
+          <div style="font-size: 2.5rem; color: #e67e22; font-weight: bold;">45</div>
+        </div>
+        <div class="dashboard-card">
+          <div class="card-header">
+            <h2>Tổng số bộ môn</h2>
+          </div>
+          <div style="font-size: 2.5rem; color: #9b59b6; font-weight: bold;">20</div>
+        </div>
+      </div>
 
 
-        <!-- Main Content Grid -->
-        <div class="dashboard-grid">
-          <!-- Quick Access -->
-          <div class="dashboard-card">
-            <div class="card-header">
-              <h2>Truy cập nhanh</h2>
-            </div>
-            <div class="quick-access-grid">
-              <!-- Dòng 1: Thêm (gộp tất cả vào một dòng) -->
-              <div class="quick-access-row">
-                <a href="#" class="quick-access-item"><i class="fas fa-user-plus"></i><span>Thêm người dùng</span></a>
-                <a href="#" class="quick-access-item"><i class="fas fa-plus-circle"></i><span>Tạo học phần</span></a>
-                <a href="#" class="quick-access-item"><i class="fas fa-building"></i><span>Thêm khoa</span></a>
-                <a href="#" class="quick-access-item"><i class="fas fa-building"></i><span>Thêm bộ môn</span></a>
-              </div>
+      <!-- Main Content Grid -->
+      <div class="dashboard-grid">
+        <!-- Quick Access -->
+        <div class="dashboard-card">
+          <div class="card-header">
+            <h2>Truy cập nhanh</h2>
+          </div>
+          <div class="quick-access-grid">
+            <!-- Dòng 1: Thêm (gộp tất cả vào một dòng) -->
+            <div class="quick-access-row">
+              <a href="#" class="quick-access-item"><i class="fas fa-user-plus"></i><span>Thêm người dùng</span></a>
+              <a href="#" class="quick-access-item"><i class="fas fa-plus-circle"></i><span>Tạo học phần</span></a>
+              <a href="#" class="quick-access-item"><i class="fas fa-building"></i><span>Thêm khoa</span></a>
+              <a href="#" class="quick-access-item"><i class="fas fa-building"></i><span>Thêm bộ môn</span></a>
             </div>
           </div>
         </div>
       </div>
-    </main>
-  </div>
-  <script>
-    function toggleUserMenu() {
-      document.querySelector('.user-dropdown').classList.toggle('active');
+    </div>
+  </main>
+</div>
+<script>
+  function toggleUserMenu() {
+    document.querySelector('.user-dropdown').classList.toggle('active');
+  }
+  // Close dropdown when clicking outside
+  document.addEventListener('click', function(event) {
+    const userProfile = document.querySelector('.user-profile');
+    const dropdown = document.querySelector('.user-dropdown');
+    if (!userProfile.contains(event.target)) {
+      dropdown.classList.remove('active');
     }
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(event) {
-      const userProfile = document.querySelector('.user-profile');
-      const dropdown = document.querySelector('.user-dropdown');
-      if (!userProfile.contains(event.target)) {
-        dropdown.classList.remove('active');
-      }
-    });
+  });
 
-    function logout() {
-      if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
-        window.location.href = '/Account/Login';
-      }
+  function logout() {
+    if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+      window.location.href = '/Account/Login';
     }
-  </script>
-</body>
-
-</html>
+  }
+</script>

@@ -33,9 +33,12 @@ namespace Lecture_web.Models
         public string AnhDaiDien { get; set; }
 
         [MaxLength(20)]
+
         public string? TrangThai { get; set; }
 
         public DateTime? NgayTao { get; set; }
+
+        
         public DateTime? NgayCapNhat { get; set; }
 
         public ICollection<OtpModels> OTPs { get; set; }

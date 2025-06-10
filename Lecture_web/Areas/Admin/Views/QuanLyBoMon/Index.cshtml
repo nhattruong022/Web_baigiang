@@ -1,365 +1,149 @@
 @{
 Layout = null;
+ViewData["Title"] = "Quản lý bộ môn";
+
+<link rel="stylesheet" href="~/css/bomon-management.css">
+<link rel="stylesheet" href="~/css/style.css">
+<link rel="stylesheet" href="~/css/admin-dashboard.css">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
 }
-<!DOCTYPE html>
-<html lang="vi">
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quản lý bộ môn - Hệ Thống Quản Lý Bài Giảng</title>
-  <link rel="stylesheet" href="~/css/style.css">
-  <link rel="stylesheet" href="~/css/admin-dashboard.css">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-  <style>
-    body {
-      background: #f5f6fa;
-      font-family: 'Roboto', sans-serif;
-    }
 
-    .container {
-      max-width: 1400px;
-      margin: 40px auto;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
-      padding: 32px;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    .tab-btn {
-      border: none;
-      background: #f5f6fa;
-      color: #333;
-      padding: 10px 28px;
-      border-radius: 6px 6px 0 0;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    .tab-btn.active {
-      background: #3498db;
-      color: #fff;
-    }
-
-    .actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .btn {
-      border: none;
-      border-radius: 4px;
-      padding: 7px 16px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .btn-primary {
-      background: #3498db;
-      color: #fff;
-    }
-
-    .btn-primary:disabled {
-      background: #b0c4de;
-      cursor: not-allowed;
-    }
-
-    .btn-edit {
-      background: #fbbc05;
-      color: #fff;
-    }
-
-    .btn-delete {
-      background: #ea4335;
-      color: #fff;
-    }
-
-    .btn-delete[disabled] {
-      background: #eee;
-      color: #aaa;
-      cursor: not-allowed;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 16px;
-    }
-
-    th,
-    td {
-      padding: 12px 10px;
-      border-bottom: 1px solid #eee;
-      text-align: left;
-    }
-
-    th {
-      background: #f8f9fa;
-    }
-
-    tr:last-child td {
-      border-bottom: none;
-    }
-
-    .tooltip {
-      position: relative;
-    }
-
-    .tooltip[disabled]:hover::after {
-      content: attr(data-tooltip);
-      position: absolute;
-      left: 50%;
-      top: 120%;
-      transform: translateX(-50%);
-      background: #222;
-      color: #fff;
-      font-size: 12px;
-      padding: 5px 10px;
-      border-radius: 4px;
-      white-space: nowrap;
-      z-index: 10;
-    }
-
-    .quick-actions {
-      margin-bottom: 20px;
-      display: flex;
-      gap: 12px;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.2);
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-    }
-
-    .modal.active {
-      display: flex;
-    }
-
-    .modal-content {
-      background: #fff;
-      border-radius: 8px;
-      padding: 32px 24px;
-      min-width: 320px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 18px;
-    }
-
-    .modal-header h2 {
-      font-size: 20px;
-    }
-
-    .close-modal {
-      background: none;
-      border: none;
-      font-size: 20px;
-      cursor: pointer;
-    }
-
-    .modal-form .form-group {
-      margin-bottom: 16px;
-    }
-
-    .modal-form label {
-      display: block;
-      margin-bottom: 6px;
-      color: #333;
-    }
-
-    .modal-form input {
-      width: 100%;
-      padding: 8px 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-    }
-
-    .modal-form .form-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-    }
-
-    .btn-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
-      border: none;
-      background: #f8f9fa;
-      color: #7f8c8d;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s;
-      margin: 0 2px;
-    }
-
-    .btn-icon:hover:not(:disabled) {
-      background: #e0e0e0;
-      color: #2c3e50;
-    }
-
-    .btn-icon:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-  </style>
-</head>
-
-<body>
-  <div class="app-container">
-    @await Html.PartialAsync("Sidebar")
+<div class="app-container">
+  @await Html.PartialAsync("~/Views/Shared/navbar.cshtml")
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <!-- Top Navigation Bar -->
+    @await Html.PartialAsync("~/Views/Shared/top_bar.cshtml")
     <!-- Main Content Area -->
-    <main class="main-content">
-      <!-- Top Navigation Bar -->
-      @await Html.PartialAsync("Topbar")
-      <!-- Main Content Area -->
 
-      <!-- Bộ môn Management Content -->
-      <div class="container">
-        <div class="quick-actions">
-          <button class="btn btn-primary" onclick="openModal('department')">+ Thêm bộ môn</button>
+    <!-- Bộ môn Management Content -->
+    <div class="container">
+      <div class="quick-actions">
+        <button class="btn btn-primary" onclick="openModal('department')">+ Thêm bộ môn</button>
+      </div>
+      <div class="tabs-search-row" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; gap: 16px;">
+        <div class="tabs" style="margin-bottom: 0;">
+          <button class="tab-btn active">Bộ môn</button>
         </div>
-        <div class="tabs-search-row" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; gap: 16px;">
-          <div class="tabs" style="margin-bottom: 0;">
-            <button class="tab-btn active">Bộ môn</button>
-          </div>
-          <div class="search-bar">
-            <i class="fas fa-search"></i>
-            <input type="text" placeholder="Tìm kiếm bộ môn...">
-          </div>
-        </div>
-        <!-- Bộ môn -->
-        <div class="tab-content" id="departments" style="display:block;">
-          <table>
-            <thead>
-              <tr>
-                <th>Mã bộ môn</th>
-                <th>Tên bộ môn</th>
-                <th>Khoa</th>
-                <th>Trưởng bộ môn</th>
-                <th>Thao tác</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>HTTT</td>
-                <td>Bộ môn Hệ thống thông tin</td>
-                <td>Khoa CNTT</td>
-                <td>TS Trần Văn B</td>
-                <td class="actions">
-                  <button class="btn-icon" onclick="openModal('edit-department')" title="Sửa">
-                    <i class="fas fa-pen-to-square"></i>
-                  </button>
-                  <button class="btn-icon tooltip" disabled data-tooltip="Không thể xóa bộ môn đã có học phần" title="Xóa">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td>MMT</td>
-                <td>Bộ môn Mạng máy tính</td>
-                <td>Khoa CNTT</td>
-                <td>TS Nguyễn Văn C</td>
-                <td class="actions">
-                  <button class="btn-icon" onclick="openModal('edit-department')" title="Sửa">
-                    <i class="fas fa-pen-to-square"></i>
-                  </button>
-                  <button class="btn-icon" title="Xóa">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="search-bar">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="Tìm kiếm bộ môn...">
         </div>
       </div>
-    </main>
-  </div>
-  <!-- Modal Thêm/Sửa -->
-  <div class="modal" id="modal-department">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Thêm bộ môn</h2>
-        <button class="close-modal" onclick="closeModal('department')">&times;</button>
+      <!-- Bộ môn -->
+      <div class="tab-content" id="departments" style="display:block;">
+        <table>
+          <thead>
+            <tr>
+              <th>Mã bộ môn</th>
+              <th>Tên bộ môn</th>
+              <th>Khoa</th>
+              <th>Trưởng bộ môn</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>HTTT</td>
+              <td>Bộ môn Hệ thống thông tin</td>
+              <td>Khoa CNTT</td>
+              <td>TS Trần Văn B</td>
+              <td class="actions">
+                <button class="btn-icon" onclick="openModal('edit-department')" title="Sửa">
+                  <i class="fas fa-pen-to-square"></i>
+                </button>
+                <button class="btn-icon tooltip" disabled data-tooltip="Không thể xóa bộ môn đã có học phần" title="Xóa">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td>MMT</td>
+              <td>Bộ môn Mạng máy tính</td>
+              <td>Khoa CNTT</td>
+              <td>TS Nguyễn Văn C</td>
+              <td class="actions">
+                <button class="btn-icon" onclick="openModal('edit-department')" title="Sửa">
+                  <i class="fas fa-pen-to-square"></i>
+                </button>
+                <button class="btn-icon" title="Xóa">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <form class="modal-form">
-        <div class="form-group">
-          <label>Mã bộ môn</label>
-          <input type="text" required>
-        </div>
-        <div class="form-group">
-          <label>Tên bộ môn</label>
-          <input type="text" required>
-        </div>
-        <div class="form-group">
-          <label>Khoa</label>
-          <input type="text" required>
-        </div>
-        <div class="form-group">
-          <label>Trưởng bộ môn</label>
-          <input type="text" required>
-        </div>
-        <div class="form-actions">
-          <button type="button" class="btn btn-edit" onclick="closeModal('department')">Hủy</button>
-          <button type="submit" class="btn btn-primary">Lưu</button>
-        </div>
-      </form>
     </div>
-  </div>
-  <!-- Popup chỉnh sửa bộ môn -->
-  <div class="modal" id="modal-edit-department">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Chỉnh sửa bộ môn</h2>
-        <button class="close-modal" onclick="closeModal('edit-department')">&times;</button>
-      </div>
-      <form class="modal-form">
-        <div class="form-group">
-          <label>Mã bộ môn</label>
-          <input type="text" value="HTTT" required>
-        </div>
-        <div class="form-group">
-          <label>Tên bộ môn</label>
-          <input type="text" value="Bộ môn Hệ thống thông tin" required>
-        </div>
-        <div class="form-group">
-          <label>Khoa</label>
-          <input type="text" value="Khoa CNTT" required>
-        </div>
-        <div class="form-group">
-          <label>Trưởng bộ môn</label>
-          <input type="text" value="TS Trần Văn B" required>
-        </div>
-        <div class="form-actions">
-          <button type="button" class="btn btn-edit" onclick="closeModal('edit-department')">Hủy</button>
-          <button type="submit" class="btn btn-primary">Lưu</button>
-        </div>
-      </form>
+  </main>
+</div>
+<!-- Modal Thêm/Sửa -->
+<div class="modal" id="modal-department">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Thêm bộ môn</h2>
+      <button class="close-modal" onclick="closeModal('department')">&times;</button>
     </div>
+    <form class="modal-form">
+      <div class="form-group">
+        <label>Mã bộ môn</label>
+        <input type="text" required>
+      </div>
+      <div class="form-group">
+        <label>Tên bộ môn</label>
+        <input type="text" required>
+      </div>
+      <div class="form-group">
+        <label>Khoa</label>
+        <input type="text" required>
+      </div>
+      <div class="form-group">
+        <label>Trưởng bộ môn</label>
+        <input type="text" required>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-edit" onclick="closeModal('department')">Hủy</button>
+        <button type="submit" class="btn btn-primary">Lưu</button>
+      </div>
+    </form>
   </div>
-</body>
+</div>
+<!-- Popup chỉnh sửa bộ môn -->
+<div class="modal" id="modal-edit-department">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Chỉnh sửa bộ môn</h2>
+      <button class="close-modal" onclick="closeModal('edit-department')">&times;</button>
+    </div>
+    <form class="modal-form">
+      <div class="form-group">
+        <label>Mã bộ môn</label>
+        <input type="text" value="HTTT" required>
+      </div>
+      <div class="form-group">
+        <label>Tên bộ môn</label>
+        <input type="text" value="Bộ môn Hệ thống thông tin" required>
+      </div>
+      <div class="form-group">
+        <label>Khoa</label>
+        <input type="text" value="Khoa CNTT" required>
+      </div>
+      <div class="form-group">
+        <label>Trưởng bộ môn</label>
+        <input type="text" value="TS Trần Văn B" required>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-edit" onclick="closeModal('edit-department')">Hủy</button>
+        <button type="submit" class="btn btn-primary">Lưu</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
 <script>
   function toggleUserMenu() {
     document.querySelector('.user-dropdown').classList.toggle('active');
@@ -412,5 +196,3 @@ Layout = null;
     });
   });
 </script>
-
-</html>

@@ -1,15 +1,16 @@
 <header class="top-bar">
+
   <div class="user-menu">
     <div class="notifications">
       <i class="fas fa-bell"></i>
       <span class="notification-badge">5</span>
     </div>
     <div class="user-profile" onclick="toggleUserMenu()">
-      <img src="/images/admin-avatar.png" alt="Admin Avatar" class="avatar">
+      <img src="~/images/avatar.jpg" alt="Admin Avatar" class="avatar">
       <span class="user-name">Admin</span>
       <i class="fas fa-chevron-down"></i>
       <div class="user-dropdown">
-        <a href="#">
+        <a href="/profile/profile">
           <i class="fas fa-user"></i>
           Thông tin cá nhân
         </a>
@@ -18,7 +19,7 @@
           Cài đặt
         </a>
         <div class="dropdown-divider"></div>
-        <a href="#" onclick="logout()">
+        <a href="/profile/LogOut">
           <i class="fas fa-sign-out-alt"></i>
           Đăng xuất
         </a>

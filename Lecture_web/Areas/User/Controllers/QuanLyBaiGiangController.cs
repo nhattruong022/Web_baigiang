@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Lecture_web.Areas.GiangVien.Controllers
+namespace Lecture_web.Areas.User.Controllers
 {
-    [Area("GiangVien")]
+    [Area("User")]
     public class QuanLyBaiGiangController : Controller
     {
         public IActionResult Index()

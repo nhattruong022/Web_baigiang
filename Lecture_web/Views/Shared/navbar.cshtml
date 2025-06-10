@@ -4,20 +4,30 @@ var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
 }
 <nav class="sidebar">
   <div class="logo">
-    <img src="logo.png" alt="Logo" class="logo-img">
+    <img src="~/images/logo.png" alt="Logo" class="logo-img">
     <h1>E-Learning</h1>
   </div>
-  <ul class="nav-links" id="sidebarMenu">
-    <!-- Trang chủ -->
+
+  <ul class="nav-links">
+    @if (userRole == "Admin")
+    {
+    <li><a href="@Url.Action("Index", "Dashboard" , new { area="Admin" })"><i class="fas fa-tachometer-alt"></i><span>Tổng quan</span></a></li>
+    <li><a href="@Url.Action("Index", "QuanLyNguoiDung" , new { area="Admin" })"><i class="fas fa-user-cog"></i><span>Quản lý tài khoản người dùng</span></a></li>
+    <li><a href="@Url.Action("Index", "QuanLyHocPhan" , new { area="Admin" })"><i class="fas fa-book-open"></i><span>Quản lý học phần</span></a></li>
+    <li><a href="@Url.Action("Index", "QuanLyKhoa" , new { area="Admin" })"><i class="fas fa-university"></i><span>Quản lý khoa</span></a></li>
+    <li><a href="@Url.Action("Index", "QuanLyBoMon" , new { area="Admin" })"><i class="fas fa-sitemap"></i><span>Quản lý bộ môn</span></a></li>
+    }
+    else if (userRole == "Giangvien" || userRole == "Sinhvien")
+    {
     <li>
-      <a href="/GiangVien/LopHoc/Index">
+      <a href="/User/LopHoc/Index">
         <i class="fas fa-home"></i>
         <span>Trang chủ</span>
       </a>
     </li>
-    <!-- Cấp 1: Khoa -->
+    <!-- Menu Khoa đa cấp -->
     <li class="menu-khoa">
-      <a href="#" onclick="toggleSubMenu(this)">
+      <a href="#" onclick="toggleSubMenu(event, this)">
         <i class="fas fa-university"></i>
         <span>Khoa</span>
         <i class="fas fa-chevron-down submenu-arrow"></i>
@@ -25,7 +35,7 @@ var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
       <ul class="submenu">
         <!-- Cấp 2: Khoa công nghệ thông tin -->
         <li class="menu-khoa-cntt">
-          <a href="#" onclick="toggleSubMenu(this)">
+          <a href="#" onclick="toggleSubMenu(event, this)">
             <i class="fas fa-university"></i>
             <span>Khoa công nghệ thông tin</span>
             <i class="fas fa-chevron-down submenu-arrow"></i>
@@ -33,7 +43,7 @@ var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
           <ul class="submenu">
             <!-- Cấp 3: Bộ môn -->
             <li class="menu-bomon">
-              <a href="#" onclick="toggleSubMenu(this)">
+              <a href="#" onclick="toggleSubMenu(event, this)">
                 <i class="fas fa-code"></i>
                 <span>Bộ môn Lập trình</span>
                 <i class="fas fa-chevron-down submenu-arrow"></i>
@@ -57,14 +67,14 @@ var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
         </li>
         <!-- Cấp 2: Khoa Quản trị kinh doanh -->
         <li class="menu-khoa-qtkd">
-          <a href="#" onclick="toggleSubMenu(this)">
+          <a href="#" onclick="toggleSubMenu(event, this)">
             <i class="fas fa-university"></i>
             <span>Khoa Quản trị kinh doanh</span>
             <i class="fas fa-chevron-down submenu-arrow"></i>
           </a>
           <ul class="submenu">
             <li class="menu-bomon">
-              <a href="#" onclick="toggleSubMenu(this)">
+              <a href="#" onclick="toggleSubMenu(event, this)">
                 <i class="fas fa-briefcase"></i>
                 <span>Quản trị Marketing</span>
                 <i class="fas fa-chevron-down submenu-arrow"></i>
@@ -82,14 +92,14 @@ var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
         </li>
         <!-- Cấp 2: Khoa Mạng máy tính -->
         <li class="menu-khoa-mmt">
-          <a href="#" onclick="toggleSubMenu(this)">
+          <a href="#" onclick="toggleSubMenu(event, this)">
             <i class="fas fa-university"></i>
             <span>Khoa mạng máy tính</span>
             <i class="fas fa-chevron-down submenu-arrow"></i>
           </a>
           <ul class="submenu">
             <li class="menu-bomon">
-              <a href="#" onclick="toggleSubMenu(this)">
+              <a href="#" onclick="toggleSubMenu(event, this)">
                 <i class="fas fa-briefcase"></i>
                 <span>Quản lý mạng</span>
                 <i class="fas fa-chevron-down submenu-arrow"></i>
@@ -107,26 +117,12 @@ var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
         </li>
       </ul>
     </li>
+    }
     @if (userRole == "Giangvien")
     {
-    <li class="active">
-      <a href="/GiangVien/QuanLyBaiGiang/Index">
-        <i class="fas fa-book"></i>
-        <span>Quản lý bài giảng</span>
-      </a>
-    </li>
-    <li>
-      <a href="/GiangVien/QuanLyChuong/Index">
-        <i class="fas fa-book"></i>
-        <span>Quản lý chương</span>
-      </a>
-    </li>
-    <li>
-      <a href="/GiangVien/QuanLyBai/Index">
-        <i class="fas fa-book"></i>
-        <span>Quản lý bài</span>
-      </a>
-    </li>
+    <li><a href="/User/QuanLyBaiGiang/Index"><i class="fas fa-book"></i><span>Quản lý bài giảng</span></a></li>
+    <li><a href="/User/QuanLyChuong/Index"><i class="fas fa-book"></i><span>Quản lý chương</span></a></li>
+    <li><a href="/User/QuanLyBai/Index"><i class="fas fa-book"></i><span>Quản lý bài</span></a></li>
     }
   </ul>
 </nav>

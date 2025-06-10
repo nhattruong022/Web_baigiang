@@ -14,16 +14,13 @@
 
 <body>
   <div class="app-container">
-    <!-- Sidebar Navigation (reuse from class-management.html) -->
-    @await Html.PartialAsync("navbar")
-
+    @await Html.PartialAsync("~/Views/Shared/navbar.cshtml")
 
     <main class="main-content">
-      @await Html.PartialAsync("top_bar")
+      @await Html.PartialAsync("~/Views/Shared/top_bar.cshtml")
       @RenderBody()
     </main>
   </div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
   <script src="~/js/script.js"></script>
 </body>
 

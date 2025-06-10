@@ -42,9 +42,9 @@ namespace Lecture_web.Controllers
             if (user.VaiTro == "Admin")
                 return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
             if (user.VaiTro == "Giangvien")
-                return RedirectToAction("Index", "LopHoc", new { area = "GiangVien" });
+                return RedirectToAction("Index", "LopHoc", new { area = "User" });
             if (user.VaiTro == "Sinhvien")
-                return RedirectToAction("Index", "LopHoc", new { area = "GiangVien" });
+                return RedirectToAction("Index", "LopHoc", new { area = "User" });
 
             return RedirectToAction("Login");
         }

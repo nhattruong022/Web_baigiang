@@ -2,11 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
-namespace Lecture_web.Areas.GiangVien.Controllers
+namespace Lecture_web.Areas.User.Controllers
 {
-    [Area("GiangVien")]
+    [Area("User")]
     [Authorize(Roles = "Giangvien,Sinhvien")]
-    public class ChiTietHocPhanController : Controller
+    public class LopHocController : Controller
     {
         public IActionResult Index()
         {
@@ -16,6 +16,7 @@ namespace Lecture_web.Areas.GiangVien.Controllers
             return View();
         }
     }
+    
 } 
 
 
