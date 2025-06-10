@@ -17,117 +17,115 @@ build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Lecture_web
 build_property.RootNamespace = Lecture_web
-build_property.ProjectDir = C:\Users\Nhat Truong\Downloads\Lecture_web\Lecture_web\
+build_property.ProjectDir = D:\DATN\DoAnWBG\Web_baigiang\Lecture_web\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\Nhat Truong\Downloads\Lecture_web\Lecture_web
+build_property.MSBuildProjectDirectory = D:\DATN\DoAnWBG\Web_baigiang\Lecture_web
 build_property._RazorSourceGeneratorDebug = 
-build_property.EffectiveAnalysisLevelStyle = 8.0
-build_property.EnableCodeStyleSeverity = 
 
-[C:/Users/Nhat Truong/Downloads/Lecture_web/Lecture_web/Areas/Admin/Views/Dashboard/Index.cshtml]
+[D:/DATN/DoAnWBG/Web_baigiang/Lecture_web/Areas/Admin/Views/Dashboard/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcRGFzaGJvYXJkXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Nhat Truong/Downloads/Lecture_web/Lecture_web/Areas/Admin/Views/QuanLyBoMon/Index.cshtml]
+[D:/DATN/DoAnWBG/Web_baigiang/Lecture_web/Areas/Admin/Views/QuanLyBoMon/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcUXVhbkx5Qm9Nb25cSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Nhat Truong/Downloads/Lecture_web/Lecture_web/Areas/Admin/Views/QuanLyHocPhan/Index.cshtml]
+[D:/DATN/DoAnWBG/Web_baigiang/Lecture_web/Areas/Admin/Views/QuanLyHocPhan/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcUXVhbkx5SG9jUGhhblxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Nhat Truong/Downloads/Lecture_web/Lecture_web/Areas/Admin/Views/QuanLyKhoa/Index.cshtml]
+[D:/DATN/DoAnWBG/Web_baigiang/Lecture_web/Areas/Admin/Views/QuanLyKhoa/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcUXVhbkx5S2hvYVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Nhat Truong/Downloads/Lecture_web/Lecture_web/Areas/Admin/Views/QuanLyNguoiDung/Index.cshtml]
+[D:/DATN/DoAnWBG/Web_baigiang/Lecture_web/Areas/Admin/Views/QuanLyNguoiDung/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcUXVhbkx5Tmd1b2lEdW5nXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Nhat Truong/Downloads/Lecture_web/Lecture_web/Areas/Admin/Views/Shared/Sidebar.cshtml]
+[D:/DATN/DoAnWBG/Web_baigiang/Lecture_web/Areas/Admin/Views/Shared/Sidebar.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcU2hhcmVkXFNpZGViYXIuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Nhat Truong/Downloads/Lecture_web/Lecture_web/Areas/Admin/Views/Shared/Topbar.cshtml]
+[D:/DATN/DoAnWBG/Web_baigiang/Lecture_web/Areas/Admin/Views/Shared/Topbar.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcU2hhcmVkXFRvcGJhci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Nhat Truong/Downloads/Lecture_web/Lecture_web/Areas/GiangVien/Views/ChiTietHocPhan/Index.cshtml]
+[D:/DATN/DoAnWBG/Web_baigiang/Lecture_web/Areas/GiangVien/Views/ChiTietHocPhan/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcR2lhbmdWaWVuXFZpZXdzXENoaVRpZXRIb2NQaGFuXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Nhat Truong/Downloads/Lecture_web/Lecture_web/Areas/GiangVien/Views/LopHoc/Index.cshtml]
+[D:/DATN/DoAnWBG/Web_baigiang/Lecture_web/Areas/GiangVien/Views/LopHoc/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcR2lhbmdWaWVuXFZpZXdzXExvcEhvY1xJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Nhat Truong/Downloads/Lecture_web/Lecture_web/Areas/GiangVien/Views/QuanLyBaiGiang/Index.cshtml]
+[D:/DATN/DoAnWBG/Web_baigiang/Lecture_web/Areas/GiangVien/Views/QuanLyBaiGiang/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcR2lhbmdWaWVuXFZpZXdzXFF1YW5MeUJhaUdpYW5nXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Nhat Truong/Downloads/Lecture_web/Lecture_web/Areas/GiangVien/Views/QuanLyBai/AddBai.cshtml]
+[D:/DATN/DoAnWBG/Web_baigiang/Lecture_web/Areas/GiangVien/Views/QuanLyBai/AddBai.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcR2lhbmdWaWVuXFZpZXdzXFF1YW5MeUJhaVxBZGRCYWkuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Nhat Truong/Downloads/Lecture_web/Lecture_web/Areas/GiangVien/Views/QuanLyBai/EditBai.cshtml]
+[D:/DATN/DoAnWBG/Web_baigiang/Lecture_web/Areas/GiangVien/Views/QuanLyBai/EditBai.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcR2lhbmdWaWVuXFZpZXdzXFF1YW5MeUJhaVxFZGl0QmFpLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Nhat Truong/Downloads/Lecture_web/Lecture_web/Areas/GiangVien/Views/QuanLyBai/Index.cshtml]
+[D:/DATN/DoAnWBG/Web_baigiang/Lecture_web/Areas/GiangVien/Views/QuanLyBai/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcR2lhbmdWaWVuXFZpZXdzXFF1YW5MeUJhaVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Nhat Truong/Downloads/Lecture_web/Lecture_web/Areas/GiangVien/Views/QuanLyChuong/Index.cshtml]
+[D:/DATN/DoAnWBG/Web_baigiang/Lecture_web/Areas/GiangVien/Views/QuanLyChuong/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcR2lhbmdWaWVuXFZpZXdzXFF1YW5MeUNodW9uZ1xJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Nhat Truong/Downloads/Lecture_web/Lecture_web/Areas/GiangVien/Views/Shared/navbar.cshtml]
+[D:/DATN/DoAnWBG/Web_baigiang/Lecture_web/Areas/GiangVien/Views/Shared/navbar.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcR2lhbmdWaWVuXFZpZXdzXFNoYXJlZFxuYXZiYXIuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Nhat Truong/Downloads/Lecture_web/Lecture_web/Areas/GiangVien/Views/Shared/top_bar.cshtml]
+[D:/DATN/DoAnWBG/Web_baigiang/Lecture_web/Areas/GiangVien/Views/Shared/top_bar.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcR2lhbmdWaWVuXFZpZXdzXFNoYXJlZFx0b3BfYmFyLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Nhat Truong/Downloads/Lecture_web/Lecture_web/Areas/GiangVien/Views/Shared/_Layout.cshtml]
+[D:/DATN/DoAnWBG/Web_baigiang/Lecture_web/Areas/GiangVien/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXNcR2lhbmdWaWVuXFZpZXdzXFNoYXJlZFxfTGF5b3V0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Nhat Truong/Downloads/Lecture_web/Lecture_web/Views/Account/ForgotPassword.cshtml]
+[D:/DATN/DoAnWBG/Web_baigiang/Lecture_web/Views/Account/ForgotPassword.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxGb3Jnb3RQYXNzd29yZC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Nhat Truong/Downloads/Lecture_web/Lecture_web/Views/Account/Login.cshtml]
+[D:/DATN/DoAnWBG/Web_baigiang/Lecture_web/Views/Account/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Nhat Truong/Downloads/Lecture_web/Lecture_web/Views/Home/Index.cshtml]
+[D:/DATN/DoAnWBG/Web_baigiang/Lecture_web/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Nhat Truong/Downloads/Lecture_web/Lecture_web/Views/Home/Privacy.cshtml]
+[D:/DATN/DoAnWBG/Web_baigiang/Lecture_web/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Nhat Truong/Downloads/Lecture_web/Lecture_web/Views/Shared/Error.cshtml]
+[D:/DATN/DoAnWBG/Web_baigiang/Lecture_web/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Nhat Truong/Downloads/Lecture_web/Lecture_web/Views/Shared/_ValidationScriptsPartial.cshtml]
+[D:/DATN/DoAnWBG/Web_baigiang/Lecture_web/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Nhat Truong/Downloads/Lecture_web/Lecture_web/Views/_ViewImports.cshtml]
+[D:/DATN/DoAnWBG/Web_baigiang/Lecture_web/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Nhat Truong/Downloads/Lecture_web/Lecture_web/Views/_ViewStart.cshtml]
+[D:/DATN/DoAnWBG/Web_baigiang/Lecture_web/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Nhat Truong/Downloads/Lecture_web/Lecture_web/Views/Shared/_Layout.cshtml]
+[D:/DATN/DoAnWBG/Web_baigiang/Lecture_web/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-fvk4dm843c
