@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "CuJncarKSCR6bY9gIjwcb6c1QUaaFbhAZ8gYsQMzpco=",
+  "Hash": "QuEx3IsByXkSj7PQ/G/yoRfMVyniOUSSVX3sDAVuNwI=",
   "Source": "Lecture_web",
   "BasePath": "_content/Lecture_web",
   "Mode": "Default",
@@ -16,48 +16,6 @@
     }
   ],
   "Assets": [
-    {
-      "Identity": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\obj\\Debug\\net8.0\\scopedcss\\bundle\\Lecture_web.styles.css",
-      "SourceId": "Lecture_web",
-      "SourceType": "Computed",
-      "ContentRoot": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\obj\\Debug\\net8.0\\scopedcss\\bundle\\",
-      "BasePath": "_content/Lecture_web",
-      "RelativePath": "Lecture_web#[.{fingerprint}]?.styles.css",
-      "AssetKind": "All",
-      "AssetMode": "CurrentProject",
-      "AssetRole": "Primary",
-      "AssetMergeBehavior": "",
-      "AssetMergeSource": "",
-      "RelatedAsset": "",
-      "AssetTraitName": "ScopedCss",
-      "AssetTraitValue": "ApplicationBundle",
-      "Fingerprint": "8n3wol2xg3",
-      "Integrity": "dMb9s9e5pbY8RQ508y/4V6BvsV7eufzN/IEictg4mGY=",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\obj\\Debug\\net8.0\\scopedcss\\bundle\\Lecture_web.styles.css"
-    },
-    {
-      "Identity": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\Lecture_web.bundle.scp.css",
-      "SourceId": "Lecture_web",
-      "SourceType": "Computed",
-      "ContentRoot": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\",
-      "BasePath": "_content/Lecture_web",
-      "RelativePath": "Lecture_web#[.{fingerprint}]!.bundle.scp.css",
-      "AssetKind": "All",
-      "AssetMode": "Reference",
-      "AssetRole": "Primary",
-      "AssetMergeBehavior": "",
-      "AssetMergeSource": "",
-      "RelatedAsset": "",
-      "AssetTraitName": "ScopedCss",
-      "AssetTraitValue": "ProjectBundle",
-      "Fingerprint": "8n3wol2xg3",
-      "Integrity": "dMb9s9e5pbY8RQ508y/4V6BvsV7eufzN/IEictg4mGY=",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\Lecture_web.bundle.scp.css"
-    },
     {
       "Identity": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\css\\admin-dashboard.css",
       "SourceId": "Lecture_web",
@@ -94,8 +52,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "ib0zpllglh",
-      "Integrity": "opaNCpdcVcv2pQYqPSMuoYlqpbpbY5syXBOUjfl6HqA=",
+      "Fingerprint": "zopxpfbhfl",
+      "Integrity": "rbrc5s6ZgWbxNsOy7SVYegIy4qFrgH3eaSyfyrHIf8c=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\css\\bai-management.css"
@@ -120,6 +78,27 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\css\\baigiang-management.css"
+    },
+    {
+      "Identity": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\css\\bomon-management.css",
+      "SourceId": "Lecture_web",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\",
+      "BasePath": "_content/Lecture_web",
+      "RelativePath": "css/bomon-management#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "g3jtrm9oe7",
+      "Integrity": "7KhK4vc7tQV9ISWO8umluqnRLU13iLoOYP6qLFEQ154=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\bomon-management.css"
     },
     {
       "Identity": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\css\\chitiethocphan.css",
@@ -164,12 +143,12 @@
       "OriginalItemSpec": "wwwroot\\css\\chuong-management.css"
     },
     {
-      "Identity": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\css\\course-detail.css",
+      "Identity": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\css\\hocphan-management.css",
       "SourceId": "Lecture_web",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\",
       "BasePath": "_content/Lecture_web",
-      "RelativePath": "css/course-detail#[.{fingerprint}]?.css",
+      "RelativePath": "css/hocphan-management#[.{fingerprint}]?.css",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -178,11 +157,32 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "8fxrvgff7t",
-      "Integrity": "9FBbmIZDfBo4F8u9hsOKngyIbqMG1jJghNCGqWeE/r0=",
+      "Fingerprint": "uk3r9ggefg",
+      "Integrity": "Iky0gQxQSXfbkfo2x7xQZg7q6U9f2iFmQuq5YeSG86M=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\css\\course-detail.css"
+      "OriginalItemSpec": "wwwroot\\css\\hocphan-management.css"
+    },
+    {
+      "Identity": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\css\\khoa-management.css",
+      "SourceId": "Lecture_web",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\",
+      "BasePath": "_content/Lecture_web",
+      "RelativePath": "css/khoa-management#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "g3jtrm9oe7",
+      "Integrity": "7KhK4vc7tQV9ISWO8umluqnRLU13iLoOYP6qLFEQ154=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\khoa-management.css"
     },
     {
       "Identity": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\css\\site.css",
@@ -269,12 +269,12 @@
       "OriginalItemSpec": "wwwroot\\favicon.ico"
     },
     {
-      "Identity": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\images\\avartar.jpg",
+      "Identity": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\images\\avatar.jpg",
       "SourceId": "Lecture_web",
       "SourceType": "Discovered",
       "ContentRoot": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\",
       "BasePath": "_content/Lecture_web",
-      "RelativePath": "images/avartar#[.{fingerprint}]?.jpg",
+      "RelativePath": "images/avatar#[.{fingerprint}]?.jpg",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -287,7 +287,7 @@
       "Integrity": "z3uPY3Sy/BcwOfZsHmZShVRR0zwjZuw+IZXfuMeogsU=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\images\\avartar.jpg"
+      "OriginalItemSpec": "wwwroot\\images\\avatar.jpg"
     },
     {
       "Identity": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\js\\script.js",
@@ -304,8 +304,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "5zls2xu1tn",
-      "Integrity": "vxveQAQzIz2LAAD5HXG/X1SlCyxPw/1uXpZburKQ7JI=",
+      "Fingerprint": "git89be9va",
+      "Integrity": "aBzMhlvgnEQ2l6f8YPSIs+BEDRqAjlb9UAe9rA46nsU=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\js\\script.js"
@@ -1623,7 +1623,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "3301"
+          "Value": "3307"
         },
         {
           "Name": "Content-Type",
@@ -1631,11 +1631,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"opaNCpdcVcv2pQYqPSMuoYlqpbpbY5syXBOUjfl6HqA=\""
+          "Value": "\"rbrc5s6ZgWbxNsOy7SVYegIy4qFrgH3eaSyfyrHIf8c=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 08 Jun 2025 05:54:29 GMT"
+          "Value": "Mon, 09 Jun 2025 13:28:53 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1645,12 +1645,12 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-opaNCpdcVcv2pQYqPSMuoYlqpbpbY5syXBOUjfl6HqA="
+          "Value": "sha256-rbrc5s6ZgWbxNsOy7SVYegIy4qFrgH3eaSyfyrHIf8c="
         }
       ]
     },
     {
-      "Route": "css/bai-management.ib0zpllglh.css",
+      "Route": "css/bai-management.zopxpfbhfl.css",
       "AssetFile": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\css\\bai-management.css",
       "Selectors": [],
       "ResponseHeaders": [
@@ -1660,7 +1660,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "3301"
+          "Value": "3307"
         },
         {
           "Name": "Content-Type",
@@ -1668,11 +1668,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"opaNCpdcVcv2pQYqPSMuoYlqpbpbY5syXBOUjfl6HqA=\""
+          "Value": "\"rbrc5s6ZgWbxNsOy7SVYegIy4qFrgH3eaSyfyrHIf8c=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 08 Jun 2025 05:54:29 GMT"
+          "Value": "Mon, 09 Jun 2025 13:28:53 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1682,7 +1682,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "ib0zpllglh"
+          "Value": "zopxpfbhfl"
         },
         {
           "Name": "label",
@@ -1690,7 +1690,7 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-opaNCpdcVcv2pQYqPSMuoYlqpbpbY5syXBOUjfl6HqA="
+          "Value": "sha256-rbrc5s6ZgWbxNsOy7SVYegIy4qFrgH3eaSyfyrHIf8c="
         }
       ]
     },
@@ -1717,7 +1717,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 08 Jun 2025 05:50:36 GMT"
+          "Value": "Mon, 09 Jun 2025 08:37:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1754,7 +1754,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 08 Jun 2025 05:50:36 GMT"
+          "Value": "Mon, 09 Jun 2025 08:37:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1773,6 +1773,88 @@
         {
           "Name": "integrity",
           "Value": "sha256-HZmRJzvgTS+GAJaSr/J2f+4vSKCoqwwEoEtaKN9FIrk="
+        }
+      ]
+    },
+    {
+      "Route": "css/bomon-management.css",
+      "AssetFile": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\css\\bomon-management.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "3218"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"7KhK4vc7tQV9ISWO8umluqnRLU13iLoOYP6qLFEQ154=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 09 Jun 2025 06:43:53 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-7KhK4vc7tQV9ISWO8umluqnRLU13iLoOYP6qLFEQ154="
+        }
+      ]
+    },
+    {
+      "Route": "css/bomon-management.g3jtrm9oe7.css",
+      "AssetFile": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\css\\bomon-management.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "3218"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"7KhK4vc7tQV9ISWO8umluqnRLU13iLoOYP6qLFEQ154=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 09 Jun 2025 06:43:53 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "g3jtrm9oe7"
+        },
+        {
+          "Name": "label",
+          "Value": "css/bomon-management.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-7KhK4vc7tQV9ISWO8umluqnRLU13iLoOYP6qLFEQ154="
         }
       ]
     },
@@ -1941,8 +2023,8 @@
       ]
     },
     {
-      "Route": "css/course-detail.8fxrvgff7t.css",
-      "AssetFile": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\css\\course-detail.css",
+      "Route": "css/hocphan-management.css",
+      "AssetFile": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\css\\hocphan-management.css",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -1951,7 +2033,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "7459"
+          "Value": "4646"
         },
         {
           "Name": "Content-Type",
@@ -1959,56 +2041,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"9FBbmIZDfBo4F8u9hsOKngyIbqMG1jJghNCGqWeE/r0=\""
+          "Value": "\"Iky0gQxQSXfbkfo2x7xQZg7q6U9f2iFmQuq5YeSG86M=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 04 Jun 2025 15:20:39 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "8fxrvgff7t"
-        },
-        {
-          "Name": "label",
-          "Value": "css/course-detail.css"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-9FBbmIZDfBo4F8u9hsOKngyIbqMG1jJghNCGqWeE/r0="
-        }
-      ]
-    },
-    {
-      "Route": "css/course-detail.css",
-      "AssetFile": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\css\\course-detail.css",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "7459"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/css"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"9FBbmIZDfBo4F8u9hsOKngyIbqMG1jJghNCGqWeE/r0=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Wed, 04 Jun 2025 15:20:39 GMT"
+          "Value": "Mon, 09 Jun 2025 06:47:27 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2018,7 +2055,134 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-9FBbmIZDfBo4F8u9hsOKngyIbqMG1jJghNCGqWeE/r0="
+          "Value": "sha256-Iky0gQxQSXfbkfo2x7xQZg7q6U9f2iFmQuq5YeSG86M="
+        }
+      ]
+    },
+    {
+      "Route": "css/hocphan-management.uk3r9ggefg.css",
+      "AssetFile": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\css\\hocphan-management.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "4646"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Iky0gQxQSXfbkfo2x7xQZg7q6U9f2iFmQuq5YeSG86M=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 09 Jun 2025 06:47:27 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "uk3r9ggefg"
+        },
+        {
+          "Name": "label",
+          "Value": "css/hocphan-management.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-Iky0gQxQSXfbkfo2x7xQZg7q6U9f2iFmQuq5YeSG86M="
+        }
+      ]
+    },
+    {
+      "Route": "css/khoa-management.css",
+      "AssetFile": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\css\\khoa-management.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "3218"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"7KhK4vc7tQV9ISWO8umluqnRLU13iLoOYP6qLFEQ154=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 09 Jun 2025 14:11:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-7KhK4vc7tQV9ISWO8umluqnRLU13iLoOYP6qLFEQ154="
+        }
+      ]
+    },
+    {
+      "Route": "css/khoa-management.g3jtrm9oe7.css",
+      "AssetFile": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\css\\khoa-management.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "3218"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"7KhK4vc7tQV9ISWO8umluqnRLU13iLoOYP6qLFEQ154=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 09 Jun 2025 14:11:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "g3jtrm9oe7"
+        },
+        {
+          "Name": "label",
+          "Value": "css/khoa-management.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-7KhK4vc7tQV9ISWO8umluqnRLU13iLoOYP6qLFEQ154="
         }
       ]
     },
@@ -2351,8 +2515,8 @@
       ]
     },
     {
-      "Route": "images/avartar.jpg",
-      "AssetFile": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\images\\avartar.jpg",
+      "Route": "images/avatar.jpg",
+      "AssetFile": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\images\\avatar.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -2388,8 +2552,8 @@
       ]
     },
     {
-      "Route": "images/avartar.v8t3tyopeg.jpg",
-      "AssetFile": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\images\\avartar.jpg",
+      "Route": "images/avatar.v8t3tyopeg.jpg",
+      "AssetFile": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\images\\avatar.jpg",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -2424,7 +2588,7 @@
         },
         {
           "Name": "label",
-          "Value": "images/avartar.jpg"
+          "Value": "images/avatar.jpg"
         },
         {
           "Name": "integrity",
@@ -2433,7 +2597,7 @@
       ]
     },
     {
-      "Route": "js/script.5zls2xu1tn.js",
+      "Route": "js/script.git89be9va.js",
       "AssetFile": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\wwwroot\\js\\script.js",
       "Selectors": [],
       "ResponseHeaders": [
@@ -2443,7 +2607,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "19459"
+          "Value": "20165"
         },
         {
           "Name": "Content-Type",
@@ -2451,11 +2615,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"vxveQAQzIz2LAAD5HXG/X1SlCyxPw/1uXpZburKQ7JI=\""
+          "Value": "\"aBzMhlvgnEQ2l6f8YPSIs+BEDRqAjlb9UAe9rA46nsU=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 08 Jun 2025 18:03:48 GMT"
+          "Value": "Mon, 09 Jun 2025 14:31:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2465,7 +2629,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "5zls2xu1tn"
+          "Value": "git89be9va"
         },
         {
           "Name": "label",
@@ -2473,7 +2637,7 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-vxveQAQzIz2LAAD5HXG/X1SlCyxPw/1uXpZburKQ7JI="
+          "Value": "sha256-aBzMhlvgnEQ2l6f8YPSIs+BEDRqAjlb9UAe9rA46nsU="
         }
       ]
     },
@@ -2488,7 +2652,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "19459"
+          "Value": "20165"
         },
         {
           "Name": "Content-Type",
@@ -2496,11 +2660,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"vxveQAQzIz2LAAD5HXG/X1SlCyxPw/1uXpZburKQ7JI=\""
+          "Value": "\"aBzMhlvgnEQ2l6f8YPSIs+BEDRqAjlb9UAe9rA46nsU=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 08 Jun 2025 18:03:48 GMT"
+          "Value": "Mon, 09 Jun 2025 14:31:50 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2510,7 +2674,7 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-vxveQAQzIz2LAAD5HXG/X1SlCyxPw/1uXpZburKQ7JI="
+          "Value": "sha256-aBzMhlvgnEQ2l6f8YPSIs+BEDRqAjlb9UAe9rA46nsU="
         }
       ]
     },
@@ -2593,170 +2757,6 @@
         {
           "Name": "integrity",
           "Value": "sha256-hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo="
-        }
-      ]
-    },
-    {
-      "Route": "Lecture_web.8n3wol2xg3.bundle.scp.css",
-      "AssetFile": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\Lecture_web.bundle.scp.css",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "1129"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/css"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"dMb9s9e5pbY8RQ508y/4V6BvsV7eufzN/IEictg4mGY=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Sat, 07 Jun 2025 02:48:40 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "8n3wol2xg3"
-        },
-        {
-          "Name": "label",
-          "Value": "Lecture_web.bundle.scp.css"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-dMb9s9e5pbY8RQ508y/4V6BvsV7eufzN/IEictg4mGY="
-        }
-      ]
-    },
-    {
-      "Route": "Lecture_web.8n3wol2xg3.styles.css",
-      "AssetFile": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\obj\\Debug\\net8.0\\scopedcss\\bundle\\Lecture_web.styles.css",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "1129"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/css"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"dMb9s9e5pbY8RQ508y/4V6BvsV7eufzN/IEictg4mGY=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Sat, 07 Jun 2025 02:48:40 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "8n3wol2xg3"
-        },
-        {
-          "Name": "label",
-          "Value": "Lecture_web.styles.css"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-dMb9s9e5pbY8RQ508y/4V6BvsV7eufzN/IEictg4mGY="
-        }
-      ]
-    },
-    {
-      "Route": "Lecture_web.bundle.scp.css",
-      "AssetFile": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\Lecture_web.bundle.scp.css",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "1129"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/css"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"dMb9s9e5pbY8RQ508y/4V6BvsV7eufzN/IEictg4mGY=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Sat, 07 Jun 2025 02:48:40 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "no-cache"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "integrity",
-          "Value": "sha256-dMb9s9e5pbY8RQ508y/4V6BvsV7eufzN/IEictg4mGY="
-        }
-      ]
-    },
-    {
-      "Route": "Lecture_web.styles.css",
-      "AssetFile": "C:\\Users\\Nhat Truong\\Downloads\\Lecture_web\\Lecture_web\\obj\\Debug\\net8.0\\scopedcss\\bundle\\Lecture_web.styles.css",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "1129"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/css"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"dMb9s9e5pbY8RQ508y/4V6BvsV7eufzN/IEictg4mGY=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Sat, 07 Jun 2025 02:48:40 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "no-cache"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "integrity",
-          "Value": "sha256-dMb9s9e5pbY8RQ508y/4V6BvsV7eufzN/IEictg4mGY="
         }
       ]
     },

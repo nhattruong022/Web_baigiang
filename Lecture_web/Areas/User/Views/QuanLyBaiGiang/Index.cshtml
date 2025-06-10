@@ -1,0 +1,136 @@
+@{
+ViewData["Title"] = "Quản lý Bai Giang";
+Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<div class="content-management-container">
+  <div class="content-header">
+    <h2>Quản lý bài giảng</h2>
+    <div class="content-actions">
+      <button class="btn-primary" onclick="openAddContentModal()">
+        <i class="fas fa-plus"></i> Thêm bài giảng
+      </button>
+      <input type="text" id="searchInput" placeholder="Tìm kiếm bài giảng..." style="padding: 0.5rem 1rem; border-radius: 5px; border: 1px solid #ddd;">
+    </div>
+  </div>
+
+  <div class="content-list">
+    <table class="content-table" id="contentTable">
+      <thead>
+        <tr>
+          <th>Tên bài giảng</th>
+          <th>Mô tả</th>
+          <th>Lớp học phần</th>
+          <th>Ngày tạo</th>
+          <th>Ngày cập nhật</th>
+          <th>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr data-type="lecture">
+          <td>Lập trình web</td>
+          <td>Giới thiệu về HTML và cấu trúc cơ bản của một trang web.</td>
+          <td>INT1234.1</td>
+          <td>01/03/2024</td>
+          <td>02/03/2024</td>
+          <td class="content-actions-btns">
+            <button class="btn-secondary" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
+            <button class="btn-danger" title="Xóa"><i class="fas fa-trash"></i></button>
+            <button class="btn-primary" title="Gán cho lớp"><i class="fas fa-link"></i></button>
+          </td>
+        </tr>
+        <tr data-type="lecture">
+          <td>CSDL</td>
+          <td>Học về cách sử dụng CSS để tạo kiểu cho trang web.</td>
+          <td>INT1234.1</td>
+          <td>05/03/2024</td>
+          <td>06/03/2024</td>
+          <td class="content-actions-btns">
+            <button class="btn-secondary" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
+            <button class="btn-danger" title="Xóa"><i class="fas fa-trash"></i></button>
+            <button class="btn-primary" title="Gán cho lớp"><i class="fas fa-link"></i></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</main>
+</div>
+<!-- Modal thêm mới bài giảng (demo) -->
+<div class="modal" id="addContentModal">
+  <div class="modal-content lecture-modal-content">
+    <div class="modal-header lecture-modal-header">
+      <i class="fas fa-chalkboard"></i>
+      <h2>Thêm bài giảng mới</h2>
+      <button class="close-modal" onclick="closeAddContentModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <form class="modal-form lecture-modal-form" onsubmit="event.preventDefault(); closeAddContentModal();">
+      <div class="form-group">
+        <label>Tên bài giảng <span class="required">*</span></label>
+        <input type="text" required placeholder="Nhập tên bài giảng">
+      </div>
+      <div class="form-group">
+        <label>Mô tả</label>
+        <textarea rows="3" placeholder="Nhập mô tả bài giảng"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Lớp học phần <span class="required">*</span></label>
+        <input type="text" required placeholder="Nhập mã lớp học phần">
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" onclick="closeAddContentModal()">Hủy</button>
+        <button type="submit" class="btn-primary">Thêm mới <i class="fas fa-plus"></i></button>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- Modal chỉnh sửa bài giảng -->
+<div class="modal" id="editContentModal">
+  <div class="modal-content lecture-modal-content">
+    <div class="modal-header lecture-modal-header">
+      <i class="fas fa-chalkboard"></i>
+      <h2>Chỉnh sửa bài giảng</h2>
+      <button class="close-modal" onclick="closeEditContentModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <form class="modal-form lecture-modal-form" id="editContentForm" onsubmit="event.preventDefault(); saveEditContent();">
+      <div class="form-group">
+        <label>Tên bài giảng <span class="required">*</span></label>
+        <input type="text" id="editLectureTitle" required placeholder="Nhập tên bài giảng">
+      </div>
+      <div class="form-group">
+        <label>Mô tả</label>
+        <textarea rows="3" id="editLectureDesc" placeholder="Nhập mô tả bài giảng"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Lớp học phần <span class="required">*</span></label>
+        <input type="text" id="editLectureClass" required placeholder="Nhập mã lớp học phần">
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" onclick="closeEditContentModal()">Hủy</button>
+        <button type="submit" class="btn-primary">Lưu <i class="fas fa-save"></i></button>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- Modal xác nhận xóa nội dung -->
+<div class="modal" id="confirmDeleteContentModal">
+  <div class="modal-content">
+    <div class="modal-header" style="justify-content:center;">
+      <h2 style="font-size:1.1rem; margin:0 auto;">Xác nhận xóa</h2>
+    </div>
+    <div class="modal-form" style="padding:20px;">
+      <p>Bạn có chắc chắn muốn xóa bài giảng này?</p>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeConfirmDeleteContent()">Hủy</button>
+        <button class="btn-danger" onclick="confirmDeleteContent()">Xóa</button>
+      </div>
+    </div>
+  </div>
+</div>
