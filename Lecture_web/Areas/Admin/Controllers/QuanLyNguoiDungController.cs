@@ -6,6 +6,8 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using System;
+using Newtonsoft.Json;
+
 
 namespace Lecture_web.Areas.Admin.Controllers
 {
@@ -65,6 +67,9 @@ namespace Lecture_web.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult AddUserAjax(TaiKhoanModels model, IFormFile AnhDaiDien, int page = 1)
         {
+            // Bỏ validate field file nếu không bắt buộc
+            ModelState.Remove("AnhDaiDien");
+
             if (_context.TaiKhoan.Any(u => u.TenDangNhap == model.TenDangNhap))
             {
                 // Trả về lỗi cho trường TenDangNhap
@@ -111,6 +116,8 @@ namespace Lecture_web.Areas.Admin.Controllers
                         kvp => kvp.Key,
                         kvp => kvp.Value.Errors.First().ErrorMessage
                     );
+                // Log lỗi ra console để debug
+                System.Diagnostics.Debug.WriteLine(JsonConvert.SerializeObject(errors));
                 return Json(new { success = false, errors });
             }
         }
