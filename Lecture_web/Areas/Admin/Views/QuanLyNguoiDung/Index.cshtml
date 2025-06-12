@@ -153,7 +153,7 @@
           <i class="fas fa-times"></i>
         </button>
       </div>
-      <form class="modal-form">
+      <form class="modal-form" id="editUserForm">
         <div class="form-group">
           <label>Tên đăng nhập</label>
           <input type="text" name="TenDangNhap">
@@ -169,9 +169,9 @@
         <div class="form-group">
           <label>Vai trò</label>
           <select name="VaiTro">
-            <option value="admin">Quản trị viên</option>
-            <option value="Giangvien">Giảng viên</option>
-            <option value="Sinhvien">Sinh viên</option>
+            <option value="Admin">Quản trị viên</option>
+            <option value="GiangVien">Giảng viên</option>
+            <option value="SinhVien">Sinh viên</option>
           </select>
         </div>
         <div class="form-group">
@@ -185,13 +185,6 @@
         <div class="form-group">
           <label>Ảnh đại diện</label>
           <input type="file" name="AnhDaiDien" accept="image/*">
-        </div>
-        <div class="form-group">
-          <label>Trạng thái</label>
-          <select name="TrangThai" required>
-            <option value="HoatDong">Hoạt động</option>
-            <option value="KhongHoatDong">Không hoạt động</option>
-          </select>
         </div>
         <div class="form-actions">
           <button type="button" class="btn-secondary" onclick="closeEditUserModal()">Hủy</button>
@@ -396,5 +389,107 @@
     // Hàm chuyển trang
     function changePage(page) {
       loadUserList(page);
+    }
+
+    // Hàm mở modal chỉnh sửa và load dữ liệu user
+    function editUser(id) {
+      fetch(`/Admin/QuanLyNguoiDung/EditUserPartial?id=${id}`, {
+          method: 'GET',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        })
+        .then(response => response.text())
+        .then(html => {
+          // Render partial vào modal
+          document.querySelector('#editUserModal .modal-content').innerHTML = `
+            <div class=\"modal-header\">
+              <h2>Chỉnh sửa người dùng</h2>
+              <button class=\"close-modal\" onclick=\"closeEditUserModal()\"><i class=\"fas fa-times\"></i></button>
+            </div>
+            ${html}
+          `;
+          openEditUserModal();
+          // Gắn submit AJAX cho form chỉnh sửa
+          var form = document.getElementById('editUserForm');
+          if (form) {
+            form.onsubmit = function(e) {
+              e.preventDefault();
+              var formData = new FormData(form);
+              fetch('/Admin/QuanLyNguoiDung/EditUserAjax', {
+                  method: 'POST',
+                  body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                  // Xóa hết lỗi cũ
+                  document.querySelectorAll('.field-error').forEach(e => e.innerHTML = '');
+                  if (data.success) {
+                    loadUserList(1);
+                    closeEditUserModal();
+                    // Hiện thông báo thành công
+                    var alert = document.getElementById('success-alert');
+                    alert.querySelector('span').innerHTML = "Cập nhật người dùng thành công!";
+                    alert.style.background = "#e6ffed";
+                    alert.style.color = "#219150";
+                    alert.style.display = 'block';
+                    alert.style.opacity = 1;
+                    setTimeout(function() {
+                      alert.style.opacity = 0;
+                      setTimeout(function() {
+                        alert.style.display = 'none';
+                      }, 500);
+                    }, 2000);
+                  } else {
+                    // Hiện lỗi từng trường vào đúng <span>
+                    if (data.errors) {
+                      Object.keys(data.errors).forEach(function(key) {
+                        var errSpan = document.getElementById('error-' + key);
+                        if (errSpan) errSpan.innerHTML = data.errors[key];
+                      });
+                    }
+                  }
+                });
+            }
+          }
+        });
+    }
+
+    function updateStatusUser(id, newStatus) {
+      var btn = event.currentTarget;
+      btn.disabled = true;
+      var icon = btn.querySelector('i');
+      var oldClass = icon.className;
+      icon.className = 'fas fa-spinner fa-spin';
+      fetch('/Admin/QuanLyNguoiDung/UpdateStatusUser', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: `IdTaiKhoan=${id}&TrangThai=${newStatus}`
+        })
+        .then(response => response.json())
+        .then(data => {
+          btn.disabled = false;
+          if (data.success) {
+            loadUserList(1); // reload lại danh sách user
+          } else {
+            icon.className = oldClass;
+            alert(data.errors.General || 'Có lỗi xảy ra!');
+          }
+        })
+        .catch(() => {
+          btn.disabled = false;
+          icon.className = oldClass;
+          alert('Có lỗi xảy ra!');
+        });
+    }
+
+    function confirmUpdateStatusUser(id, newStatus) {
+      var msg = newStatus === 'HoatDong' ? 'Bạn có chắc muốn chuyển trạng thái sang Hoạt động?' : 'Bạn có chắc muốn chuyển trạng thái sang Không hoạt động?';
+      if (confirm(msg)) {
+        updateStatusUser(id, newStatus);
+      }
     }
   </script>

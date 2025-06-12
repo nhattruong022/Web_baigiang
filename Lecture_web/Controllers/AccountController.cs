@@ -24,10 +24,16 @@ namespace Lecture_web.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(string username, string password)
         {
-            var user = _context.TaiKhoan.FirstOrDefault(u => u.TenDangNhap == username && u.MatKhau == password);
-            if (user == null)
+            var user = _context.TaiKhoan.FirstOrDefault(u => u.TenDangNhap == username);
+            if (user == null || user.MatKhau != password)
             {
-                ModelState.AddModelError("", "Tên đăng nhập hoặc mật khẩu không đúng.");
+                ModelState.AddModelError("username", "Tên đăng nhập hoặc mật khẩu không đúng.");
+                ModelState.AddModelError("password", "Tên đăng nhập hoặc mật khẩu không đúng.");
+                return View();
+            }
+            if (user.TrangThai != null && user.TrangThai.Trim() == "KhongHoatDong")
+            {
+                ModelState.AddModelError("username", "Tài khoản của bạn đã bị khóa hoặc không hoạt động.");
                 return View();
             }
             var claims = new List<Claim>

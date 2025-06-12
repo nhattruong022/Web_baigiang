@@ -122,6 +122,102 @@ namespace Lecture_web.Areas.Admin.Controllers
             }
         }
 
+
+        [HttpPost]
+        public IActionResult EditUserAjax(TaiKhoanModels model, IFormFile AnhDaiDien, int page = 1)
+        {
+            // Bỏ validate field file nếu không bắt buộc
+            ModelState.Remove("AnhDaiDien");
+
+            // Kiểm tra trùng tên đăng nhập (trừ chính user đang sửa)
+            if (_context.TaiKhoan.Any(u => u.TenDangNhap == model.TenDangNhap && u.IdTaiKhoan != model.IdTaiKhoan))
+            {
+                return Json(new { success = false, errors = new { TenDangNhap = "Tên đăng nhập đã tồn tại!" } });
+            }
+            // Kiểm tra trùng email
+            else if (_context.TaiKhoan.Any(u => u.Email == model.Email && u.IdTaiKhoan != model.IdTaiKhoan))
+            {
+                return Json(new { success = false, errors = new { Email = "Email đã tồn tại!" } });
+            }
+            // Kiểm tra trùng số điện thoại
+            else if (_context.TaiKhoan.Any(u => u.SoDienThoai == model.SoDienThoai && u.IdTaiKhoan != model.IdTaiKhoan))
+            {
+                return Json(new { success = false, errors = new { SoDienThoai = "Số điện thoại đã tồn tại!" } });
+            }
+
+            if (ModelState.IsValid)
+            {
+                var user = _context.TaiKhoan.FirstOrDefault(u => u.IdTaiKhoan == model.IdTaiKhoan);
+                if (user == null)
+                {
+                    return Json(new { success = false, errors = new { General = "Người dùng không tồn tại!" } });
+                }
+
+                // Cập nhật thông tin
+                user.TenDangNhap = model.TenDangNhap;
+                user.MatKhau = model.MatKhau;
+                user.HoTen = model.HoTen;
+                user.VaiTro = model.VaiTro;
+                user.Email = model.Email;
+                user.SoDienThoai = model.SoDienThoai;
+                user.TrangThai = model.TrangThai?.Trim();
+                user.NgayCapNhat = DateTime.Now;
+
+                // Xử lý lưu file ảnh nếu có
+                if (AnhDaiDien != null && AnhDaiDien.Length > 0)
+                {
+                    var fileName = Path.GetFileName(AnhDaiDien.FileName);
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", fileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        AnhDaiDien.CopyTo(stream);
+                    }
+                    user.AnhDaiDien = "/images/" + fileName;
+                }
+
+                _context.TaiKhoan.Update(user);
+                _context.SaveChanges();
+                return Json(new { success = true });
+            }
+            else
+            {
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Count > 0)
+                    .ToDictionary(
+                        kvp => kvp.Key,
+                        kvp => kvp.Value.Errors.First().ErrorMessage
+                    );
+                return Json(new { success = false, errors });
+            }
+        }
+        
+
+     [HttpGet]
+        public IActionResult EditUserPartial(int id)
+        {
+            var user = _context.TaiKhoan.FirstOrDefault(u => u.IdTaiKhoan == id);
+            if (user == null)
+                return Content("Không tìm thấy người dùng");
+            return PartialView("_EditUserPartial", user);
+        }
+
+
+        [HttpPost]
+        public IActionResult UpdateStatusUser(int IdTaiKhoan, string TrangThai)
+        {
+            var user = _context.TaiKhoan.FirstOrDefault(u => u.IdTaiKhoan == IdTaiKhoan);
+            if (user == null)
+                return Json(new { success = false, errors = new { General = "Người dùng không tồn tại!" } });
+
+            user.TrangThai = TrangThai?.Trim();
+            _context.TaiKhoan.Update(user);
+            _context.SaveChanges();
+
+            return Json(new { success = true });
+        }
+
+
+
         public IActionResult PaginationPartial(string role, string status, string search, int page = 1)
         {
             int pageSize = 5;
@@ -145,5 +241,13 @@ namespace Lecture_web.Areas.Admin.Controllers
             ViewBag.TotalPages = totalPages;
             return PartialView("_PaginationPartial");
         }
+
+
+
+   
+
+
+
+        
     }
 } 
