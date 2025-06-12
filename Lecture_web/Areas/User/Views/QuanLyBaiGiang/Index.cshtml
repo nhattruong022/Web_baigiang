@@ -1,8 +1,10 @@
 @{
 ViewData["Title"] = "Quản lý Bai Giang";
 Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+    var baigiang = ViewBag.list as List<Lecture_web.Models.ViewModels.BaiGiangViewModel>;
 }
 
+    
 
 
 <div class="content-management-container">
@@ -29,30 +31,23 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
         </tr>
       </thead>
       <tbody>
+        @foreach (var l in baigiang)
+        {
         <tr data-type="lecture">
-          <td>Lập trình web</td>
-          <td>Giới thiệu về HTML và cấu trúc cơ bản của một trang web.</td>
-          <td>INT1234.1</td>
-          <td>01/03/2024</td>
-          <td>02/03/2024</td>
-          <td class="content-actions-btns">
-            <button class="btn-secondary" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
-            <button class="btn-danger" title="Xóa"><i class="fas fa-trash"></i></button>
-            <button class="btn-primary" title="Gán cho lớp"><i class="fas fa-link"></i></button>
-          </td>
-        </tr>
-        <tr data-type="lecture">
-          <td>CSDL</td>
-          <td>Học về cách sử dụng CSS để tạo kiểu cho trang web.</td>
-          <td>INT1234.1</td>
-          <td>05/03/2024</td>
-          <td>06/03/2024</td>
-          <td class="content-actions-btns">
-            <button class="btn-secondary" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
-            <button class="btn-danger" title="Xóa"><i class="fas fa-trash"></i></button>
-            <button class="btn-primary" title="Gán cho lớp"><i class="fas fa-link"></i></button>
-          </td>
-        </tr>
+            <td>@l.TieuDe</td>
+            <td>@l.MoTa</td>
+            <td>
+                @l.LopHocPhan
+            </td>
+            <td>@l.NgayTao</td>
+            <td>@l.NgayCapNhat</td>
+            <td class="content-actions-btns">
+                 <a asp-controller="QuanLyBaiGiang" asp-action="Edit" asp-route-idbg="@l.IdBaiGiang" class="btn-secondary" title="Chỉnh sửa"><i class="fas fa-edit"></i></a>
+                <button class="btn-danger" title="Xóa"><i class="fas fa-trash"></i></button>
+                <button class="btn-primary" title="Gán cho lớp"><i class="fas fa-link"></i></button>
+            </td>
+        </tr>          
+        }
       </tbody>
     </table>
   </div>
@@ -90,7 +85,7 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
   </div>
 </div>
 <!-- Modal chỉnh sửa bài giảng -->
-<div class="modal" id="editContentModal">
+@* <div class="modal" id="editContentModal">
   <div class="modal-content lecture-modal-content">
     <div class="modal-header lecture-modal-header">
       <i class="fas fa-chalkboard"></i>
@@ -118,7 +113,7 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
       </div>
     </form>
   </div>
-</div>
+</div> *@
 <!-- Modal xác nhận xóa nội dung -->
 <div class="modal" id="confirmDeleteContentModal">
   <div class="modal-content">

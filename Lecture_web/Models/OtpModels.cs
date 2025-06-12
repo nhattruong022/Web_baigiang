@@ -13,6 +13,7 @@ namespace Lecture_web.Models
         public DateTime NgayHetHan { get; set; }
         public DateTime NgayTao { get; set; }
 
+        [ForeignKey(nameof(IdTaiKhoan))]
         public TaiKhoanModels TaiKhoan { get; set; }
     }
 }
