@@ -14,8 +14,12 @@ namespace Lecture_web.Models
         public int IdTaiKhoan { get; set; }
         public int IdLopHocPhan { get; set; }
 
+        [ForeignKey(nameof(IdTaiKhoan))]
         public TaiKhoanModels TaiKhoan { get; set; }
+
+        [ForeignKey(nameof(IdLopHocPhan))]
         public LopHocPhanModels LopHocPhan { get; set; }
+
         public ICollection<BinhLuanModels> BinhLuans { get; set; }
     }
 }

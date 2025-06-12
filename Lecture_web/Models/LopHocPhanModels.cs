@@ -18,8 +18,13 @@ namespace Lecture_web.Models
         public DateTime NgayTao { get; set; }
         public DateTime NgayCapNhat { get; set; }
 
+        [ForeignKey(nameof(IdHocPhan))]
         public HocPhanModels HocPhan { get; set; }
+
+        [ForeignKey(nameof(IdTaiKhoan))]
         public TaiKhoanModels TaiKhoan { get; set; }
+
+        [ForeignKey(nameof(IdBaiGiang))]
         public BaiGiangModels BaiGiang { get; set; }
         public ICollection<LopHocPhan_SinhVienModels> LopHocPhan_SinhViens { get; set; }
         public ICollection<ThongBaoModels> ThongBaos { get; set; }

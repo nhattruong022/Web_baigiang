@@ -14,6 +14,7 @@ namespace Lecture_web.Models
         public DateTime NgayTao { get; set; }
         public int IdChuong { get; set; }
 
+        [ForeignKey(nameof(IdChuong))]
         public ChuongModels Chuong { get; set; }
         public ICollection<BinhLuanModels> BinhLuans { get; set; }
     }
