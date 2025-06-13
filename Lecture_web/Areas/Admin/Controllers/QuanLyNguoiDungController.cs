@@ -129,6 +129,9 @@ namespace Lecture_web.Areas.Admin.Controllers
             // Bỏ validate field file nếu không bắt buộc
             ModelState.Remove("AnhDaiDien");
 
+            if (string.IsNullOrEmpty(model.TrangThai))
+                model.TrangThai = "HoatDong";
+
             // Kiểm tra trùng tên đăng nhập (trừ chính user đang sửa)
             if (_context.TaiKhoan.Any(u => u.TenDangNhap == model.TenDangNhap && u.IdTaiKhoan != model.IdTaiKhoan))
             {

@@ -1,201 +1,277 @@
-  <!-- Profile Content -->
-            <div class="dashboard">
-                <div class="dashboard-grid">
-                    <!-- Profile Information -->
-                    <div class="dashboard-card">
-                        <div class="card-header">
-                            <h2>Thông tin cá nhân</h2>
-                            <button class="btn-primary" onclick="openEditProfileModal()">
-                                <i class="fas fa-edit"></i>
-                                Chỉnh sửa
-                            </button>
-                        </div>
-                        <div class="profile-info">
-                            <div class="profile-avatar">
-                                <img src="admin-avatar.png" alt="Profile Avatar">
-                                <button class="btn-secondary" onclick="openChangeAvatarModal()">
-                                    <i class="fas fa-camera"></i>
-                                    Đổi ảnh
-                                </button>
-                            </div>
-                            <div class="profile-details">
-                                <div class="info-group">
-                                    <label>Họ và tên</label>
-                                    <p>Nguyễn Văn A</p>
-                                </div>
-                                <div class="info-group">
-                                    <label>Mã số</label>
-                                    <p>GV001</p>
-                                </div>
-                                <div class="info-group">
-                                    <label>Email</label>
-                                    <p>nguyenvana@example.com</p>
-                                </div>
-                                <div class="info-group">
-                                    <label>Số điện thoại</label>
-                                    <p>0123456789</p>
-                                </div>
-                                <div class="info-group">
-                                    <label>Địa chỉ</label>
-                                    <p>123 Đường ABC, Quận XYZ, TP.HCM</p>
-                                </div>
-                                <div class="info-group">
-                                    <label>Vai trò</label>
-                                    <p>Giảng viên</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Security Settings -->
-                    <div class="dashboard-card">
-                        <div class="card-header">
-                            <h2>Bảo mật</h2>
-                        </div>
-                        <div class="security-settings">
-                            <button class="btn-primary" onclick="openChangePasswordModal()">
-                                <i class="fas fa-key"></i>
-                                Đổi mật khẩu
-                            </button>
-                            <button class="btn-secondary" onclick="logout()">
-                                <i class="fas fa-sign-out-alt"></i>
-                                Đăng xuất
-                            </button>
-                        </div>
-                    </div>
-                </div>
+    @model Lecture_web.Models.TaiKhoanModels
+    <!-- Profile Content -->
+    <div class="dashboard">
+      <div class="dashboard-grid">
+        <!-- Profile Information -->
+        <div class="dashboard-card">
+          <div class="card-header">
+            <h2>Thông tin cá nhân</h2>
+            <button class="btn-primary" onclick="openEditProfileModal()">
+              <i class="fas fa-edit"></i>
+              Chỉnh sửa
+            </button>
+          </div>
+          <div class="profile-info">
+            <div class="profile-avatar">
+              <img src="@(!string.IsNullOrEmpty(Model.AnhDaiDien) ? Url.Content(Model.AnhDaiDien) : " /images/default-avatar.png")" alt="Profile Avatar">
+              <button class="btn-secondary" onclick="openChangeAvatarModal()">
+                <i class="fas fa-camera"></i>
+                Đổi ảnh
+              </button>
             </div>
-        </main>
+            <div class="profile-details">
+              <div class="info-group">
+                <label>Tên đăng nhập</label>
+                <p>@Model.TenDangNhap</p>
+              </div>
+              <div class="info-group">
+                <label>Họ và tên</label>
+                <p>@Model.HoTen</p>
+              </div>
+              <div class="info-group">
+                <label>Email</label>
+                <p>@Model.Email</p>
+              </div>
+              <div class="info-group">
+                <label>Số điện thoại</label>
+                <p>@Model.SoDienThoai</p>
+              </div>
+              <div class="info-group">
+                <label>Vai trò</label>
+                <p>@Model.VaiTro</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Security Settings -->
+        <div class="dashboard-card">
+          <div class="card-header">
+            <h2>Bảo mật</h2>
+          </div>
+          <div class="security-settings">
+            <button class="btn-primary" onclick="openChangePasswordModal()">
+              <i class="fas fa-key"></i>
+              Đổi mật khẩu
+            </button>
+            <button class="btn-secondary" onclick="logout()">
+              <i class="fas fa-sign-out-alt"></i>
+              Đăng xuất
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    </main>
     </div>
 
     <!-- Edit Profile Modal -->
     <div class="modal" id="editProfileModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Chỉnh sửa thông tin cá nhân</h2>
-                <button class="close-modal" onclick="closeEditProfileModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <form class="modal-form">
-                <div class="form-group">
-                    <label>Họ và tên</label>
-                    <input type="text" value="Nguyễn Văn A" required>
-                </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" value="nguyenvana@example.com" required>
-                </div>
-                <div class="form-group">
-                    <label>Số điện thoại</label>
-                    <input type="tel" value="0123456789" required>
-                </div>
-                <div class="form-group">
-                    <label>Địa chỉ</label>
-                    <input type="text" value="123 Đường ABC, Quận XYZ, TP.HCM" required>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn-secondary" onclick="closeEditProfileModal()">Hủy</button>
-                    <button type="submit" class="btn-primary">Lưu thay đổi</button>
-                </div>
-            </form>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Chỉnh sửa thông tin cá nhân</h2>
+          <button class="close-modal" onclick="closeEditProfileModal()">
+            <i class="fas fa-times"></i>
+          </button>
         </div>
+        <form class="modal-form" id="editProfileForm">
+          <div class="form-group">
+            <label>Họ và tên</label>
+            <input type="text" name="HoTen" value="@Model.HoTen" required>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="Email" value="@Model.Email" required>
+          </div>
+          <div class="form-group">
+            <label>Số điện thoại</label>
+            <input type="tel" name="SDT" value="@Model.SoDienThoai" required>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" onclick="closeEditProfileModal()">Hủy</button>
+            <button type="submit" class="btn-primary">Lưu thay đổi</button>
+          </div>
+        </form>
+      </div>
     </div>
 
     <!-- Change Password Modal -->
     <div class="modal" id="changePasswordModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Đổi mật khẩu</h2>
-                <button class="close-modal" onclick="closeChangePasswordModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <form class="modal-form">
-                <div class="form-group">
-                    <label>Mật khẩu hiện tại</label>
-                    <input type="password" required>
-                </div>
-                <div class="form-group">
-                    <label>Mật khẩu mới</label>
-                    <input type="password" required>
-                </div>
-                <div class="form-group">
-                    <label>Xác nhận mật khẩu mới</label>
-                    <input type="password" required>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn-secondary" onclick="closeChangePasswordModal()">Hủy</button>
-                    <button type="submit" class="btn-primary">Đổi mật khẩu</button>
-                </div>
-            </form>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Đổi mật khẩu</h2>
+          <button class="close-modal" onclick="closeChangePasswordModal()">
+            <i class="fas fa-times"></i>
+          </button>
         </div>
+        <form class="modal-form" id="changePasswordForm">
+          <div class="form-group">
+            <label>Mật khẩu hiện tại</label>
+            <input type="password" name="oldPassword" required>
+          </div>
+          <div class="form-group">
+            <label>Mật khẩu mới</label>
+            <input type="password" name="newPassword" required>
+          </div>
+          <div class="form-group">
+            <label>Xác nhận mật khẩu mới</label>
+            <input type="password" name="confirmPassword" required>
+            <div id="changePasswordMsg" style="margin-top:6px;"></div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" onclick="closeChangePasswordModal()">Hủy</button>
+            <button type="submit" class="btn-primary">Đổi mật khẩu</button>
+          </div>
+        </form>
+      </div>
     </div>
 
     <!-- Change Avatar Modal -->
     <div class="modal" id="changeAvatarModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Đổi ảnh đại diện</h2>
-                <button class="close-modal" onclick="closeChangeAvatarModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <form class="modal-form">
-                <div class="form-group">
-                    <label>Chọn ảnh</label>
-                    <input type="file" accept="image/*" required>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn-secondary" onclick="closeChangeAvatarModal()">Hủy</button>
-                    <button type="submit" class="btn-primary">Cập nhật ảnh</button>
-                </div>
-            </form>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Đổi ảnh đại diện</h2>
+          <button class="close-modal" onclick="closeChangeAvatarModal()">
+            <i class="fas fa-times"></i>
+          </button>
         </div>
+        <form class="modal-form" id="changeAvatarForm" enctype="multipart/form-data">
+          <div class="form-group">
+            <label>Chọn ảnh</label>
+            <input type="file" name="avatar" accept="image/*" required>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" onclick="closeChangeAvatarModal()">Hủy</button>
+            <button type="submit" class="btn-primary">Cập nhật ảnh</button>
+          </div>
+        </form>
+      </div>
     </div>
 
     <script>
-        // Modal functions
-        function openEditProfileModal() {
-            document.getElementById('editProfileModal').classList.add('active');
-        }
+      // Modal functions
+      function openEditProfileModal() {
+        document.getElementById('editProfileModal').classList.add('active');
+      }
 
-        function closeEditProfileModal() {
-            document.getElementById('editProfileModal').classList.remove('active');
-        }
+      function closeEditProfileModal() {
+        document.getElementById('editProfileModal').classList.remove('active');
+      }
 
-        function openChangePasswordModal() {
-            document.getElementById('changePasswordModal').classList.add('active');
-        }
+      function openChangePasswordModal() {
+        document.getElementById('changePasswordModal').classList.add('active');
+      }
 
-        function closeChangePasswordModal() {
-            document.getElementById('changePasswordModal').classList.remove('active');
-        }
+      function closeChangePasswordModal() {
+        document.getElementById('changePasswordModal').classList.remove('active');
+      }
 
-        function openChangeAvatarModal() {
-            document.getElementById('changeAvatarModal').classList.add('active');
-        }
+      function openChangeAvatarModal() {
+        document.getElementById('changeAvatarModal').classList.add('active');
+      }
 
-        function closeChangeAvatarModal() {
-            document.getElementById('changeAvatarModal').classList.remove('active');
-        }
+      function closeChangeAvatarModal() {
+        document.getElementById('changeAvatarModal').classList.remove('active');
+      }
 
-        function logout() {
-            if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
-                window.location.href = 'login.html';
-            }
+      function logout() {
+        if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+          window.location.href = '/profile/LogOut';
         }
+      }
 
-        function toggleUserMenu() {
-            document.querySelector('.user-dropdown').classList.toggle('active');
+      function toggleUserMenu() {
+        document.querySelector('.user-dropdown').classList.toggle('active');
+      }
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function(event) {
+        const userProfile = document.querySelector('.user-profile');
+        const dropdown = document.querySelector('.user-dropdown');
+        if (!userProfile.contains(event.target)) {
+          dropdown.classList.remove('active');
         }
+      });
 
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            const userProfile = document.querySelector('.user-profile');
-            const dropdown = document.querySelector('.user-dropdown');
-            if (!userProfile.contains(event.target)) {
-                dropdown.classList.remove('active');
-            }
+      // Submit form chỉnh sửa profile bằng AJAX
+      const editProfileForm = document.getElementById('editProfileForm');
+      if (editProfileForm) {
+        editProfileForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          const formData = new FormData(editProfileForm);
+          fetch('/profile/EditProfilAjax', {
+              method: 'POST',
+              body: new URLSearchParams([...formData])
+            })
+            .then(res => {
+              if (res.redirected) {
+                window.location.href = res.url;
+              } else {
+                location.reload();
+              }
+            });
         });
+      }
+
+      // Submit form đổi ảnh đại diện bằng AJAX
+      const changeAvatarForm = document.getElementById('changeAvatarForm');
+      if (changeAvatarForm) {
+        changeAvatarForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          const formData = new FormData(changeAvatarForm);
+          fetch('/profile/UploadAvatar', {
+              method: 'POST',
+              body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) {
+                document.querySelector('.profile-avatar img').src = data.url + '?t=' + new Date().getTime();
+                var topBarAvatar = document.getElementById('topBarAvatar');
+                if (topBarAvatar) topBarAvatar.src = data.url + '?t=' + new Date().getTime();
+                closeChangeAvatarModal();
+                localStorage.setItem('updatedAvatarUrl', data.url);
+              } else {
+                alert(data.message || 'Có lỗi xảy ra!');
+              }
+            });
+        });
+      }
+
+      // Submit form đổi mật khẩu bằng AJAX
+      const changePasswordForm = document.getElementById('changePasswordForm');
+      if (changePasswordForm) {
+        changePasswordForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          const formData = new FormData(changePasswordForm);
+          const oldPassword = formData.get('oldPassword');
+          const newPassword = formData.get('newPassword');
+          const confirmPassword = formData.get('confirmPassword');
+          const msgDiv = document.getElementById('changePasswordMsg');
+          msgDiv.innerHTML = '';
+          if (newPassword !== confirmPassword) {
+            msgDiv.innerHTML = '<span style="color:red">Mật khẩu mới và xác nhận không khớp.</span>';
+            return;
+          }
+          fetch('/profile/ChangePassword', {
+              method: 'POST',
+              headers: {},
+              body: new URLSearchParams({
+                oldPassword,
+                newPassword
+              })
+            })
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) {
+                msgDiv.innerHTML = '<span style="color:green">' + data.message + '</span>';
+                setTimeout(() => {
+                  closeChangePasswordModal();
+                }, 1500);
+              } else {
+                msgDiv.innerHTML = '<span style="color:red">' + data.message + '</span>';
+              }
+            });
+        });
+      }
     </script>

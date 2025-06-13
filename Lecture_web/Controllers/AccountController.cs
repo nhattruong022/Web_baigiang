@@ -3,6 +3,9 @@ using Lecture_web.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
+using System.Net.Mail;
+using System.Net;
+using Lecture_web.Service;
 
 namespace Lecture_web.Controllers
 {
@@ -10,9 +13,11 @@ namespace Lecture_web.Controllers
     {
 
         private readonly ApplicationDbContext _context;
-        public AccountController(ApplicationDbContext context)
+        private readonly EmailService _emailService;
+        public AccountController(ApplicationDbContext context, EmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         [HttpGet]
@@ -55,12 +60,81 @@ namespace Lecture_web.Controllers
             return RedirectToAction("Login");
         }
 
-        [HttpGet]
-        public IActionResult ForgotPassword()
+
+        [HttpPost]
+        public async Task<JsonResult> SendOTP(string email)
         {
-            return View();
+            try
+            {
+                if (string.IsNullOrWhiteSpace(email))
+                    return Json(new { success = false, message = "Vui lòng nhập email!" });
+
+                var emailCheck = email.Trim().ToLower();
+                var user = _context.TaiKhoan.FirstOrDefault(u => u.Email.Trim().ToLower() == emailCheck);
+                if (user == null)
+                    return Json(new { success = false, message = "Email không tồn tại!" });
+
+                var otp = new Random().Next(100000, 999999).ToString();
+                var otpModel = new OtpModels
+                {
+                    IdTaiKhoan = user.IdTaiKhoan,
+                    OtpCode = otp,
+                    NgayTao = DateTime.Now,
+                    NgayHetHan = DateTime.Now.AddMinutes(5)
+                };
+                _context.Add(otpModel);
+                _context.SaveChanges();
+
+                // Gửi email thực tế qua service (bây giờ là async)
+                await _emailService.SendEmailAsync(email, "Mã xác thực OTP", $"Mã OTP của bạn là: {otp}");
+
+                return Json(new { success = true, message = "Đã gửi mã xác thực về email!" });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Lỗi gửi email: " + ex.Message);
+                if (ex.InnerException != null)
+                    Console.WriteLine("Chi tiết: " + ex.InnerException.Message);
+                throw; // hoặc return false, hoặc trả về lỗi chi tiết cho client
+            }
         }
 
-      
+        [HttpPost]
+        public IActionResult VerifyOTP(string email, string otp)
+        {
+            var user = _context.TaiKhoan.FirstOrDefault(u => u.Email == email);
+            if (user == null)
+                return Json(new { success = false, message = "Email không tồn tại!" });
+            var otpModel = _context.Set<OtpModels>()
+                .Where(o => o.IdTaiKhoan == user.IdTaiKhoan && o.OtpCode == otp && o.NgayHetHan > DateTime.Now)
+                .OrderByDescending(o => o.NgayTao)
+                .FirstOrDefault();
+            if (otpModel == null)
+                return Json(new { success = false, message = "Mã OTP không hợp lệ hoặc đã hết hạn!" });
+            // Xóa OTP sau khi xác thực thành công
+            _context.Remove(otpModel);
+            _context.SaveChanges();
+            return Json(new { success = true });
+        }
+
+        [HttpPost]
+        public IActionResult ResetPassword(string email, string newPassword)
+        {
+            var user = _context.TaiKhoan.FirstOrDefault(u => u.Email == email);
+            if (user == null)
+                return Json(new { success = false, message = "Email không tồn tại!" });
+            user.MatKhau = newPassword;
+            _context.TaiKhoan.Update(user);
+            _context.SaveChanges();
+            return Json(new { success = true, message = "Đặt lại mật khẩu thành công!" });
+        }
+
+            [HttpGet]
+            public IActionResult ForgotPassword()
+            {
+                return View();
+            }
+        
+        
     }
 } 

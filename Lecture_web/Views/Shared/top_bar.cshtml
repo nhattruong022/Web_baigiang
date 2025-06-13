@@ -1,3 +1,7 @@
+@{
+var avatar = !string.IsNullOrEmpty(ViewBag.Avatar as string) ? (string)ViewBag.Avatar : "/images/avatar.jpg";
+var userName = !string.IsNullOrEmpty(ViewBag.UserName as string) ? (string)ViewBag.UserName : "User";
+}
 <header class="top-bar">
 
   <div class="user-menu">
@@ -6,8 +10,8 @@
       <span class="notification-badge">5</span>
     </div>
     <div class="user-profile" onclick="toggleUserMenu()">
-      <img src="~/images/avatar.jpg" alt="Admin Avatar" class="avatar">
-      <span class="user-name">Admin</span>
+      <img src="@avatar" alt="User Avatar" class="avatar" id="topBarAvatar">
+      <span class="user-name" id="topBarUserName">@userName</span>
       <i class="fas fa-chevron-down"></i>
       <div class="user-dropdown">
         <a href="/profile/profile">
@@ -27,3 +31,13 @@
     </div>
   </div>
 </header>
+
+<script>
+  // Lắng nghe sự kiện avatar thay đổi từ các tab khác
+  window.addEventListener('storage', function(event) {
+    if (event.key === 'updatedAvatarUrl') {
+      var topBarAvatar = document.getElementById('topBarAvatar');
+      if (topBarAvatar) topBarAvatar.src = event.newValue + '?t=' + new Date().getTime();
+    }
+  });
+</script>
