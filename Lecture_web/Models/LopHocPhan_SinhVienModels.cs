@@ -11,7 +11,10 @@ namespace Lecture_web.Models
         public int IdLopHocPhan { get; set; }
         public int IdTaiKhoan { get; set; }
 
+        [ForeignKey(nameof(IdLopHocPhan))]
         public LopHocPhanModels LopHocPhan { get; set; }
+
+        [ForeignKey(nameof(IdTaiKhoan))]
         public TaiKhoanModels TaiKhoan { get; set; }
     }
 }

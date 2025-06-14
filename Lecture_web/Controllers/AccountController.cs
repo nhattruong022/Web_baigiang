@@ -43,6 +43,7 @@ namespace Lecture_web.Controllers
             }
             var claims = new List<Claim>
             {
+                new Claim(ClaimTypes.NameIdentifier, user.IdTaiKhoan.ToString()),
                 new Claim(ClaimTypes.Name, user.TenDangNhap ?? ""),
                 new Claim(ClaimTypes.Role, user.VaiTro ?? "")
             };
