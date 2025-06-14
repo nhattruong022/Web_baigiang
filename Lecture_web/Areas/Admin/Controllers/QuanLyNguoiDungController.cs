@@ -242,7 +242,7 @@ namespace Lecture_web.Areas.Admin.Controllers
 
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = totalPages;
-            return PartialView("_PaginationPartial");
+            return PartialView("~/Views/Shared/_PaginationPartial.cshtml");
         }
 
 

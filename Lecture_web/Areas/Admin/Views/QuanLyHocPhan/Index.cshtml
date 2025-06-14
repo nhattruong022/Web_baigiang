@@ -36,52 +36,18 @@ ViewData["Title"] = "Quản lý học phần";
             <tr>
               <th>Mã học phần</th>
               <th>Tên học phần</th>
-              <th>Số tín chỉ</th>
+              <th>Mô tả</th>
+              <th>Trạng thái</th>
               <th>Bộ môn</th>
-              <th>Số lớp</th>
+              <th>Ngày tạo</th>
+              <th>Ngày cập nhật</th>
               <th>Thao tác</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>INT1234</td>
-              <td>Lập trình Web</td>
-              <td>3</td>
-              <td>HTTT</td>
-              <td>4</td>
-              <td class="actions">
-                <button class="btn-icon" onclick="openModal('edit-subject')" title="Sửa">
-                  <i class="fas fa-pen-to-square"></i>
-                </button>
-                <button class="btn-icon" disabled title="Xóa">
-                  <i class="fas fa-trash"></i>
-                </button>
-                <button class="btn-icon" onclick="openDetailModal('subject', 'INT1234')" title="Chi tiết">
-                  <i class="fas fa-eye"></i>
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <td>INT1235</td>
-              <td>Cơ sở dữ liệu</td>
-              <td>3</td>
-              <td>HTTT</td>
-              <td>0</td>
-              <td class="actions">
-                <button class="btn-icon" onclick="openModal('edit-subject')" title="Sửa">
-                  <i class="fas fa-pen-to-square"></i>
-                </button>
-                <button class="btn-icon" title="Xóa">
-                  <i class="fas fa-trash"></i>
-                </button>
-                <button class="btn-icon" onclick="openDetailModal('subject', 'INT1235')" title="Chi tiết">
-                  <i class="fas fa-eye"></i>
-                </button>
-              </td>
-            </tr>
-          </tbody>
+          <tbody id="hocphan-tbody"></tbody>
         </table>
       </div>
+      <div id="pagination-container"></div>
     </div>
   </main>
 </div>
@@ -102,9 +68,10 @@ ViewData["Title"] = "Quản lý học phần";
         <input type="text" required>
       </div>
       <div class="form-group">
-        <label>Số tín chỉ</label>
-        <input type="text" required>
+        <label>Mô tả</label>
+        <textarea required></textarea>
       </div>
+
       <div class="form-group">
         <label>Bộ môn</label>
         <input type="text" required>
@@ -145,8 +112,15 @@ ViewData["Title"] = "Quản lý học phần";
         <input type="text" value="Lập trình Web" required>
       </div>
       <div class="form-group">
-        <label>Số tín chỉ</label>
-        <input type="text" value="3" required>
+        <label>Mô tả</label>
+        <textarea required>Học phần về lập trình web</textarea>
+      </div>
+      <div class="form-group">
+        <label>Trạng thái</label>
+        <select required>
+          <option value="Hoạt động" selected>Hoạt động</option>
+          <option value="Không hoạt động">Không hoạt động</option>
+        </select>
       </div>
       <div class="form-group">
         <label>Bộ môn</label>
@@ -200,16 +174,20 @@ ViewData["Title"] = "Quản lý học phần";
       document.getElementById('detail-title').innerText = 'Chi tiết học phần: Lập trình Web';
       html = `<p><b>Mã học phần:</b> INT1234</p>
                         <p><b>Tên học phần:</b> Lập trình Web</p>
-                        <p><b>Số tín chỉ:</b> 3</p>
+                        <p><b>Mô tả:</b> Học phần về lập trình web</p>
+                        <p><b>Trạng thái:</b> Hoạt động</p>
                         <p><b>Bộ môn:</b> HTTT</p>
-                        <p><b>Số lớp:</b> 4</p>`;
+                        <p><b>Ngày tạo:</b> 01/01/2024</p>
+                        <p><b>Ngày cập nhật:</b> 01/01/2024</p>`;
     } else if (type === 'subject' && id === 'INT1235') {
       document.getElementById('detail-title').innerText = 'Chi tiết học phần: Cơ sở dữ liệu';
       html = `<p><b>Mã học phần:</b> INT1235</p>
                         <p><b>Tên học phần:</b> Cơ sở dữ liệu</p>
-                        <p><b>Số tín chỉ:</b> 3</p>
+                        <p><b>Mô tả:</b> Học phần về cơ sở dữ liệu</p>
+                        <p><b>Trạng thái:</b> Hoạt động</p>
                         <p><b>Bộ môn:</b> HTTT</p>
-                        <p><b>Số lớp:</b> 0</p>`;
+                        <p><b>Ngày tạo:</b> 01/01/2024</p>
+                        <p><b>Ngày cập nhật:</b> 01/01/2024</p>`;
     }
     document.getElementById('detail-body').innerHTML = html;
     openModal('detail');
@@ -226,5 +204,61 @@ ViewData["Title"] = "Quản lý học phần";
     if (params.get('open') === 'edit') {
       openModal('edit-subject');
     }
+  });
+
+  function renderHocPhanTable(data) {
+    const tbody = document.getElementById('hocphan-tbody');
+    tbody.innerHTML = '';
+    data.forEach(hp => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${hp.idHocPhan}</td>
+          <td>${hp.tenHocPhan}</td>
+          <td>${hp.moTa ?? ''}</td>
+          <td>${hp.trangThai ?? ''}</td>
+          <td>${hp.boMon ?? ''}</td>
+          <td>${hp.ngayTao ? new Date(hp.ngayTao).toLocaleString() : ''}</td>
+          <td>${hp.ngayCapNhat ? new Date(hp.ngayCapNhat).toLocaleString() : ''}</td>
+          <td class="actions">
+            <button class="btn-icon" onclick="openModal('edit-subject')" title="Sửa">
+              <i class="fas fa-pen-to-square"></i>
+            </button>
+            <button class="btn-icon" title="Xóa">
+              <i class="fas fa-trash"></i>
+            </button>
+            <button class="btn-icon" onclick="openDetailModal('subject', '${hp.idHocPhan}')" title="Chi tiết">
+              <i class="fas fa-eye"></i>
+            </button>
+          </td>
+        </tr>
+      `;
+    });
+  }
+
+  function loadHocPhanList(page = 1, search = '') {
+    fetch(`/Admin/QuanLyHocPhan/GetHocPhanList?search=${encodeURIComponent(search)}&page=${page}`)
+      .then(res => res.json())
+      .then(result => {
+        renderHocPhanTable(result.data);
+        // Load phân trang
+        fetch(`/Admin/QuanLyHocPhan/PaginationPartial?currentPage=${result.currentPage}&totalPages=${result.totalPages}&changePageFunc=changeHocPhanPage`)
+          .then(response => response.text())
+          .then(paginationHtml => {
+            document.getElementById('pagination-container').innerHTML = paginationHtml;
+          });
+      });
+  }
+
+  function changeHocPhanPage(page) {
+    var search = document.querySelector('.search-bar input').value;
+    loadHocPhanList(page, search);
+  }
+
+  // Gọi khi trang vừa load
+  document.addEventListener('DOMContentLoaded', function() {
+    loadHocPhanList(1);
+    document.querySelector('.search-bar input').addEventListener('input', function() {
+      loadHocPhanList(1, this.value);
+    });
   });
 </script>

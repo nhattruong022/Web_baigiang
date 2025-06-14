@@ -40,43 +40,17 @@ ViewData["Title"] = "Quản lý bộ môn";
             <tr>
               <th>Mã bộ môn</th>
               <th>Tên bộ môn</th>
-              <th>Khoa</th>
-              <th>Trưởng bộ môn</th>
+              <th>Mô tả</th>
+              <th>Mã khoa</th>
+              <th>Ngày tạo</th>
+              <th>Ngày cập nhật</th>
               <th>Thao tác</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>HTTT</td>
-              <td>Bộ môn Hệ thống thông tin</td>
-              <td>Khoa CNTT</td>
-              <td>TS Trần Văn B</td>
-              <td class="actions">
-                <button class="btn-icon" onclick="openModal('edit-department')" title="Sửa">
-                  <i class="fas fa-pen-to-square"></i>
-                </button>
-                <button class="btn-icon tooltip" disabled data-tooltip="Không thể xóa bộ môn đã có học phần" title="Xóa">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <td>MMT</td>
-              <td>Bộ môn Mạng máy tính</td>
-              <td>Khoa CNTT</td>
-              <td>TS Nguyễn Văn C</td>
-              <td class="actions">
-                <button class="btn-icon" onclick="openModal('edit-department')" title="Sửa">
-                  <i class="fas fa-pen-to-square"></i>
-                </button>
-                <button class="btn-icon" title="Xóa">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </td>
-            </tr>
-          </tbody>
+          <tbody id="bomon-tbody"></tbody>
         </table>
       </div>
+      <div id="pagination-container"></div>
     </div>
   </main>
 </div>
@@ -97,11 +71,11 @@ ViewData["Title"] = "Quản lý bộ môn";
         <input type="text" required>
       </div>
       <div class="form-group">
-        <label>Khoa</label>
-        <input type="text" required>
+        <label>Mô tả</label>
+        <textarea required></textarea>
       </div>
       <div class="form-group">
-        <label>Trưởng bộ môn</label>
+        <label>Mã khoa</label>
         <input type="text" required>
       </div>
       <div class="form-actions">
@@ -128,12 +102,12 @@ ViewData["Title"] = "Quản lý bộ môn";
         <input type="text" value="Bộ môn Hệ thống thông tin" required>
       </div>
       <div class="form-group">
-        <label>Khoa</label>
-        <input type="text" value="Khoa CNTT" required>
+        <label>Mô tả</label>
+        <textarea required>Mô tả bộ môn HTTT</textarea>
       </div>
       <div class="form-group">
-        <label>Trưởng bộ môn</label>
-        <input type="text" value="TS Trần Văn B" required>
+        <label>Mã khoa</label>
+        <input type="text" value="1" required>
       </div>
       <div class="form-actions">
         <button type="button" class="btn btn-edit" onclick="closeModal('edit-department')">Hủy</button>
@@ -193,6 +167,58 @@ ViewData["Title"] = "Quản lý bộ môn";
       tabContents.forEach((content, cidx) => {
         content.style.display = (cidx === idx) ? 'block' : 'none';
       });
+    });
+  });
+
+  function renderBoMonTable(data) {
+    const tbody = document.getElementById('bomon-tbody');
+    tbody.innerHTML = '';
+    data.forEach(bm => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${bm.idBoMon}</td>
+          <td>${bm.tenBoMon}</td>
+          <td>${bm.moTa ?? ''}</td>
+          <td>${bm.idKhoa}</td>
+          <td>${bm.ngayTao ? new Date(bm.ngayTao).toLocaleString() : ''}</td>
+          <td>${bm.ngayCapNhat ? new Date(bm.ngayCapNhat).toLocaleString() : ''}</td>
+          <td class="actions">
+            <button class="btn-icon" onclick="openModal('edit-department')" title="Sửa">
+              <i class="fas fa-pen-to-square"></i>
+            </button>
+            <button class="btn-icon" title="Xóa">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      `;
+    });
+  }
+
+  function loadBoMonList(page = 1, search = '') {
+    fetch(`/Admin/QuanLyBoMon/GetBoMonList?search=${encodeURIComponent(search)}&page=${page}`)
+      .then(res => res.json())
+      .then(result => {
+        renderBoMonTable(result.data);
+        // Load phân trang
+        fetch(`/Admin/QuanLyBoMon/PaginationPartial?currentPage=${result.currentPage}&totalPages=${result.totalPages}`)
+          .then(response => response.text())
+          .then(paginationHtml => {
+            document.getElementById('pagination-container').innerHTML = paginationHtml;
+          });
+      });
+  }
+
+  function changeBoMonPage(page) {
+    var search = document.querySelector('.search-bar input').value;
+    loadBoMonList(page, search);
+  }
+
+  // Gọi khi trang vừa load
+  document.addEventListener('DOMContentLoaded', function() {
+    loadBoMonList(1);
+    document.querySelector('.search-bar input').addEventListener('input', function() {
+      loadBoMonList(1, this.value);
     });
   });
 </script>
