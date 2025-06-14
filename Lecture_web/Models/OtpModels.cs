@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -13,7 +13,7 @@ namespace Lecture_web.Models
         public DateTime NgayHetHan { get; set; }
         public DateTime NgayTao { get; set; }
 
-        [ForeignKey(nameof(IdTaiKhoan))]
+        [ForeignKey("IdTaiKhoan")]
         public TaiKhoanModels TaiKhoan { get; set; }
     }
 }

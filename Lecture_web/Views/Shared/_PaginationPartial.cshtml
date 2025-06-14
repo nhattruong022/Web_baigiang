@@ -1,0 +1,15 @@
+@{
+int currentPage = ViewBag.CurrentPage ?? 1;
+int totalPages = ViewBag.TotalPages ?? 1;
+var changePageFunc = ViewBag.ChangePageFunc ?? "changePage";
+}
+<div class="pagination">
+  <button class="btn-page" onclick="@(changePageFunc + " (" + (currentPage - 1) + ")" )" @(currentPage==1 ? "disabled" : "" )>
+    <i class="fas fa-chevron-left"></i>
+  </button>
+  @for (int i = 1; i <= totalPages; i++) { <button class="btn-page @(i == currentPage ? " active" : "" )" onclick="@(changePageFunc + " (" + i + ")" )">@i</button>
+    }
+    <button class="btn-page" onclick="@(changePageFunc + " (" + (currentPage + 1) + ")" )" @(currentPage==totalPages ? "disabled" : "" )>
+      <i class="fas fa-chevron-right"></i>
+    </button>
+</div>

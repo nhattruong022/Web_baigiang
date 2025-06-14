@@ -1,13 +1,14 @@
-@{
-Layout = null;
-ViewData["Title"] = "Quản lý khoa";
+@model IEnumerable<Lecture_web.Models.KhoaModels>
+  @{
+  Layout = null;
+  ViewData["Title"] = "Quản lý khoa";
 
-<link rel="stylesheet" href="~/css/khoa-management.css">
-<link rel="stylesheet" href="~/css/style.css">
-<link rel="stylesheet" href="~/css/admin-dashboard.css">
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-}
+  <link rel="stylesheet" href="~/css/khoa-management.css">
+  <link rel="stylesheet" href="~/css/style.css">
+  <link rel="stylesheet" href="~/css/admin-dashboard.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  }
 
 
   <div class="app-container">
@@ -20,6 +21,12 @@ ViewData["Title"] = "Quản lý khoa";
 
       <!-- Khoa Management Content -->
       <div class="container">
+        <div id="success-alert" style="display:none;position:relative;margin-bottom:18px;">
+          <div style="display:flex;align-items:center;gap:10px;justify-content:center;background:#e6ffed;border:1.5px solid #27ae60;color:#219150;padding:12px 28px;border-radius:8px;font-size:1.08rem;font-weight:500;box-shadow:0 2px 8px rgba(39,174,96,0.08);transition:opacity 0.5s;">
+            <i class="fas fa-check-circle" style="font-size:1.3rem;color:#27ae60;"></i>
+            <span id="success-alert-msg">Thêm khoa thành công!</span>
+          </div>
+        </div>
         <div class="quick-actions">
           <button class="btn btn-primary" onclick="openModal('faculty')">+ Thêm khoa</button>
         </div>
@@ -29,7 +36,7 @@ ViewData["Title"] = "Quản lý khoa";
           </div>
           <div class="search-bar" style="width:260px;">
             <i class="fas fa-search"></i>
-            <input type="text" placeholder="Tìm kiếm khoa...">
+            <input type="text" id="searchKhoa" placeholder="Tìm kiếm khoa...">
           </div>
         </div>
         <!-- Khoa -->
@@ -39,43 +46,17 @@ ViewData["Title"] = "Quản lý khoa";
               <tr>
                 <th>Mã khoa</th>
                 <th>Tên khoa</th>
-                <th>Số bộ môn</th>
-                <th>Trưởng khoa</th>
+                <th>Mô tả</th>
+                <th>Ngày tạo</th>
+                <th>Ngày cập nhật</th>
                 <th>Thao tác</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td>CNTT</td>
-                <td>Khoa Công nghệ thông tin</td>
-                <td>5</td>
-                <td>PGS.TS Nguyễn Văn A</td>
-                <td class="actions">
-                  <button class="btn-icon" onclick="openModal('edit-faculty')" title="Sửa">
-                    <i class="fas fa-pen-to-square"></i>
-                  </button>
-                  <button class="btn-icon tooltip" disabled data-tooltip="Không thể xóa khoa đã có học phần" title="Xóa">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td>QTKD</td>
-                <td>Khoa Quản trị kinh doanh</td>
-                <td>3</td>
-                <td>TS. Lê Văn B</td>
-                <td class="actions">
-                  <button class="btn-icon" onclick="openModal('edit-faculty')" title="Sửa">
-                    <i class="fas fa-pen-to-square"></i>
-                  </button>
-                  <button class="btn-icon" title="Xóa">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </td>
-              </tr>
+            <tbody id="khoa-tbody">
             </tbody>
           </table>
         </div>
+        <div id="pagination-container"></div>
       </div>
     </main>
   </div>
@@ -86,18 +67,14 @@ ViewData["Title"] = "Quản lý khoa";
         <h2>Thêm khoa</h2>
         <button class="close-modal" onclick="closeModal('faculty')">&times;</button>
       </div>
-      <form class="modal-form">
-        <div class="form-group">
-          <label>Mã khoa</label>
-          <input type="text" required>
-        </div>
+      <form class="modal-form" id="addKhoaForm">
         <div class="form-group">
           <label>Tên khoa</label>
-          <input type="text" required>
+          <input type="text" name="TenKhoa" required>
         </div>
         <div class="form-group">
-          <label>Trưởng khoa</label>
-          <input type="text" required>
+          <label>Mô tả</label>
+          <input type="text" name="MoTa">
         </div>
         <div class="form-actions">
           <button type="button" class="btn btn-edit" onclick="closeModal('faculty')">Hủy</button>
@@ -106,6 +83,7 @@ ViewData["Title"] = "Quản lý khoa";
       </form>
     </div>
   </div>
+
   <!-- Popup chỉnh sửa khoa -->
   <div class="modal" id="modal-edit-faculty">
     <div class="modal-content">
@@ -113,18 +91,18 @@ ViewData["Title"] = "Quản lý khoa";
         <h2>Chỉnh sửa khoa</h2>
         <button class="close-modal" onclick="closeModal('edit-faculty')">&times;</button>
       </div>
-      <form class="modal-form">
+      <form class="modal-form" id="editKhoaForm">
         <div class="form-group">
           <label>Mã khoa</label>
-          <input type="text" value="CNTT" required>
+          <input type="text" name="IdKhoa" id="edit-IdKhoa" required readonly>
         </div>
         <div class="form-group">
           <label>Tên khoa</label>
-          <input type="text" value="Khoa Công nghệ thông tin" required>
+          <input type="text" name="TenKhoa" id="edit-TenKhoa" required>
         </div>
         <div class="form-group">
-          <label>Trưởng khoa</label>
-          <input type="text" value="PGS.TS Nguyễn Văn A" required>
+          <label>Mô tả</label>
+          <input type="text" name="MoTa" id="edit-MoTa">
         </div>
         <div class="form-actions">
           <button type="button" class="btn btn-edit" onclick="closeModal('edit-faculty')">Hủy</button>
@@ -135,44 +113,215 @@ ViewData["Title"] = "Quản lý khoa";
   </div>
 
 
-<script>
-  function toggleUserMenu() {
-    document.querySelector('.user-dropdown').classList.toggle('active');
-  }
-  // Close dropdown when clicking outside
-  document.addEventListener('click', function(event) {
-    const userProfile = document.querySelector('.user-profile');
-    const dropdown = document.querySelector('.user-dropdown');
-    if (!userProfile.contains(event.target)) {
-      dropdown.classList.remove('active');
+  <script>
+    function toggleUserMenu() {
+      document.querySelector('.user-dropdown').classList.toggle('active');
     }
-  });
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+      const userProfile = document.querySelector('.user-profile');
+      const dropdown = document.querySelector('.user-dropdown');
+      if (!userProfile.contains(event.target)) {
+        dropdown.classList.remove('active');
+      }
+    });
 
-  function logout() {
-    if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
-      window.location.href = '/Account/Login';
+    function logout() {
+      if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+        window.location.href = '/Account/Login';
+      }
     }
-  }
 
-  function openModal(type) {
-    document.getElementById('modal-' + type).classList.add('active');
-  }
-
-  function closeModal(type) {
-    document.getElementById('modal-' + type).classList.remove('active');
-  }
-  // Tự động mở popup nếu có ?open=add
-  window.addEventListener('DOMContentLoaded', function() {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('open') === 'add') {
-      openModal('faculty');
+    function openModal(type) {
+      document.getElementById('modal-' + type).classList.add('active');
     }
-  });
-  window.addEventListener('DOMContentLoaded', function() {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('open') === 'edit') {
+
+    function closeModal(type) {
+      document.getElementById('modal-' + type).classList.remove('active');
+    }
+    // Tự động mở popup nếu có ?open=add
+    window.addEventListener('DOMContentLoaded', function() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('open') === 'add') {
+        openModal('faculty');
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', function() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('open') === 'edit') {
+        openModal('edit-faculty');
+      }
+    });
+
+    function renderKhoaTable(data) {
+      const tbody = document.getElementById('khoa-tbody');
+      tbody.innerHTML = '';
+      data.forEach(khoa => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${khoa.idKhoa}</td>
+            <td>${khoa.tenKhoa}</td>
+            <td>${khoa.moTa ?? ''}</td>
+            <td>${khoa.ngayTao ? new Date(khoa.ngayTao).toLocaleString() : ''}</td>
+            <td>${khoa.ngayCapNhat ? new Date(khoa.ngayCapNhat).toLocaleString() : ''}</td>
+            <td class="actions">
+              <button class="btn-icon" onclick="openEditKhoaModal('${khoa.idKhoa}', '${khoa.tenKhoa}', '${khoa.moTa}')" title="Sửa">
+                <i class="fas fa-pen-to-square"></i>
+              </button>
+              <button class="btn-icon" title="Xóa">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function loadKhoaList(page = 1, search = '') {
+      fetch(`/Admin/QuanLyKhoa/GetKhoaList?search=${encodeURIComponent(search)}&page=${page}`)
+        .then(res => res.json())
+        .then(result => {
+          renderKhoaTable(result.data);
+          // Load phân trang
+          fetch(`/Admin/QuanLyKhoa/PaginationPartial?currentPage=${result.currentPage}&totalPages=${result.totalPages}`)
+            .then(response => response.text())
+            .then(paginationHtml => {
+              document.getElementById('pagination-container').innerHTML = paginationHtml;
+            });
+        });
+    }
+
+    // Load lần đầu
+    document.addEventListener('DOMContentLoaded', function() {
+      loadKhoaList(1);
+      document.getElementById('searchKhoa').addEventListener('input', function() {
+        loadKhoaList(1, this.value);
+      });
+    });
+
+    document.getElementById('addKhoaForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const data = {
+        TenKhoa: formData.get('TenKhoa'),
+        MoTa: formData.get('MoTa')
+      };
+      fetch('/Admin/QuanLyKhoa/ThemKhoaAjax', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        })
+        .then(res => res.json())
+        .then(result => {
+          if (result.success) {
+            closeModal('faculty');
+            loadKhoaList();
+            // Hiện alert thành công
+            var alertBox = document.getElementById('success-alert');
+            var alertMsg = document.getElementById('success-alert-msg');
+            alertMsg.innerText = result.message || "Thêm khoa thành công!";
+            alertBox.style.display = 'block';
+            alertBox.style.opacity = 1;
+            setTimeout(function() {
+              alertBox.style.opacity = 0;
+              setTimeout(function() {
+                alertBox.style.display = 'none';
+              }, 500);
+            }, 2000);
+            this.reset();
+          } else {
+            // Hiện alert đỏ báo lỗi
+            var alertBox = document.getElementById('success-alert');
+            var alertMsg = document.getElementById('success-alert-msg');
+            alertMsg.innerText = result.message || "Có lỗi xảy ra!";
+            alertBox.querySelector('div').style.background = '#ffeaea';
+            alertBox.querySelector('div').style.color = '#c0392b';
+            alertBox.querySelector('i').className = 'fas fa-times-circle';
+            alertBox.style.display = 'block';
+            alertBox.style.opacity = 1;
+            setTimeout(function() {
+              alertBox.style.opacity = 0;
+              setTimeout(function() {
+                alertBox.style.display = 'none';
+                // Reset lại style alert về thành công cho lần sau
+                alertBox.querySelector('div').style.background = '#e6ffed';
+                alertBox.querySelector('div').style.color = '#219150';
+                alertBox.querySelector('i').className = 'fas fa-check-circle';
+              }, 500);
+            }, 2000);
+          }
+        })
+        .catch(() => alert('Có lỗi xảy ra!'));
+    });
+
+    document.getElementById('editKhoaForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const data = {
+        IdKhoa: parseInt(formData.get('IdKhoa')),
+        TenKhoa: formData.get('TenKhoa'),
+        MoTa: formData.get('MoTa')
+      };
+      fetch('/Admin/QuanLyKhoa/SuaKhoaAjax', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        })
+        .then(res => res.json())
+        .then(result => {
+          var alertBox = document.getElementById('success-alert');
+          var alertMsg = document.getElementById('success-alert-msg');
+          if (result.success) {
+            closeModal('edit-faculty');
+            loadKhoaList();
+            alertMsg.innerText = result.message || "Sửa khoa thành công!";
+            alertBox.querySelector('div').style.background = '#e6ffed';
+            alertBox.querySelector('div').style.color = '#219150';
+            alertBox.querySelector('i').className = 'fas fa-check-circle';
+            alertBox.style.display = 'block';
+            alertBox.style.opacity = 1;
+            setTimeout(function() {
+              alertBox.style.opacity = 0;
+              setTimeout(function() {
+                alertBox.style.display = 'none';
+              }, 500);
+            }, 2000);
+          } else {
+            alertMsg.innerText = result.message || "Có lỗi xảy ra!";
+            alertBox.querySelector('div').style.background = '#ffeaea';
+            alertBox.querySelector('div').style.color = '#c0392b';
+            alertBox.querySelector('i').className = 'fas fa-times-circle';
+            alertBox.style.display = 'block';
+            alertBox.style.opacity = 1;
+            setTimeout(function() {
+              alertBox.style.opacity = 0;
+              setTimeout(function() {
+                alertBox.style.display = 'none';
+                // Reset lại style alert về thành công cho lần sau
+                alertBox.querySelector('div').style.background = '#e6ffed';
+                alertBox.querySelector('div').style.color = '#219150';
+                alertBox.querySelector('i').className = 'fas fa-check-circle';
+              }, 500);
+            }, 2000);
+          }
+        })
+        .catch(() => alert('Có lỗi xảy ra!'));
+    });
+
+    function openEditKhoaModal(id, ten, mota) {
+      document.getElementById('edit-IdKhoa').value = id;
+      document.getElementById('edit-TenKhoa').value = ten;
+      document.getElementById('edit-MoTa').value = mota;
       openModal('edit-faculty');
     }
-  });
-</script>
 
+    function changeKhoaPage(page) {
+      var search = document.getElementById('searchKhoa').value;
+      loadKhoaList(page, search);
+    }
+  </script>

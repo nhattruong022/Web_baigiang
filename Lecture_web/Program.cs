@@ -14,6 +14,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LoginPath = "/Account/Login";
         options.AccessDeniedPath = "/Account/AccessDenied";
     });
+    
+builder.Services.AddScoped<Lecture_web.Service.EmailService>();
 
 var app = builder.Build();
 

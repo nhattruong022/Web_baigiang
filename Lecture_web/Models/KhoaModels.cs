@@ -8,11 +8,16 @@ namespace Lecture_web.Models
     {
         [Key]
         public int IdKhoa { get; set; }
-        public string TenKhoa { get; set; }
-        public string MoTa { get; set; }
-        public DateTime NgayTao { get; set; }
-        public DateTime NgayCapNhat { get; set; }
 
-        public ICollection<BoMonModels> BoMons { get; set; }
+        [Required(ErrorMessage = "Tên khoa không được để trống")]
+        public string TenKhoa { get; set; }
+
+        [Required(ErrorMessage = "Mô tả không được để trống")]
+        public string MoTa { get; set; }
+
+        public DateTime? NgayTao { get; set; }
+        public DateTime? NgayCapNhat { get; set; }
+
+        public ICollection<BoMonModels>? BoMons { get; set; }
     }
 }
