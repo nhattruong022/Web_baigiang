@@ -7,15 +7,18 @@ namespace Lecture_web.Models
     public class BoMonModels
     {
         [Key]
-        public int IdBoMon { get; set; }
-        public string TenBoMon { get; set; }
-        public string MoTa { get; set; }
-        public int IdKhoa { get; set; }
-        public DateTime NgayTao { get; set; }
-        public DateTime NgayCapNhat { get; set; }
+        public int? IdBoMon { get; set; }
+        [Required]
+        public string? TenBoMon { get; set; }
+        [Required]
+        public string? MoTa { get; set; }
+        [Required]
+        public int? IdKhoa { get; set; }
+        public DateTime? NgayTao { get; set; }
+        public DateTime? NgayCapNhat { get; set; }
 
-        [ForeignKey(nameof(IdKhoa))]
-        public KhoaModels Khoa { get; set; }
-        public ICollection<HocPhanModels> HocPhans { get; set; }
+        [ForeignKey("IdKhoa")]
+        public KhoaModels? Khoa { get; set; }
+        public ICollection<HocPhanModels>? HocPhans { get; set; }
     }
 }

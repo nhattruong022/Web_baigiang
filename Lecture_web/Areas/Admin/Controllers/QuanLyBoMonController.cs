@@ -56,5 +56,50 @@ namespace Lecture_web.Areas.Admin.Controllers
             ViewBag.ChangePageFunc = "changeBoMonPage";
             return PartialView("~/Views/Shared/_PaginationPartial.cshtml");
         }
+
+        [HttpPost]
+        public IActionResult ThemBoMonAjax([FromBody] BoMonModels boMon)
+        {
+            if(ModelState.IsValid)
+            {
+                boMon.NgayTao = DateTime.Now;
+                boMon.NgayCapNhat = DateTime.Now;
+                _context.BoMon.Add(boMon);
+                _context.SaveChanges();
+                return Json(new { success = true, message = "Thêm bộ môn thành công!" });
+            }
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return Json(new { success = false, message = "Dữ liệu không hợp lệ", errors });
+        }
+
+        [HttpGet]
+        public IActionResult GetBoMonById(int id)
+        {
+            var boMon = _context.BoMon.FirstOrDefault(b => b.IdBoMon == id);
+            if (boMon == null)
+                return NotFound();
+            return Json(boMon);
+        }
+
+        [HttpPost]
+        public IActionResult EditBoMonAjax([FromBody] BoMonModels boMon)
+        {
+            if (ModelState.IsValid)
+            {
+                var existing = _context.BoMon.FirstOrDefault(b => b.IdBoMon == boMon.IdBoMon);
+                if (existing == null)
+                    return Json(new { success = false, message = "Không tìm thấy bộ môn!" });
+
+                existing.TenBoMon = boMon.TenBoMon;
+                existing.MoTa = boMon.MoTa;
+                existing.IdKhoa = boMon.IdKhoa;
+                existing.NgayCapNhat = DateTime.Now;
+
+                _context.SaveChanges();
+                return Json(new { success = true, message = "Cập nhật bộ môn thành công!" });
+            }
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return Json(new { success = false, message = "Dữ liệu không hợp lệ", errors });
+        }
     }
 } 

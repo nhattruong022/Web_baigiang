@@ -21,6 +21,12 @@ ViewData["Title"] = "Quản lý bộ môn";
 
     <!-- Bộ môn Management Content -->
     <div class="container">
+      <div id="bomon-alert" style="display:none; margin-bottom: 16px;">
+        <div id="bomon-alert-content" class="alert alert-success" style="padding: 12px 20px; border-radius: 6px; background: #e6fff0; color: #1a7f37; border: 1px solid #b7ebc6; display: flex; align-items: center; gap: 8px;">
+          <i class="fas fa-check-circle"></i>
+          <span id="bomon-alert-message"></span>
+        </div>
+      </div>
       <div class="quick-actions">
         <button class="btn btn-primary" onclick="openModal('department')">+ Thêm bộ môn</button>
       </div>
@@ -61,22 +67,18 @@ ViewData["Title"] = "Quản lý bộ môn";
       <h2>Thêm bộ môn</h2>
       <button class="close-modal" onclick="closeModal('department')">&times;</button>
     </div>
-    <form class="modal-form">
-      <div class="form-group">
-        <label>Mã bộ môn</label>
-        <input type="text" required>
-      </div>
+    <form class="modal-form" id="addBoMonForm">
       <div class="form-group">
         <label>Tên bộ môn</label>
-        <input type="text" required>
+        <input type="text" name="TenBoMon" required>
       </div>
       <div class="form-group">
         <label>Mô tả</label>
-        <textarea required></textarea>
+        <textarea name="MoTa" required></textarea>
       </div>
       <div class="form-group">
         <label>Mã khoa</label>
-        <input type="text" required>
+        <input type="number" name="IdKhoa" required>
       </div>
       <div class="form-actions">
         <button type="button" class="btn btn-edit" onclick="closeModal('department')">Hủy</button>
@@ -94,20 +96,16 @@ ViewData["Title"] = "Quản lý bộ môn";
     </div>
     <form class="modal-form">
       <div class="form-group">
-        <label>Mã bộ môn</label>
-        <input type="text" value="HTTT" required>
-      </div>
-      <div class="form-group">
         <label>Tên bộ môn</label>
-        <input type="text" value="Bộ môn Hệ thống thông tin" required>
+        <input type="text" name="TenBoMon" required>
       </div>
       <div class="form-group">
         <label>Mô tả</label>
-        <textarea required>Mô tả bộ môn HTTT</textarea>
+        <textarea name="MoTa" required></textarea>
       </div>
       <div class="form-group">
         <label>Mã khoa</label>
-        <input type="text" value="1" required>
+        <input type="number" name="IdKhoa" required>
       </div>
       <div class="form-actions">
         <button type="button" class="btn btn-edit" onclick="closeModal('edit-department')">Hủy</button>
@@ -183,7 +181,7 @@ ViewData["Title"] = "Quản lý bộ môn";
           <td>${bm.ngayTao ? new Date(bm.ngayTao).toLocaleString() : ''}</td>
           <td>${bm.ngayCapNhat ? new Date(bm.ngayCapNhat).toLocaleString() : ''}</td>
           <td class="actions">
-            <button class="btn-icon" onclick="openModal('edit-department')" title="Sửa">
+            <button class="btn-icon" onclick="openEditModal(${bm.idBoMon})" title="Sửa">
               <i class="fas fa-pen-to-square"></i>
             </button>
             <button class="btn-icon" title="Xóa">
@@ -219,6 +217,88 @@ ViewData["Title"] = "Quản lý bộ môn";
     loadBoMonList(1);
     document.querySelector('.search-bar input').addEventListener('input', function() {
       loadBoMonList(1, this.value);
+    });
+  });
+
+  function showBoMonAlert(message) {
+    const alertDiv = document.getElementById('bomon-alert');
+    const alertMsg = document.getElementById('bomon-alert-message');
+    alertMsg.textContent = message;
+    alertDiv.style.display = 'block';
+    setTimeout(() => {
+      alertDiv.style.display = 'none';
+    }, 3000);
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('addBoMonForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const data = {
+        TenBoMon: formData.get('TenBoMon'),
+        MoTa: formData.get('MoTa'),
+        IdKhoa: parseInt(formData.get('IdKhoa'))
+      };
+      fetch('/Admin/QuanLyBoMon/ThemBoMonAjax', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        })
+        .then(res => res.json())
+        .then(result => {
+          if (result.success) {
+            closeModal('department');
+            loadBoMonList(1); // Reload danh sách
+            showBoMonAlert('Thêm bộ môn thành công!');
+          } else {
+            alert(result.message || 'Có lỗi xảy ra!');
+          }
+        });
+    });
+  });
+
+  let editingBoMonId = null;
+
+  function openEditModal(id) {
+    fetch(`/Admin/QuanLyBoMon/GetBoMonById?id=${id}`)
+      .then(res => res.json())
+      .then(bm => {
+        editingBoMonId = bm.idBoMon;
+        document.querySelector('#modal-edit-department input[name="TenBoMon"]').value = bm.tenBoMon;
+        document.querySelector('#modal-edit-department textarea[name="MoTa"]').value = bm.moTa;
+        document.querySelector('#modal-edit-department input[name="IdKhoa"]').value = bm.idKhoa;
+        openModal('edit-department');
+      });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('#modal-edit-department form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const data = {
+        IdBoMon: editingBoMonId,
+        TenBoMon: this.querySelector('input[name="TenBoMon"]').value,
+        MoTa: this.querySelector('textarea[name="MoTa"]').value,
+        IdKhoa: parseInt(this.querySelector('input[name="IdKhoa"]').value)
+      };
+      fetch('/Admin/QuanLyBoMon/EditBoMonAjax', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        })
+        .then(res => res.json())
+        .then(result => {
+          if (result.success) {
+            closeModal('edit-department');
+            loadBoMonList(1);
+            showBoMonAlert('Cập nhật bộ môn thành công!');
+          } else {
+            alert(result.message || 'Có lỗi xảy ra!');
+          }
+        });
     });
   });
 </script>
