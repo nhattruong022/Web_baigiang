@@ -10,7 +10,6 @@ namespace Lecture_web.Models
         public int IdBai { get; set; }
         public string TieuDeBai { get; set; }
         public string NoiDungText { get; set; }
-        public string TrangThai { get; set; }
         public DateTime NgayTao { get; set; }
         public int IdChuong { get; set; }
 
