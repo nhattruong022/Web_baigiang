@@ -476,10 +476,10 @@ function bindContentTableEvents() {
             document.getElementById('editContentModal').classList.add('active');
         }
         // Xóa
-        if (btn.classList.contains('btn-danger') && btn.title === 'Xóa') {
-            contentRowToDelete = row;
-            document.getElementById('confirmDeleteContentModal').classList.add('active');
-        }
+        //if (btn.classList.contains('btn-danger') && btn.title === 'Xóa') {
+        //    contentRowToDelete = row;
+        //    document.getElementById('confirmDeleteContentModal').classList.add('active');
+        //}
     }
 }
 document.addEventListener('DOMContentLoaded', bindContentTableEvents);

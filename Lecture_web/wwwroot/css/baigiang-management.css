@@ -1,4 +1,4 @@
-.content-management-container {
+﻿.content-management-container {
   max-width: 1400px;
   margin: 40px auto;
   background: #fff;
@@ -198,3 +198,4 @@
 .lecture-modal-form .btn-secondary {
   min-width: 110px;
 }
+
