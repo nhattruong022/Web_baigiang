@@ -101,5 +101,30 @@ namespace Lecture_web.Areas.Admin.Controllers
             var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
             return Json(new { success = false, message = "Dữ liệu không hợp lệ", errors });
         }
+
+
+        [HttpPost]
+        public IActionResult XoaBoMonAjax([FromBody] XoaBoMonModel model)
+        {
+            var boMon = _context.BoMon.FirstOrDefault(b => b.IdBoMon == model.IdBoMon);
+            if (boMon == null)
+                return Json(new { success = false, message = "Không tìm thấy bộ môn" });
+            // Kiểm tra ràng buộc học phần
+            var hasHocPhan = _context.HocPhan.Any(hp => hp.IdBoMon == model.IdBoMon);
+            if (hasHocPhan)
+                return Json(new { success = false, message = "Không thể xóa bộ môn vì còn học phần liên kết!" });
+            _context.BoMon.Remove(boMon);
+            _context.SaveChanges();
+            return Json(new { success = true, message = "Xóa bộ môn thành công" });
+        }
+
+
+
+        public class XoaBoMonModel
+        {
+            public int IdBoMon { get; set; }
+        }
+
+        
     }
 } 

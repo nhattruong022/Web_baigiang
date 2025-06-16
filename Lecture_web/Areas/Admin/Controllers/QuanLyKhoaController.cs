@@ -15,7 +15,7 @@ namespace Lecture_web.Areas.Admin.Controllers
             _context = context;
         }
 
-        // AJAX: Lấy danh sách khoa, có thể truyền từ khóa tìm kiếm
+        //Lấy danh sách khoa, tìm kiếm khoa
         [HttpGet]
         public IActionResult GetKhoaList(string search = "", int page = 1)
         {
@@ -38,6 +38,7 @@ namespace Lecture_web.Areas.Admin.Controllers
             });
         }
 
+        //Phân trang
         public IActionResult PaginationPartial(int currentPage, int totalPages)
         {
             ViewBag.CurrentPage = currentPage;
@@ -46,6 +47,7 @@ namespace Lecture_web.Areas.Admin.Controllers
             return PartialView("~/Views/Shared/_PaginationPartial.cshtml");
         }
 
+        //return view
         [HttpGet]
         public IActionResult Index()
         {
@@ -53,6 +55,7 @@ namespace Lecture_web.Areas.Admin.Controllers
         }
 
 
+        //Thêm Khoa
         [HttpPost]
         public IActionResult ThemKhoaAjax([FromBody] KhoaModels khoa)
         {
@@ -68,6 +71,7 @@ namespace Lecture_web.Areas.Admin.Controllers
             return Json(new { success = false, message = "Dữ liệu không hợp lệ", errors });
         }
 
+        //Sửa Khoa
         [HttpPost]
         public IActionResult SuaKhoaAjax([FromBody] KhoaModels khoa)
         {
@@ -91,6 +95,26 @@ namespace Lecture_web.Areas.Admin.Controllers
             return Json(new { success = false, message = "Dữ liệu không hợp lệ", errors });
         }
 
+        //Xoa Khoa
+        public IActionResult XoaKhoaAjax([FromBody] XoaKhoaModel model)
+        {
+            var khoa = _context.Khoa.FirstOrDefault(x => x.IdKhoa == model.IdKhoa);
+            if (khoa == null)
+                return Json(new { success = false, message = "Không tìm thấy khoa" });
+            // Kiểm tra ràng buộc bộ môn
+            var hasBoMon = _context.BoMon.Any(bm => bm.IdKhoa == model.IdKhoa);
+            if (hasBoMon)
+                return Json(new { success = false, message = "Không thể xóa khoa vì còn bộ môn liên kết!" });
+            _context.Khoa.Remove(khoa);
+            _context.SaveChanges();
+            return Json(new { success = true, message = "Xóa khoa thành công" });
+        }
+
+
+        public class XoaKhoaModel
+        {
+            public int IdKhoa { get; set; }
+        }
         
     }
 } 

@@ -56,10 +56,29 @@
             </tbody>
           </table>
         </div>
+
         <div id="pagination-container"></div>
+        <!-- Modal xác nhận xóa khoa -->
+        <div class="modal" id="modal-confirm-delete-khoa">
+          <div class="modal-content" style="max-width: 350px;">
+            <div class="modal-header">
+              <h2>Xác nhận xóa</h2>
+              <button class="close-modal" onclick="closeModal('confirm-delete-khoa')">&times;</button>
+            </div>
+            <div class="modal-body">
+              <p>Bạn có chắc chắn muốn xóa khoa này không?</p>
+            </div>
+            <div class="form-actions" style="display: flex; justify-content: flex-end; gap: 8px;">
+              <button type="button" class="btn btn-edit" onclick="closeModal('confirm-delete-khoa')">Hủy</button>
+              <button type="button" class="btn btn-danger" id="btn-confirm-delete-khoa">Xóa</button>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
   </div>
+
+
   <!-- Modal Thêm/Sửa -->
   <div class="modal" id="modal-faculty">
     <div class="modal-content">
@@ -154,6 +173,70 @@
       }
     });
 
+    let deletingKhoaId = null;
+
+    function openConfirmDeleteKhoaModal(id) {
+      deletingKhoaId = id;
+      openModal('confirm-delete-khoa');
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('btn-confirm-delete-khoa').addEventListener('click', function() {
+        if (deletingKhoaId) {
+          fetch(`/Admin/QuanLyKhoa/XoaKhoaAjax`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                IdKhoa: deletingKhoaId
+              })
+            })
+            .then(res => res.json())
+            .then(result => {
+              closeModal('confirm-delete-khoa');
+              if (result.success) {
+                loadKhoaList(1);
+                var alertBox = document.getElementById('success-alert');
+                var alertMsg = document.getElementById('success-alert-msg');
+                alertMsg.innerText = result.message || "Xóa khoa thành công!";
+                alertBox.querySelector('div').style.background = '#e6ffed';
+                alertBox.querySelector('div').style.color = '#219150';
+                alertBox.querySelector('i').className = 'fas fa-check-circle';
+                alertBox.style.display = 'block';
+                alertBox.style.opacity = 1;
+                setTimeout(function() {
+                  alertBox.style.opacity = 0;
+                  setTimeout(function() {
+                    alertBox.style.display = 'none';
+                  }, 500);
+                }, 2000);
+              } else {
+                var alertBox = document.getElementById('success-alert');
+                var alertMsg = document.getElementById('success-alert-msg');
+                alertMsg.innerText = result.message || "Không thể xóa khoa!";
+                alertBox.querySelector('div').style.background = '#ffeaea';
+                alertBox.querySelector('div').style.color = '#c0392b';
+                alertBox.querySelector('div').style.border = '1.5px solid #e0b4b4';
+                alertBox.querySelector('i').className = 'fas fa-times-circle';
+                alertBox.style.display = 'block';
+                alertBox.style.opacity = 1;
+                setTimeout(function() {
+                  alertBox.style.opacity = 0;
+                  setTimeout(function() {
+                    alertBox.style.display = 'none';
+                    // Reset lại style alert về thành công cho lần sau
+                    alertBox.querySelector('div').style.background = '#e6ffed';
+                    alertBox.querySelector('div').style.color = '#219150';
+                    alertBox.querySelector('div').style.border = '1.5px solid #27ae60';
+                    alertBox.querySelector('i').className = 'fas fa-check-circle';
+                  }, 500);
+                }, 2000);
+              }
+            });
+        }
+      });
+    });
+
     function renderKhoaTable(data) {
       const tbody = document.getElementById('khoa-tbody');
       tbody.innerHTML = '';
@@ -169,7 +252,7 @@
               <button class="btn-icon" onclick="openEditKhoaModal('${khoa.idKhoa}', '${khoa.tenKhoa}', '${khoa.moTa}')" title="Sửa">
                 <i class="fas fa-pen-to-square"></i>
               </button>
-              <button class="btn-icon" title="Xóa">
+              <button class="btn-icon" title="Xóa" onclick="openConfirmDeleteKhoaModal(${khoa.idKhoa})">
                 <i class="fas fa-trash"></i>
               </button>
             </td>
@@ -256,6 +339,7 @@
         })
         .catch(() => alert('Có lỗi xảy ra!'));
     });
+
 
     document.getElementById('editKhoaForm').addEventListener('submit', function(e) {
       e.preventDefault();

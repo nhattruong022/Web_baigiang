@@ -114,6 +114,22 @@ ViewData["Title"] = "Quản lý bộ môn";
     </form>
   </div>
 </div>
+<!-- Modal xác nhận xóa bộ môn -->
+<div class="modal" id="modal-confirm-delete-bomon">
+  <div class="modal-content" style="max-width: 350px;">
+    <div class="modal-header">
+      <h2>Xác nhận xóa</h2>
+      <button class="close-modal" onclick="closeModal('confirm-delete-bomon')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p>Bạn có chắc chắn muốn xóa bộ môn này không?</p>
+    </div>
+    <div class="form-actions" style="display: flex; justify-content: flex-end; gap: 8px;">
+      <button type="button" class="btn btn-edit" onclick="closeModal('confirm-delete-bomon')">Hủy</button>
+      <button type="button" class="btn btn-danger" id="btn-confirm-delete-bomon">Xóa</button>
+    </div>
+  </div>
+</div>
 
 
 <script>
@@ -184,7 +200,7 @@ ViewData["Title"] = "Quản lý bộ môn";
             <button class="btn-icon" onclick="openEditModal(${bm.idBoMon})" title="Sửa">
               <i class="fas fa-pen-to-square"></i>
             </button>
-            <button class="btn-icon" title="Xóa">
+            <button class="btn-icon" title="Xóa" onclick="openConfirmDeleteBoMonModal(${bm.idBoMon})">
               <i class="fas fa-trash"></i>
             </button>
           </td>
@@ -220,13 +236,31 @@ ViewData["Title"] = "Quản lý bộ môn";
     });
   });
 
-  function showBoMonAlert(message) {
+  function showBoMonAlert(message, isError = false) {
     const alertDiv = document.getElementById('bomon-alert');
+    const alertContent = document.getElementById('bomon-alert-content');
     const alertMsg = document.getElementById('bomon-alert-message');
+    const alertIcon = alertContent.querySelector('i');
     alertMsg.textContent = message;
+    if (isError) {
+      alertContent.style.background = '#ffeaea';
+      alertContent.style.color = '#c0392b';
+      alertContent.style.border = '1px solid #e0b4b4';
+      alertIcon.className = 'fas fa-times-circle';
+    } else {
+      alertContent.style.background = '#e6fff0';
+      alertContent.style.color = '#1a7f37';
+      alertContent.style.border = '1px solid #b7ebc6';
+      alertIcon.className = 'fas fa-check-circle';
+    }
     alertDiv.style.display = 'block';
     setTimeout(() => {
       alertDiv.style.display = 'none';
+      // Reset lại style về mặc định xanh cho lần sau
+      alertContent.style.background = '#e6fff0';
+      alertContent.style.color = '#1a7f37';
+      alertContent.style.border = '1px solid #b7ebc6';
+      alertIcon.className = 'fas fa-check-circle';
     }, 3000);
   }
 
@@ -299,6 +333,38 @@ ViewData["Title"] = "Quản lý bộ môn";
             alert(result.message || 'Có lỗi xảy ra!');
           }
         });
+    });
+  });
+
+  let deletingBoMonId = null;
+
+  function openConfirmDeleteBoMonModal(id) {
+    deletingBoMonId = id;
+    openModal('confirm-delete-bomon');
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('btn-confirm-delete-bomon').addEventListener('click', function() {
+      if (deletingBoMonId) {
+        fetch(`/Admin/QuanLyBoMon/XoaBoMonAjax`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              IdBoMon: deletingBoMonId
+            })
+          })
+          .then(res => res.json())
+          .then(result => {
+            closeModal('confirm-delete-bomon');
+            if (result.success) {
+              loadBoMonList(1);
+              showBoMonAlert(result.message || 'Xóa bộ môn thành công!');
+            } else {
+              showBoMonAlert(result.message || 'Không thể xóa bộ môn!', true);
+            }
+          });
+      }
     });
   });
 </script>
