@@ -17,6 +17,12 @@ ViewData["Title"] = "Quản lý học phần";
     @await Html.PartialAsync("~/Views/Shared/top_bar.cshtml")
     <!-- User Management Content -->
     <div class="container">
+      <div id="hocphan-alert" style="display:none; margin-bottom: 16px;">
+        <div id="hocphan-alert-content" class="alert alert-success" style="padding: 12px 20px; border-radius: 6px; background: #e6fff0; color: #1a7f37; border: 1px solid #b7ebc6; display: flex; align-items: center; gap: 8px;">
+          <i class="fas fa-check-circle"></i>
+          <span id="hocphan-alert-message"></span>
+        </div>
+      </div>
       <div class="quick-actions" style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
         <button class="btn btn-primary" onclick="openModal('subject')">+ Thêm học phần mới</button>
       </div>
@@ -24,11 +30,22 @@ ViewData["Title"] = "Quản lý học phần";
         <div class="tabs">
           <button class="tab-btn active" onclick="showTab('subjects')">Học phần</button>
         </div>
-        <div class="search-bar" style="width:260px;">
-          <i class="fas fa-search"></i>
-          <input type="text" placeholder="Tìm kiếm học phần...">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <select id="status-filter" style="height: 36px; border-radius: 6px; border: 1px solid #ddd; padding: 0 12px; font-size: 15px;">
+            <option value="all">Tất cả trạng thái</option>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+          <div class="search-bar" style="width:260px;">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Tìm kiếm học phần...">
+          </div>
         </div>
       </div>
+
+
+
+
       <!-- Học phần -->
       <div class="tab-content" id="subjects" style="display:block;">
         <table>
@@ -60,21 +77,23 @@ ViewData["Title"] = "Quản lý học phần";
     </div>
     <form class="modal-form">
       <div class="form-group">
-        <label>Mã học phần</label>
-        <input type="text" required>
-      </div>
-      <div class="form-group">
         <label>Tên học phần</label>
-        <input type="text" required>
+        <input type="text" name="TenHocPhan" required>
       </div>
+
       <div class="form-group">
         <label>Mô tả</label>
-        <textarea required></textarea>
+        <textarea name="MoTa" required></textarea>
       </div>
 
       <div class="form-group">
         <label>Bộ môn</label>
-        <input type="text" required>
+        <select name="IdBoMon" required>
+          @foreach (var boMon in ViewBag.BoMons)
+          {
+          <option value="@boMon.IdBoMon">@boMon.TenBoMon</option>
+          }
+        </select>
       </div>
       <div class="form-actions">
         <button type="button" class="btn btn-edit" onclick="closeModal('subject')">Hủy</button>
@@ -83,6 +102,7 @@ ViewData["Title"] = "Quản lý học phần";
     </form>
   </div>
 </div>
+
 <!-- Modal Chi tiết học phần -->
 <div class="modal" id="modal-detail">
   <div class="modal-content">
@@ -95,6 +115,8 @@ ViewData["Title"] = "Quản lý học phần";
     </div>
   </div>
 </div>
+
+
 <!-- Popup chỉnh sửa học phần -->
 <div class="modal" id="modal-edit-subject">
   <div class="modal-content">
@@ -104,33 +126,51 @@ ViewData["Title"] = "Quản lý học phần";
     </div>
     <form class="modal-form">
       <div class="form-group">
-        <label>Mã học phần</label>
-        <input type="text" value="INT1234" required>
-      </div>
-      <div class="form-group">
         <label>Tên học phần</label>
-        <input type="text" value="Lập trình Web" required>
+        <input type="text" name="TenHocPhan" required>
       </div>
       <div class="form-group">
         <label>Mô tả</label>
-        <textarea required>Học phần về lập trình web</textarea>
+        <textarea name="MoTa" required></textarea>
       </div>
       <div class="form-group">
         <label>Trạng thái</label>
-        <select required>
-          <option value="Hoạt động" selected>Hoạt động</option>
-          <option value="Không hoạt động">Không hoạt động</option>
+        <select name="TrangThai" required>
+          <option value="Active" selected>Active</option>
+          <option value="Inactive">Inactive</option>
         </select>
       </div>
       <div class="form-group">
         <label>Bộ môn</label>
-        <input type="text" value="HTTT" required>
+        <select name="IdBoMon" required>
+          @foreach (var boMon in ViewBag.BoMons)
+          {
+          <option value="@boMon.IdBoMon">@boMon.TenBoMon</option>
+          }
+        </select>
       </div>
       <div class="form-actions">
         <button type="button" class="btn btn-edit" onclick="closeModal('edit-subject')">Hủy</button>
         <button type="submit" class="btn btn-primary">Lưu</button>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- Modal xác nhận cập nhật trạng thái -->
+<div class="modal" id="modal-confirm-status">
+  <div class="modal-content" style="max-width: 350px;">
+    <div class="modal-header">
+      <h2>Xác nhận</h2>
+      <button class="close-modal" onclick="closeModal('confirm-status')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p>Bạn có chắc chắn muốn cập nhật trạng thái học phần này?</p>
+    </div>
+    <div class="form-actions" style="display: flex; justify-content: flex-end; gap: 8px;">
+      <button type="button" class="btn btn-edit" onclick="closeModal('confirm-status')">Hủy</button>
+      <button type="button" class="btn btn-primary" id="btn-confirm-status">Đồng ý</button>
+    </div>
   </div>
 </div>
 
@@ -210,21 +250,24 @@ ViewData["Title"] = "Quản lý học phần";
     const tbody = document.getElementById('hocphan-tbody');
     tbody.innerHTML = '';
     data.forEach(hp => {
+      const isActive = hp.trangThai && hp.trangThai.trim().toLowerCase() === 'active';
       tbody.innerHTML += `
         <tr>
           <td>${hp.idHocPhan}</td>
           <td>${hp.tenHocPhan}</td>
           <td>${hp.moTa ?? ''}</td>
-          <td>${hp.trangThai ?? ''}</td>
+          <td>
+            <span class="status ${isActive ? 'active' : 'inactive'}">${isActive ? 'Active' : 'Inactive'}</span>
+          </td>
           <td>${hp.boMon ?? ''}</td>
-          <td>${hp.ngayTao ? new Date(hp.ngayTao).toLocaleString() : ''}</td>
-          <td>${hp.ngayCapNhat ? new Date(hp.ngayCapNhat).toLocaleString() : ''}</td>
+          <td>${hp.ngayTao ? new Date(hp.ngayTao).toLocaleDateString() : ''}</td>
+          <td>${hp.ngayCapNhat ? new Date(hp.ngayCapNhat).toLocaleDateString() : ''}</td>
           <td class="actions">
-            <button class="btn-icon" onclick="openModal('edit-subject')" title="Sửa">
-              <i class="fas fa-pen-to-square"></i>
+            <button class="btn-icon status-toggle-btn" title="Cập nhật trạng thái" onclick="confirmUpdateStatusHocPhan(${hp.idHocPhan}, '${isActive ? 'Inactive' : 'Active'}')">
+              <i class="fas ${isActive ? 'fa-toggle-on status-on' : 'fa-toggle-off status-off'}"></i>
             </button>
-            <button class="btn-icon" title="Xóa">
-              <i class="fas fa-trash"></i>
+            <button class="btn-icon" onclick="openEditSubjectModal(${hp.idHocPhan})" title="Sửa">
+              <i class="fas fa-pen-to-square"></i>
             </button>
             <button class="btn-icon" onclick="openDetailModal('subject', '${hp.idHocPhan}')" title="Chi tiết">
               <i class="fas fa-eye"></i>
@@ -236,7 +279,11 @@ ViewData["Title"] = "Quản lý học phần";
   }
 
   function loadHocPhanList(page = 1, search = '') {
-    fetch(`/Admin/QuanLyHocPhan/GetHocPhanList?search=${encodeURIComponent(search)}&page=${page}`)
+    const status = document.getElementById('status-filter') ? document.getElementById('status-filter').value : 'all';
+    if (!search) {
+      search = document.querySelector('.search-bar input').value;
+    }
+    fetch(`/Admin/QuanLyHocPhan/GetHocPhanList?search=${encodeURIComponent(search)}&page=${page}&status=${status}`)
       .then(res => res.json())
       .then(result => {
         renderHocPhanTable(result.data);
@@ -259,6 +306,129 @@ ViewData["Title"] = "Quản lý học phần";
     loadHocPhanList(1);
     document.querySelector('.search-bar input').addEventListener('input', function() {
       loadHocPhanList(1, this.value);
+    });
+    document.getElementById('status-filter').addEventListener('change', function() {
+      loadHocPhanList(1);
+    });
+  });
+
+  let editingHocPhanId = null;
+
+  function openEditSubjectModal(id) {
+    fetch(`/Admin/QuanLyHocPhan/GetHocPhanById?id=${id}`)
+      .then(res => res.json())
+      .then(hp => {
+        editingHocPhanId = hp.idHocPhan;
+        document.querySelector('#modal-edit-subject input[name="TenHocPhan"]').value = hp.tenHocPhan;
+        document.querySelector('#modal-edit-subject textarea[name="MoTa"]').value = hp.moTa;
+        document.querySelector('#modal-edit-subject select[name="TrangThai"]').value = hp.trangThai;
+        document.querySelector('#modal-edit-subject select[name="IdBoMon"]').value = hp.idBoMon;
+        openModal('edit-subject');
+      });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('#modal-edit-subject form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const data = {
+        IdHocPhan: editingHocPhanId,
+        TenHocPhan: this.querySelector('input[name="TenHocPhan"]').value,
+        MoTa: this.querySelector('textarea[name="MoTa"]').value,
+        TrangThai: this.querySelector('select[name="TrangThai"]').value,
+        IdBoMon: parseInt(this.querySelector('select[name="IdBoMon"]').value)
+      };
+      fetch('/Admin/QuanLyHocPhan/EditHocPhanAjax', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        })
+        .then(res => res.json())
+        .then(result => {
+          if (result.success) {
+            closeModal('edit-subject');
+            loadHocPhanList(1);
+            showHocPhanAlert('Cập nhật học phần thành công!');
+          } else {
+            alert(result.message || 'Có lỗi xảy ra!');
+          }
+        });
+    });
+  });
+
+  function showHocPhanAlert(message) {
+    const alertDiv = document.getElementById('hocphan-alert');
+    const alertMsg = document.getElementById('hocphan-alert-message');
+    alertMsg.textContent = message;
+    alertDiv.style.display = 'block';
+    setTimeout(() => {
+      alertDiv.style.display = 'none';
+    }, 3000);
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('#modal-subject form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const data = {
+        TenHocPhan: this.querySelector('input[name="TenHocPhan"]').value,
+        MoTa: this.querySelector('textarea[name="MoTa"]').value,
+        IdBoMon: parseInt(this.querySelector('select[name="IdBoMon"]').value)
+      };
+      fetch('/Admin/QuanLyHocPhan/ThemHocPhanAjax', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        })
+        .then(res => res.json())
+        .then(result => {
+          if (result.success) {
+            closeModal('subject');
+            loadHocPhanList(1);
+            showHocPhanAlert('Thêm học phần thành công!');
+          } else {
+            alert(result.message || 'Có lỗi xảy ra!');
+          }
+        });
+    });
+  });
+
+  let pendingStatusUpdate = {
+    id: null,
+    newStatus: null
+  };
+
+  function confirmUpdateStatusHocPhan(id, newStatus) {
+    pendingStatusUpdate.id = id;
+    pendingStatusUpdate.newStatus = newStatus;
+    openModal('confirm-status');
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('btn-confirm-status').addEventListener('click', function() {
+      // Gọi API cập nhật trạng thái
+      fetch('/Admin/QuanLyHocPhan/UpdateTrangThai', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            id: pendingStatusUpdate.id,
+            trangThai: pendingStatusUpdate.newStatus
+          })
+        })
+        .then(res => res.json())
+        .then(result => {
+          closeModal('confirm-status');
+          if (result.success) {
+            loadHocPhanList(1);
+            showHocPhanAlert('Cập nhật trạng thái thành công!');
+          } else {
+            alert(result.message || 'Có lỗi xảy ra!');
+          }
+        });
     });
   });
 </script>

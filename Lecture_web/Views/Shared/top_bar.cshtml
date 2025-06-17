@@ -10,7 +10,7 @@ var userName = !string.IsNullOrEmpty(ViewBag.UserName as string) ? (string)ViewB
       <span class="notification-badge">5</span>
     </div>
     <div class="user-profile" onclick="toggleUserMenu()">
-      <img src="@avatar" alt="User Avatar" class="avatar" id="topBarAvatar">
+      <img src="@avatar?t=@DateTime.Now.Ticks" alt="User Avatar" class="avatar" id="topBarAvatar">
       <span class="user-name" id="topBarUserName">@userName</span>
       <i class="fas fa-chevron-down"></i>
       <div class="user-dropdown">
@@ -33,11 +33,12 @@ var userName = !string.IsNullOrEmpty(ViewBag.UserName as string) ? (string)ViewB
 </header>
 
 <script>
-  // Lắng nghe sự kiện avatar thay đổi từ các tab khác
-  window.addEventListener('storage', function(event) {
-    if (event.key === 'updatedAvatarUrl') {
+  // Ưu tiên lấy avatar mới nhất từ localStorage khi load trang
+  document.addEventListener('DOMContentLoaded', function() {
+    var updatedUrl = localStorage.getItem('updatedAvatarUrl');
+    if (updatedUrl) {
       var topBarAvatar = document.getElementById('topBarAvatar');
-      if (topBarAvatar) topBarAvatar.src = event.newValue + '?t=' + new Date().getTime();
+      if (topBarAvatar) topBarAvatar.src = updatedUrl + '?t=' + new Date().getTime();
     }
   });
 </script>
