@@ -90,10 +90,12 @@
         <div class="form-group">
           <label>Tên khoa</label>
           <input type="text" name="TenKhoa" required>
+          <span class="field-error" id="error-tenKhoa" style="display:none;color:#c0392b;font-size:0.95em;margin-top:5px;"></span>
         </div>
         <div class="form-group">
           <label>Mô tả</label>
           <input type="text" name="MoTa">
+          <span class="field-error" id="error-moTa" style="display:none;color:#c0392b;font-size:0.95em;margin-top:5px;"></span>
         </div>
         <div class="form-actions">
           <button type="button" class="btn btn-edit" onclick="closeModal('faculty')">Hủy</button>
@@ -118,10 +120,12 @@
         <div class="form-group">
           <label>Tên khoa</label>
           <input type="text" name="TenKhoa" id="edit-TenKhoa" required>
+          <span class="field-error" id="error-tenKhoa-edit" style="display:none;color:#c0392b;font-size:0.95em;margin-top:5px;"></span>
         </div>
         <div class="form-group">
           <label>Mô tả</label>
           <input type="text" name="MoTa" id="edit-MoTa">
+          <span class="field-error" id="error-moTa-edit" style="display:none;color:#c0392b;font-size:0.95em;margin-top:5px;"></span>
         </div>
         <div class="form-actions">
           <button type="button" class="btn btn-edit" onclick="closeModal('edit-faculty')">Hủy</button>
@@ -285,11 +289,19 @@
 
     document.getElementById('addKhoaForm').addEventListener('submit', function(e) {
       e.preventDefault();
+
+      // Reset all error messages
+      this.querySelectorAll('.field-error').forEach(span => {
+        span.textContent = '';
+        span.style.display = 'none';
+      });
+
       const formData = new FormData(this);
       const data = {
         TenKhoa: formData.get('TenKhoa'),
         MoTa: formData.get('MoTa')
       };
+
       fetch('/Admin/QuanLyKhoa/ThemKhoaAjax', {
           method: 'POST',
           headers: {
@@ -315,6 +327,15 @@
               }, 500);
             }, 2000);
             this.reset();
+          } else if (result.errors) {
+            // Display validation errors
+            Object.entries(result.errors).forEach(([key, message]) => {
+              const errorSpan = document.getElementById('error-' + key);
+              if (errorSpan) {
+                errorSpan.textContent = message;
+                errorSpan.style.display = 'block';
+              }
+            });
           } else {
             // Hiện alert đỏ báo lỗi
             var alertBox = document.getElementById('success-alert');
@@ -343,12 +364,20 @@
 
     document.getElementById('editKhoaForm').addEventListener('submit', function(e) {
       e.preventDefault();
+
+      // Reset all error messages
+      this.querySelectorAll('.field-error').forEach(span => {
+        span.textContent = '';
+        span.style.display = 'none';
+      });
+
       const formData = new FormData(this);
       const data = {
         IdKhoa: parseInt(formData.get('IdKhoa')),
         TenKhoa: formData.get('TenKhoa'),
         MoTa: formData.get('MoTa')
       };
+
       fetch('/Admin/QuanLyKhoa/SuaKhoaAjax', {
           method: 'POST',
           headers: {
@@ -358,11 +387,11 @@
         })
         .then(res => res.json())
         .then(result => {
-          var alertBox = document.getElementById('success-alert');
-          var alertMsg = document.getElementById('success-alert-msg');
           if (result.success) {
             closeModal('edit-faculty');
             loadKhoaList();
+            var alertBox = document.getElementById('success-alert');
+            var alertMsg = document.getElementById('success-alert-msg');
             alertMsg.innerText = result.message || "Sửa khoa thành công!";
             alertBox.querySelector('div').style.background = '#e6ffed';
             alertBox.querySelector('div').style.color = '#219150';
@@ -375,7 +404,18 @@
                 alertBox.style.display = 'none';
               }, 500);
             }, 2000);
+          } else if (result.errors) {
+            // Display validation errors
+            Object.entries(result.errors).forEach(([key, message]) => {
+              const errorSpan = document.getElementById('error-' + key + '-edit');
+              if (errorSpan) {
+                errorSpan.textContent = message;
+                errorSpan.style.display = 'block';
+              }
+            });
           } else {
+            var alertBox = document.getElementById('success-alert');
+            var alertMsg = document.getElementById('success-alert-msg');
             alertMsg.innerText = result.message || "Có lỗi xảy ra!";
             alertBox.querySelector('div').style.background = '#ffeaea';
             alertBox.querySelector('div').style.color = '#c0392b';

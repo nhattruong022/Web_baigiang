@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Lecture_web.Models;
 using System.Linq;
 using System;
+using System.Collections.Generic;
 using Lecture_web.Service;
 
 namespace Lecture_web.Areas.Admin.Controllers
@@ -62,6 +63,17 @@ namespace Lecture_web.Areas.Admin.Controllers
         {
             khoa.TenKhoa = StringHelper.NormalizeString(khoa.TenKhoa);
             khoa.MoTa = StringHelper.NormalizeString(khoa.MoTa);
+
+            // Dictionary chứa tất cả các lỗi
+            var errors = new Dictionary<string, string>();
+
+            // Kiểm tra trùng tên khoa
+            if (_context.Khoa.Any(k => k.TenKhoa == khoa.TenKhoa))
+            {
+                errors.Add("tenKhoa", "Tên khoa đã tồn tại!");
+                return Json(new { success = false, errors = errors });
+            }
+
             if (ModelState.IsValid)
             {
                 khoa.NgayTao = DateTime.Now;
@@ -70,8 +82,16 @@ namespace Lecture_web.Areas.Admin.Controllers
                 _context.SaveChanges();
                 return Json(new { success = true, message = "Thêm khoa thành công" });
             }
-            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-            return Json(new { success = false, message = "Dữ liệu không hợp lệ", errors });
+
+            // Thêm các lỗi validation từ ModelState
+            var modelErrors = ModelState
+                .Where(x => x.Value.Errors.Count > 0)
+                .ToDictionary(
+                    kvp => kvp.Key.Substring(0, 1).ToLower() + kvp.Key.Substring(1), // Chuyển key về camelCase
+                    kvp => kvp.Value.Errors.First().ErrorMessage
+                );
+
+            return Json(new { success = false, errors = modelErrors });
         }
 
         //Sửa Khoa
@@ -80,24 +100,44 @@ namespace Lecture_web.Areas.Admin.Controllers
         {
             khoa.TenKhoa = StringHelper.NormalizeString(khoa.TenKhoa);
             khoa.MoTa = StringHelper.NormalizeString(khoa.MoTa);
+
+            // Dictionary chứa tất cả các lỗi
+            var errors = new Dictionary<string, string>();
+
+            // Kiểm tra trùng tên khoa (trừ chính khoa đang sửa)
+            if (_context.Khoa.Any(k => k.TenKhoa == khoa.TenKhoa && k.IdKhoa != khoa.IdKhoa))
+            {
+                errors.Add("tenKhoa", "Tên khoa đã tồn tại!");
+                return Json(new { success = false, errors = errors });
+            }
+
             if (ModelState.IsValid)
             {
-                // Lấy bản ghi cũ từ DB
                 var existing = _context.Khoa.FirstOrDefault(x => x.IdKhoa == khoa.IdKhoa);
                 if (existing == null)
-                    return Json(new { success = false, message = "Không tìm thấy khoa" });
+                {
+                    errors.Add("general", "Không tìm thấy khoa!");
+                    return Json(new { success = false, errors = errors });
+                }
 
-                // Cập nhật các trường cho phép sửa
                 existing.TenKhoa = khoa.TenKhoa;
                 existing.MoTa = khoa.MoTa;
-                existing.NgayCapNhat = DateTime.Now; // cập nhật ngày cập nhật
+                existing.NgayCapNhat = DateTime.Now;
 
                 _context.Khoa.Update(existing);
                 _context.SaveChanges();
                 return Json(new { success = true, message = "Sửa khoa thành công" });
             }
-            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-            return Json(new { success = false, message = "Dữ liệu không hợp lệ", errors });
+
+            // Thêm các lỗi validation từ ModelState
+            var modelErrors = ModelState
+                .Where(x => x.Value.Errors.Count > 0)
+                .ToDictionary(
+                    kvp => kvp.Key.Substring(0, 1).ToLower() + kvp.Key.Substring(1), // Chuyển key về camelCase
+                    kvp => kvp.Value.Errors.First().ErrorMessage
+                );
+
+            return Json(new { success = false, errors = modelErrors });
         }
 
         //Xoa Khoa
