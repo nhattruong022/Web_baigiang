@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Lecture_web.Models;
 using System.Linq;
 using System;
+using Lecture_web.Service;
 
 namespace Lecture_web.Areas.Admin.Controllers
 {
@@ -59,6 +60,8 @@ namespace Lecture_web.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult ThemKhoaAjax([FromBody] KhoaModels khoa)
         {
+            khoa.TenKhoa = StringHelper.NormalizeString(khoa.TenKhoa);
+            khoa.MoTa = StringHelper.NormalizeString(khoa.MoTa);
             if (ModelState.IsValid)
             {
                 khoa.NgayTao = DateTime.Now;
@@ -75,6 +78,8 @@ namespace Lecture_web.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult SuaKhoaAjax([FromBody] KhoaModels khoa)
         {
+            khoa.TenKhoa = StringHelper.NormalizeString(khoa.TenKhoa);
+            khoa.MoTa = StringHelper.NormalizeString(khoa.MoTa);
             if (ModelState.IsValid)
             {
                 // Lấy bản ghi cũ từ DB
