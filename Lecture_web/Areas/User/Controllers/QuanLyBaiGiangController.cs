@@ -87,10 +87,9 @@ namespace Lecture_web.Areas.User.Controllers
           .FirstOrDefaultAsync();
             if (bg == null) return NotFound();
 
-            // Danh sách đã chọn
             var listSelected = bg.LopHocPhans.Select(lp => lp.IdLopHocPhan).ToList();
 
-            // Danh sách tất cả lớp giảng viên đang dạy
+
             var teacherClass = await _context.LopHocPhan
                 .Where(lp => lp.IdTaiKhoan == userId)
                 .Include(lp => lp.HocPhan)
@@ -243,7 +242,7 @@ namespace Lecture_web.Areas.User.Controllers
                 {
                     errors = new
                     {
-                        TieuDe = new[] { "Tiêu đề đã tồn tại" }
+                        tieude = new[] { "Tiêu đề đã tồn tại" }
                     }
                 });
             }
