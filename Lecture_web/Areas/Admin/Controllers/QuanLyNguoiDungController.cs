@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using System;
 using Newtonsoft.Json;
+using Lecture_web.Service;
 
 
 namespace Lecture_web.Areas.Admin.Controllers
@@ -87,6 +88,10 @@ namespace Lecture_web.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
+                model.TenDangNhap = StringHelper.NormalizeString(model.TenDangNhap);
+                model.HoTen = StringHelper.NormalizeString(model.HoTen);
+                model.Email = StringHelper.NormalizeString(model.Email);
+                model.SoDienThoai = StringHelper.NormalizeString(model.SoDienThoai);
                 model.TrangThai = "HoatDong";
                 model.NgayTao = DateTime.Now;
                 model.NgayCapNhat = DateTime.Now;
@@ -157,12 +162,12 @@ namespace Lecture_web.Areas.Admin.Controllers
                 }
 
                 // Cập nhật thông tin
-                user.TenDangNhap = model.TenDangNhap;
+                user.TenDangNhap = StringHelper.NormalizeString(model.TenDangNhap);
                 user.MatKhau = model.MatKhau;
-                user.HoTen = model.HoTen;
+                user.HoTen = StringHelper.NormalizeString(model.HoTen);
                 user.VaiTro = model.VaiTro;
-                user.Email = model.Email;
-                user.SoDienThoai = model.SoDienThoai;
+                user.Email = StringHelper.NormalizeString(model.Email);
+                user.SoDienThoai = StringHelper.NormalizeString(model.SoDienThoai);
                 user.TrangThai = model.TrangThai?.Trim();
                 user.NgayCapNhat = DateTime.Now;
 

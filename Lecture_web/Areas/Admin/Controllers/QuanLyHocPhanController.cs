@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System;
 using Lecture_web.Models;
+using Lecture_web.Service;
 
 namespace Lecture_web.Areas.Admin.Controllers
 {
@@ -71,6 +72,8 @@ namespace Lecture_web.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult ThemHocPhanAjax([FromBody] HocPhanModels hocPhan)
         {
+            hocPhan.TenHocPhan = StringHelper.NormalizeString(hocPhan.TenHocPhan);
+            hocPhan.MoTa = StringHelper.NormalizeString(hocPhan.MoTa);
             if (ModelState.IsValid)
             {
                 if (string.IsNullOrEmpty(hocPhan.TrangThai))
@@ -90,6 +93,8 @@ namespace Lecture_web.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult EditHocPhanAjax([FromBody] HocPhanModels hocPhan)
         {
+            hocPhan.TenHocPhan = StringHelper.NormalizeString(hocPhan.TenHocPhan);
+            hocPhan.MoTa = StringHelper.NormalizeString(hocPhan.MoTa);
             if (ModelState.IsValid)
             {
                 var existing = _context.HocPhan.FirstOrDefault(h => h.IdHocPhan == hocPhan.IdHocPhan);

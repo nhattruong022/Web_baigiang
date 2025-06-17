@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
 using Lecture_web.Models;
+using Lecture_web.Service;
 
 namespace Lecture_web.Areas.Admin.Controllers
 {
@@ -60,6 +61,8 @@ namespace Lecture_web.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult ThemBoMonAjax([FromBody] BoMonModels boMon)
         {
+            boMon.TenBoMon = StringHelper.NormalizeString(boMon.TenBoMon);
+            boMon.MoTa = StringHelper.NormalizeString(boMon.MoTa);
             if(ModelState.IsValid)
             {
                 boMon.NgayTao = DateTime.Now;
@@ -84,6 +87,8 @@ namespace Lecture_web.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult EditBoMonAjax([FromBody] BoMonModels boMon)
         {
+            boMon.TenBoMon = StringHelper.NormalizeString(boMon.TenBoMon);
+            boMon.MoTa = StringHelper.NormalizeString(boMon.MoTa);
             if (ModelState.IsValid)
             {
                 var existing = _context.BoMon.FirstOrDefault(b => b.IdBoMon == boMon.IdBoMon);
