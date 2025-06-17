@@ -9,6 +9,14 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
 {
 
     <style>
+         .truncate {
+            max-width: 200px; /* Điều chỉnh chiều rộng phù hợp */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        } 
+
+
         /* Chỉ nhắm tới vùng checkbox trong modal edit */
         #lectureClassCheckboxes .form-check {
             display: flex;
@@ -234,9 +242,9 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
         @foreach (var l in Model.Items)
         {
         <tr data-type="lecture">
-            <td>@l.TieuDe</td>
-            <td>@l.MoTa</td>
-            <td>
+            <td class="truncate">@l.TieuDe</td>
+            <td class="truncate">@l.MoTa</td>
+             <td class="truncate">
                 @l.LopHocPhan
             </td>
             <td>@l.NgayTao</td>
