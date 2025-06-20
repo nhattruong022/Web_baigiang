@@ -4,22 +4,160 @@
     Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
 }
 
+@section style
+{
+    <style>
+
+        .text-danger {
+            color: red !important;
+        }
+
+        #editChapterModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+            #editChapterModal.open {
+                display: flex;
+            }
+
+            #editChapterModal select, #addAssignmentModal select {
+                padding: 13px 16px;
+                border-radius: 7px;
+                border: 1.5px solid #d0d7de;
+                font-size: 1rem;
+                background: #fff;
+                transition: border-color 0.2s, box-shadow 0.2s;
+                width: 100%;
+                margin-bottom: 0;
+             }
+
+        #addAssignmentModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+            #addAssignmentModal.open {
+                display: flex;
+            }
+
+
+        .pagination {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 1.5rem 0;
+            justify-content: center;
+        }
+
+
+            .pagination li {
+                margin: 0 0.25rem;
+            }
+
+
+                .pagination li a,
+                .pagination li span {
+                    display: block;
+                    padding: 0.5rem 0.75rem;
+                    text-decoration: none;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                    color: #007bff;
+                    font-weight: 500;
+                }
+
+
+                    .pagination li a:hover {
+                        background-color: #f1f1f1;
+                    }
+
+
+                .pagination li.active span {
+                    background-color: #007bff;
+                    color: #fff;
+                    border-color: #007bff;
+                }
+
+
+                .pagination li.disabled span {
+                    color: #aaa;
+                    border-color: #ddd;
+                    cursor: default;
+                }
+
+    </style>
+     
+}
+
 
 <div class="assignment-management-container">
     <div class="assignment-header">
         <h2>Quản lý chương</h2>
         <div class="assignment-actions">
-            <select id="lectureFilter" style="padding: 0.5rem 1rem; border-radius: 5px; border: 1px solid #ddd;">
-                <option value="">-- Lọc theo bài giảng --</option>
-                <option value="lecture1">Lập trình web</option>
-                <option value="lecture2">Cơ sở dữ liệu</option>
-                <!-- Thêm các bài giảng khác -->
-            </select>
-            <input type="text" id="searchAssignmentInput" placeholder="Tìm kiếm chương..." style="padding: 0.5rem 1rem; border-radius: 5px; border: 1px solid #ddd;">
-
-            <button class="btn-primary" onclick="openAddAssignmentModal()">
+            <button class="btn-primary add-chapter-btn"
+                onclick="openAddAssignmentModal()">
                 <i class="fas fa-plus"></i> Thêm chương
             </button>
+            <form id="searchForm"
+                  method="get"
+                  action='@Url.Action("Index","QuanLyChuong", new { area = "User" })'
+                  class="search-form"
+                  style="display:flex; align-items:center; gap:0.5rem; margin-bottom:1rem;">
+
+                @* Reset về trang 1 mỗi lần submit *@
+                <input type="hidden" name="page" value="1" />
+
+                @* Dropdown lọc theo bài giảng *@
+                <select name="tenbg"
+                        style="padding:0.5rem 1rem; border:1px solid #ddd; border-radius:5px;">
+                    <option value="" @(string.IsNullOrEmpty(Model.baigiang) ? "selected" : "")>
+                        -- Lọc theo bài giảng --
+                    </option>
+                    @foreach (var bg in ViewBag.lectures)
+                    {
+                        var td = bg.TieuDe;
+                        var kq = td.Length > 30 ? td.Substring(0, 30) + "..." : td;
+
+                        <option value="@bg.TieuDe"
+                        @(bg.TieuDe == Model.baigiang ? "selected" : "") title="@td">
+                            
+                            @kq
+                        </option>
+                    }
+                </select>
+
+
+                <input type="text"
+                       name="search"
+                       value="@Model.SearchTerm"
+                       placeholder="Tìm kiếm chương..."
+                       style="flex:1; padding:0.5rem 1rem; border:1px solid #ddd; border-radius:5px;" />
+
+
+                <button type="submit"
+                        style="border:none; background:none; cursor:pointer; font-size:1.2rem;">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+
+
 
         </div>
     </div>
@@ -43,101 +181,303 @@
                         <td>@c.NgayTao</td>
                         <td>@c.NgayCapNhat</td>
                         <td class="assignment-actions-btns">
-                            <button data-c="@c.IdChuong" class="btn-secondary" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
-                            <button data-c="@c.IdChuong" class="btn-danger" title="Xóa"><i class="fas fa-trash"></i></button>
+                            <button type="button"
+                                    class="btn-secondary edit-chapter-btn"
+                                    data-chapter="@c.IdChuong"
+                                    title="Chỉnh sửa">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button
+                                data-chapter="@c.IdChuong"
+                                    class="btn-danger delete-chapter-btn"
+                                title="Xóa">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </td>
                     </tr>
                 }
         </tbody>
       </table>
+        <nav>
+            <ul class="pagination">
+                @* Nút Back *@
+                @if (Model.CurrentPage > 1)
+                {
+                    <li>
+                        <a href="?page=@(Model.CurrentPage-1)&search=@Model.SearchTerm">«</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="disabled">
+                        <span>«</span>
+                    </li>
+                }
+
+                @* Các trang số *@
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    if (i == Model.CurrentPage)
+                    {
+                        <li class="active"><span>@i</span></li>
+                    }
+                    else
+                    {
+                        <li><a href="?page=@i&search=@Model.SearchTerm">@i</a></li>
+                    }
+                }
+
+                @* Nút Next *@
+                @if (Model.CurrentPage < Model.TotalPages)
+                {
+                    <li>
+                        <a href="?page=@(Model.CurrentPage+1)&search=@Model.SearchTerm">»</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="disabled">
+                        <span>»</span>
+                    </li>
+                }
+            </ul>
+        </nav>
     </div>
   </div>
   </main>
   </div>
   <!-- Modal thêm mới chương (demo) -->
-  <div class="modal" id="addAssignmentModal">
+<!-- Modal thêm mới chương -->
+<div class="modal" id="addAssignmentModal">
     <div class="modal-content chapter-modal-content">
-      <div class="modal-header chapter-modal-header">
-        <i class="fas fa-layer-group"></i>
-        <h2>Thêm chương mới</h2>
-        <button class="close-modal" onclick="closeAddAssignmentModal()">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-      <form class="modal-form chapter-modal-form" onsubmit="event.preventDefault(); closeAddAssignmentModal();">
-        <div class="form-group">
-          <label>Tên chương <span class="required">*</span></label>
-          <input type="text" required placeholder="Nhập tên chương">
+        <div class="modal-header chapter-modal-header">
+            <i class="fas fa-layer-group"></i>
+            <h2>Thêm chương mới</h2>
+            <button class="close-modal" onclick="closeAddAssignmentModal()">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
-        <div class="form-group">
-          <label>Mô tả</label>
-          <textarea rows="3" placeholder="Nhập mô tả chương"></textarea>
-        </div>
-        <div class="form-group">
-          <label>Bài giảng <span class="required">*</span></label>
-          <select id="editChapterCourse" class="styled-select" required>
-            <option value="">-- Chọn bài giảng --</option>
-            <option value="lecture1">Lập trình web</option>
-            <option value="lecture2">Cơ sở dữ liệu</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Lớp học phần <span class="required">*</span></label>
-          <select id="editChapterClass" class="styled-select-multi" multiple required>
-            <option value="INT1234.1">INT1234.1</option>
-            <option value="INT1235.1">INT1235.1</option>
-          </select>
-        </div>
-        <div class="form-actions">
-          <button type="button" class="btn-secondary" onclick="closeAddAssignmentModal()">Hủy</button>
-          <button type="submit" class="btn-primary">Thêm mới <i class="fas fa-plus"></i></button>
-        </div>
-      </form>
+        <form method="post"
+              action="@Url.Action("CreateChuong","QuanLyChuong",new{area="User"})"
+              class="modal-form chapter-modal-form">
+            @Html.AntiForgeryToken()
+
+            <div class="form-group">
+                <label>Tên chương <span class="required">*</span></label>
+                <input type="text"
+                       name="tenchuong"
+                       id="addChapterName"
+                       class="form-control"
+                       placeholder="Nhập tên chương" />
+                <span asp-validation-for="tenchuong" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Bài giảng <span class="required">*</span></label>
+                <select name="BaiGiang"
+                        id="addChapterLecture"
+                        class="form-control">
+                    <option value="">-- Chọn bài giảng --</option>
+                </select>
+              
+            </div>
+            <span asp-validation-for="BaiGiang" class="text-danger"></span>
+
+            <div class="form-actions">
+                <button type="button"
+                        class="btn-secondary"
+                        onclick="closeAddAssignmentModal()">
+                    Hủy
+                </button>
+                <button type="submit" class="btn-primary">
+                    Thêm mới <i class="fas fa-plus"></i>
+                </button>
+            </div>
+        </form>
     </div>
-  </div>
+</div>
+
+
+
+
+<!-- Modal chỉnh sửa chương -->
+@* <div class="modal" id="editAssignmentModal">
+    <div class="modal-content chapter-modal-content">
+        <div class="modal-header chapter-modal-header">
+            <i class="fas fa-layer-group"></i>
+            <h2>Chỉnh sửa chương</h2>
+            <button class="close-modal" onclick="closeEditAssignmentModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form class="modal-form chapter-modal-form" id="editAssignmentForm" onsubmit="event.preventDefault(); saveEditAssignment();">
+            <div class="form-group">
+                <label>Tên chương <span class="required">*</span></label>
+                <input type="text" id="editChapterName" required placeholder="Nhập tên chương">
+            </div>
+            <div class="form-group">
+                <label>Bài giảng <span class="required">*</span></label>
+                <select id="editChapterCourse" class="styled-select" required>
+                    <option value="">-- Chọn bài giảng --</option>
+                    <option value="lecture1">Lập trình web</option>
+                    <option value="lecture2">Cơ sở dữ liệu</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeEditAssignmentModal()">Hủy</button>
+                <button type="submit" class="btn-primary">Lưu <i class="fas fa-save"></i></button>
+            </div>
+        </form>
+    </div>
+</div> *@
+
+
+@* <div class="modal" id="editAssignmentModal">
+    <div class="modal-content chapter-modal-content">
+        <div class="modal-header chapter-modal-header">
+            <i class="fas fa-layer-group"></i>
+            <h2>Chỉnh sửa chương</h2>
+            <button class="close-modal" onclick="closeEditAssignmentModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <form class="modal-form chapter-modal-form" id="editAssignmentForm" onsubmit="event.preventDefault(); saveEditAssignment();">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="IdChuong" id="editChId" />
+
+            <div class="form-group">
+                <label>Tên chương <span class="required">*</span></label>
+                <input type="text"
+                       name="TenChuong"
+                       id="editChapterName"
+                       class="form-control"
+                       required
+                       placeholder="Nhập tên chương" />
+                <span asp-validation-for="TenChuong" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Bài giảng <span class="required">*</span></label>
+                <select name="BaiGiang"
+                        id="editChapterCourse"
+                        class="form-control styled-select"
+                        required>
+                    <option value="">-- Chọn bài giảng --</option>
+
+                </select>
+                <span asp-validation-for="BaiGiang" class="text-danger"></span>
+            </div>
+
+            <div class="form-actions">
+                <button type="button"
+                        class="btn-secondary"
+                        onclick="closeEditAssignmentModal()">
+                    Hủy
+                </button>
+                <button type="submit"
+                        class="btn-primary">
+                    Lưu <i class="fas fa-save"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div> *@
+
+
+
+
   <!-- Modal chỉnh sửa chương -->
-  <div class="modal" id="editAssignmentModal">
+@* <div class="modal" id="editAssignmentModal">
     <div class="modal-content chapter-modal-content">
-      <div class="modal-header chapter-modal-header">
-        <i class="fas fa-layer-group"></i>
-        <h2>Chỉnh sửa chương</h2>
-        <button class="close-modal" onclick="closeEditAssignmentModal()">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-      <form class="modal-form chapter-modal-form" id="editAssignmentForm" onsubmit="event.preventDefault(); saveEditAssignment();">
-        <div class="form-group">
-          <label>Tên chương <span class="required">*</span></label>
-          <input type="text" id="editChapterName" required placeholder="Nhập tên chương">
+        <div class="modal-header chapter-modal-header">
+            <i class="fas fa-layer-group"></i>
+            <h2>Chỉnh sửa chương</h2>
+            <button class="close-modal" onclick="closeEditAssignmentModal()">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
-        <div class="form-group">
-          <label>Mô tả</label>
-          <textarea rows="3" id="editChapterDesc" placeholder="Nhập mô tả chương"></textarea>
-        </div>
-        <div class="form-group">
-          <label>Bài giảng <span class="required">*</span></label>
-          <select id="editChapterCourse" class="styled-select" required>
-            <option value="">-- Chọn bài giảng --</option>
-            <option value="lecture1">Lập trình web</option>
-            <option value="lecture2">Cơ sở dữ liệu</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Lớp học phần <span class="required">*</span></label>
-          <select id="editChapterClass" class="styled-select-multi" multiple required>
-            <option value="INT1234.1">INT1234.1</option>
-            <option value="INT1235.1">INT1235.1</option>
-          </select>
-        </div>
-        <div class="form-actions">
-          <button type="button" class="btn-secondary" onclick="closeEditAssignmentModal()">Hủy</button>
-          <button type="submit" class="btn-primary">Lưu <i class="fas fa-save"></i></button>
-        </div>
-      </form>
+
+        <form id="editAssignmentForm" class="modal-form chapter-modal-form">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="IdChuong" id="editChId" />
+
+            <div class="form-group">
+                <label>Tên chương <span class="required">*</span></label>
+                <input type="text" name="TenChuong" id="editChName" class="form-control" required />
+                <span asp-validation-for="TenChuong" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Bài giảng <span class="required">*</span></label>
+                <select name="BaiGiang" id="editChLecture" class="form-control" required>
+                    <option value="">-- Chọn bài giảng --</option>
+               
+                </select>
+                <span asp-validation-for="BaiGiang" class="text-danger"></span>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeEditAssignmentModal()">Hủy</button>
+                <button type="submit" class="btn-primary">Lưu <i class="fas fa-save"></i></button>
+            </div>
+        </form>
     </div>
-  </div>
+</div> *@
+
+
+
+
+
+<!-- Modal chỉnh sửa chương -->
+<div class="modal" id="editChapterModal">
+    <div class="modal-content chapter-modal-content">
+        <div class="modal-header chapter-modal-header">
+            <i class="fas fa-layer-group"></i>
+            <h2>Chỉnh sửa chương</h2>
+            <button class="close-modal" onclick="closeEditChapterModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form id="editChapterForm"
+              method="post"
+              action="@Url.Action("EditChuong","QuanLyChuong",new{area="User"})"
+              class="modal-form chapter-modal-form">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="idchuong" id="editChapterId" />
+
+            <div class="form-group">
+                <label>Tên chương <span class="required">*</span></label>
+                <input type="text"
+                       name="tenchuong"
+                       id="editChapterName"
+                       class="form-control"
+                       />
+                <span asp-validation-for="tenchuong" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Bài giảng <span class="required">*</span></label>
+                <select name="BaiGiang"
+                        id="editChapterLecture"
+                        class="form-control"
+                        required>
+                    <option value="">-- Chọn bài giảng --</option>
+                </select>
+                <span asp-validation-for="BaiGiang" class="text-danger"></span>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeEditChapterModal()">Hủy</button>
+                <button type="submit" class="btn-primary">Lưu <i class="fas fa-save"></i></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
   <!-- Modal xác nhận xóa chương -->
-  <div class="modal" id="confirmDeleteChapterModal">
+@*   <div class="modal" id="confirmDeleteChapterModal">
     <div class="modal-content" id="confirmDeleteModalContent">
       <div class="modal-header" style="justify-content:center;">
         <h2 style="font-size:1.1rem; margin:0 auto;">Xác nhận xóa</h2>
@@ -150,4 +490,240 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> *@
+
+
+
+
+@section scripts {
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    function SearchChuong() {
+        $('#searchForm').on('submit', function (e) {
+            e.preventDefault();
+            var url = $(this).attr('action'),
+                data = $(this).serialize();
+            $.get(url, data, function (html) {
+                var newRes = $('<div>').html(html)
+                    .find('.assignment-list').html();
+                $('.assignment-list').html(newRes);
+                SearchChuong();
+            });
+        });
+    }
+    $(function () {
+        SearchChuong();
+    });
+
+
+
+    // Chỉnh sửa chương
+
+
+    $(function () {
+        // 1) Bắt click “Chỉnh sửa”
+        $(document).on('click', 'button.edit-chapter-btn', function () {
+            var id = $(this).data('chapter');            // <— đây là biến đúng
+            $.getJSON(
+                '@Url.Action("EditChuong", "QuanLyChuong", new { area = "User" })',
+                { id: id }                                  // <— truyền biến id chứ không phải idChuong!
+            )
+                .done(function (data) {
+                    console.log(data);
+                    // 2) Điền form
+                    $('#editChapterId').val(data.idChuong);
+                    $('#editChapterName').val(data.tenChuong);
+
+                    var $ddl = $('#editChapterLecture')
+                        .empty()
+                        .append('<option value="">-- Chọn bài giảng --</option>');
+
+                    data.listbg.forEach(function (bg) {
+                        var td = bg.tieuDe;
+                        var kq = td.length > 30 ? td.substring(0, 30) + "..." : td;
+                        var selected = td === data.baiGiang ? ' selected' : '';
+                        $ddl.append('<option value="' + td + '"' + selected + ' title="' + td + '">' + kq + '</option>');
+                    });
+             
+                    // 3) Mở modal
+                    $('#editChapterModal').addClass('open');
+                })
+                .fail(function () {
+                    alert('Không tải được dữ liệu chương');
+                });
+        });
+
+        // 4) Đóng modal
+        window.closeEditChapterModal = function () {
+            $('#editChapterModal').removeClass('open');
+        };
+
+        // 5) AJAX submit form chỉnh sửa
+        $('#editChapterForm').on('submit', function (e) {
+            e.preventDefault();
+            var $f = $(this),
+                url = $f.attr('action'),
+                data = $f.serialize(),
+                token = $f.find('input[name="__RequestVerificationToken"]').val();
+            $f.find('span.text-danger').text('');
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                headers: { 'RequestVerificationToken': token }
+            })
+                .done(function () {
+                    closeEditChapterModal();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Đã cập nhật chương',
+                        timer: 1200,
+                        showConfirmButton: false
+                    }).then(function () {
+                        location.reload();
+                    });
+                })
+                .fail(function (xhr) {
+                    console.log('ERROR', xhr.status, xhr.responseText);
+                    if (xhr.status === 400 && xhr.responseJSON.errors) {
+                        // clear old errors
+                        $('#editChapterForm').find('span.text-danger').text('');
+                        var errs = xhr.responseJSON.errors;
+                        // xóa lỗi cũ
+                        $('#editChapterForm').find('span.text-danger').text('');
+                        $.each(errs, function (field, messages) {
+                            // hiển thị message đầu tiên
+                            $('[asp-validation-for="' + field + '"]').text(messages[0]);
+                        });
+                    } else {
+                        alert('Lỗi server, vui lòng thử lại');
+                    }
+                });
+        });
+    });
+
+    $(function () {
+        // 1) Mở modal “Thêm chương” và load danh sách bài giảng
+        $(document).on('click', '.btn-primary.add-chapter-btn', function () {
+            $.getJSON('@Url.Action("CreateChuong", "QuanLyChuong", new { area = "User" })')
+                .done(function (data) {
+                    var $ddl = $('#addChapterLecture').empty()
+                        .append('<option value="">-- Chọn bài giảng --</option>');
+                    data.listbg.forEach(function (title) {
+                        $ddl.append('<option value="' + title + '">' + title + '</option>');
+                    });
+                    $('#addAssignmentModal').addClass('open');
+                })
+                .fail(function () {
+                    alert('Không tải được danh sách bài giảng');
+                });
+        });
+
+        // 2) Đóng modal
+        window.closeAddAssignmentModal = function () {
+            $('#addAssignmentModal').removeClass('open');
+            // reset form và xóa lỗi
+            $('#addAssignmentModal .modal-form')[0].reset();
+            $('#addAssignmentModal').find('span.text-danger').text('');
+        };
+
+        // 3) AJAX submit form Thêm chương
+        $('#addAssignmentModal .modal-form').on('submit', function (e) {
+            e.preventDefault();
+            var $f = $(this),
+                url = $f.attr('action'),
+                token = $f.find('input[name="__RequestVerificationToken"]').val(),
+                data = $f.serialize();
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                headers: { 'RequestVerificationToken': token }
+            })
+                .done(function () {
+                    closeAddAssignmentModal();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Đã thêm chương',
+                        timer: 1200,
+                        showConfirmButton: false
+                    }).then(function () {
+                        location.reload();
+                    });
+                })
+                .fail(function (xhr) {
+                    if (xhr.status === 400 && xhr.responseJSON.errors) {
+                        var errs = xhr.responseJSON.errors;
+                        // xóa lỗi cũ
+                        $('#addAssignmentModal').find('span.text-danger').text('');
+                        // hiển thị lỗi mới
+                        $.each(errs, function (field, msgs) {
+                            $('[asp-validation-for="' + field + '"]', '#addAssignmentModal')
+                                .text(msgs[0]);
+                        });
+                    } else {
+                        alert('Lỗi server, vui lòng thử lại');
+                    }
+                });
+        });
+    });
+
+    //Xóa chương
+
+    $(function () {
+
+        $(document).on('click', '.delete-chapter-btn', function () {
+            var chapterId = $(this).data('chapter');
+
+            Swal.fire({
+                title: 'Xác nhận xóa',
+                text: 'Bạn có chắc chắn muốn xóa chương này?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Xóa',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("DeleteChuong", "QuanLyChuong", new { area = "User" })',
+                        type: 'POST',
+                        data: {
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
+                            idchuong: chapterId
+                        }
+                    })
+                        .done(function (res) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Đã xóa chương',
+                                timer: 1200,
+                                showConfirmButton: false
+                            }).then(() => location.reload());
+                        })
+                        .fail(function (xhr) {
+                            var msg = 'Có lỗi xảy ra';
+                            if (xhr.status === 400 && xhr.responseJSON && xhr.responseJSON.error) {
+                                msg = xhr.responseJSON.error;
+                            }
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Không thể xóa',
+                                text: msg
+                            });
+                        });
+                }
+            });
+        });
+    });
+        $(function() {
+      console.log('AntiForgeryToken =', $('input[name="__RequestVerificationToken"]').val());
+    });
+</script>
+}
+
+

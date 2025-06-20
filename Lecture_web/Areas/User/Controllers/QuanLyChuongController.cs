@@ -1,7 +1,10 @@
-using Lecture_web.Models.ViewModels;
+﻿using Lecture_web.Models.ViewModels;
+using Lecture_web.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using Lecture_web.Service;
+using System.Linq;
 
 namespace Lecture_web.Areas.User.Controllers
 {
@@ -13,54 +16,257 @@ namespace Lecture_web.Areas.User.Controllers
         {
             _context = context;
         }
-        [HttpGet]
-        public async Task<IActionResult> Index(string search, int page = 1)
-        {
 
+        [HttpGet]
+        public async Task<IActionResult> Index( string tenbg,string search, int page = 1)
+        {
             const int pageSize = 5;
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
 
-            var q = _context.BaiGiang
-                .Include(c=>c.Chuongs.OrderByDescending(o=>o.NgayCapNhat))
+            var bg = await _context.BaiGiang
                 .Where(b => b.IdTaiKhoan == userId)
-                .Select(p => new ListChuongViewModel
+                .Select(b => new {b.TieuDe })
+                .Distinct()
+                .ToListAsync();
+            ViewBag.Lectures = bg;
+
+           
+            var q = _context.BaiGiang
+                .Where(b => b.IdTaiKhoan == userId)
+                .SelectMany(b => b.Chuongs, (b, c) => new { b, c })
+                .Select(x => new ListChuongViewModel
                 {
-                    IdChuong = p.Chuongs.Select(c=>c.IdChuong).FirstOrDefault(),
-                    Ten = p.Chuongs.Select(c=>c.TenChuong).FirstOrDefault(),
-                    BaiGiang = p.TieuDe,
-                    NgayTao = p.Chuongs.Select(c=>c.NgayTao).FirstOrDefault(),
-                    NgayCapNhat = p.Chuongs.Select(c=>c.NgayCapNhat).FirstOrDefault(),
+                    IdChuong = x.c.IdChuong,
+                    Ten = x.c.TenChuong,
+                    BaiGiang = x.b.TieuDe,
+                    NgayTao = x.c.NgayTao,
+                    NgayCapNhat = x.c.NgayCapNhat
                 });
+
+            if (!string.IsNullOrWhiteSpace(tenbg))
+                q = q.Where(x => x.BaiGiang == tenbg);
 
 
             if (!string.IsNullOrWhiteSpace(search))
             {
                 var key = search.Replace(" ", "").ToLower();
                 q = q.Where(x =>
-                  x.Ten.Replace(" ", "")
-                          .ToLower()
-                          .Contains(key)
+                    x.Ten.Replace(" ", "").ToLower().Contains(key)
                 );
             }
-
             var totalItems = await q.CountAsync();
             var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
             var items = await q
+                .OrderByDescending(x => x.NgayCapNhat)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
-
-            var bg = new SearchChuongViewModel<ListChuongViewModel>
+  
+            var listch = new SearchChuongViewModel<ListChuongViewModel>
             {
                 Items = items,
                 CurrentPage = page,
                 TotalPages = totalPages,
-                SearchTerm = search
+                SearchTerm = search,
+                baigiang = tenbg
             };
-
-            return View(bg);
+            return View(listch);
         }
+        [HttpGet]
+        public async Task<IActionResult> EditChuong(int id)
+        {
+            var chuong = await _context.Chuong
+                .Include(c => c.BaiGiang)
+                .FirstOrDefaultAsync(c => c.IdChuong == id);
+            if (chuong == null) return NotFound();
+    //var normalizedTitle = StringHelper.NormalizeString(chuong.TenChuong);
+
+            return Json(new
+            {
+                idChuong = chuong.IdChuong,
+                tenChuong = StringHelper.NormalizeString(chuong.TenChuong),
+                baiGiang = chuong.BaiGiang.TieuDe,
+                listbg = await _context.BaiGiang
+                    .Where(b => b.IdTaiKhoan == int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)))
+                    .Select(b => new { b.TieuDe })
+                    .ToListAsync()
+            });
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> EditChuong(EditChuongViewModel ch)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var td = StringHelper.NormalizeString(ch.tenchuong);
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .Where(m => m.Value.Errors.Any())
+                    .ToDictionary(
+                        kv => kv.Key,
+                        kv => kv.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                    );
+                return BadRequest(new { errors });
+            }
+
+            var chuong = await _context.Chuong
+                .Include(c => c.BaiGiang)
+                .FirstOrDefaultAsync(c => c.IdChuong == ch.idchuong);
+            if (chuong == null) return NotFound();
+
+            // Tìm bài giảng mới
+            var bai = await _context.BaiGiang
+                .FirstOrDefaultAsync(b => b.TieuDe == ch.BaiGiang);
+            if (bai == null)
+            {
+                ModelState.AddModelError(nameof(ch.BaiGiang), "Bài giảng không tồn tại.");
+                var errors = ModelState
+                    .Where(m => m.Value.Errors.Any())
+                    .ToDictionary(
+                        kv => kv.Key,
+                        kv => kv.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                    );
+                return BadRequest(new { errors });
+            }
+            var exist = await _context.Chuong
+                   .Where(c =>
+                       c.IdBaiGiang == bai.IdBaiGiang
+                    && c.IdChuong != ch.idchuong
+                   )
+                   .Select(c => c.TenChuong)
+                   .ToListAsync();
+
+
+            bool check = exist
+                .Select(n => StringHelper.NormalizeString(n))
+                .Any(n =>
+                    string.Equals(n, td, StringComparison.OrdinalIgnoreCase)
+                );
+
+            if (check)
+            {
+                ModelState.AddModelError(nameof(ch.tenchuong),
+                    "Tên chương này đã tồn tại trong bài giảng đã chọn.");
+                var errors = ModelState
+                    .Where(m => m.Value.Errors.Any())
+                    .ToDictionary(
+                        kv => kv.Key,
+                        kv => kv.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                    );
+                return BadRequest(new { errors });
+            }
+
+            chuong.TenChuong = td;
+            chuong.IdBaiGiang = bai.IdBaiGiang;
+            chuong.NgayCapNhat = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+            return Ok(new { success = true });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CreateChuong()
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var lectures = await _context.BaiGiang
+                .Where(b => b.IdTaiKhoan == userId)
+                .Select(b => b.TieuDe)
+                .ToListAsync();
+            return Json(new { listbg = lectures });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateChuong(EditChuongViewModel ch)
+        {
+
+            ch.tenchuong = StringHelper.NormalizeString(ch.tenchuong);
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .Where(m => m.Value.Errors.Any())
+                    .ToDictionary(
+                        kv => kv.Key,
+                        kv => kv.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                    );
+                return BadRequest(new { errors });
+            }
+
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var bai = await _context.BaiGiang
+                .FirstOrDefaultAsync(b => b.TieuDe == ch.BaiGiang && b.IdTaiKhoan == userId);
+            if (bai == null)
+            {
+                ModelState.AddModelError(nameof(ch.BaiGiang), "Bài giảng không tồn tại");
+                var errors = ModelState
+                    .Where(m => m.Value.Errors.Any())
+                    .ToDictionary(
+                        kv => kv.Key,
+                        kv => kv.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                    );
+                return BadRequest(new { errors });
+            }
+
+                var otherTitles = await _context.Chuong
+                    .Where(c => c.IdBaiGiang == bai.IdBaiGiang)
+                    .Select(c => c.TenChuong)
+                    .ToListAsync();
+
+                bool duplicate = otherTitles
+                    .Select(t => StringHelper.NormalizeString(t))
+                    .Any(normalized =>
+                        string.Equals(normalized,
+                                        ch.tenchuong,
+                                        StringComparison.OrdinalIgnoreCase));
+
+                if (duplicate)
+                {
+                    ModelState.AddModelError(nameof(ch.tenchuong),
+                        "Tên chương này đã tồn tại trong bài giảng đã chọn.");
+                    var errors = ModelState
+                        .Where(k => k.Value.Errors.Any())
+                        .ToDictionary(
+                            kv => kv.Key,
+                            kv => kv.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                        );
+                    return BadRequest(new { errors });
+                }
+
+
+
+
+            var chuong = new Models.ChuongModels
+            {
+                TenChuong = ch.tenchuong,
+                IdBaiGiang = bai.IdBaiGiang,
+                NgayTao = DateTime.Now,
+                NgayCapNhat = DateTime.Now
+            };
+            _context.Chuong.Add(chuong);
+            await _context.SaveChangesAsync();
+            return Ok(new { success = true });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteChuong(int idchuong)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var chuong = await _context.Chuong
+                .Include(c => c.BaiGiang)
+                .FirstOrDefaultAsync(c => c.IdChuong == idchuong && c.BaiGiang.IdTaiKhoan == userId);
+            if (chuong == null)
+                return NotFound();
+            bool hasLessons = await _context.Bai
+                .AnyAsync(bh => bh.IdChuong == idchuong);
+            if (hasLessons)
+                return BadRequest(new { error = "Chương đang có bài học liên kết, không thể xóa." });
+            _context.Chuong.Remove(chuong);
+            await _context.SaveChangesAsync();
+            return Ok(new { success = true });
+        }
+
     }
 } 

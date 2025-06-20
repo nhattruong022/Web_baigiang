@@ -9,6 +9,14 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
 {
 
     <style>
+         .truncate {
+            max-width: 200px; /* Điều chỉnh chiều rộng phù hợp */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        } 
+
+
         /* Chỉ nhắm tới vùng checkbox trong modal edit */
         #lectureClassCheckboxes .form-check {
             display: flex;
@@ -234,9 +242,9 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
         @foreach (var l in Model.Items)
         {
         <tr data-type="lecture">
-            <td>@l.TieuDe</td>
-            <td>@l.MoTa</td>
-            <td>
+            <td class="truncate">@l.TieuDe</td>
+            <td class="truncate">@l.MoTa</td>
+             <td class="truncate">
                 @l.LopHocPhan
             </td>
             <td>@l.NgayTao</td>
@@ -428,8 +436,8 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
             $.getJSON('@Url.Action("Edit","QuanLyBaiGiang", new {area="User"})', { idbg: idbg }).done(function (data) {
                 console.log("Dữ liệu nhận được:", data);
                 $('#editIdBaiGiang').val(data.idBaiGiang);
-                $('#editLectureTitle').val(data.tieuDe);
-                $('#editLectureDesc').val(data.moTa);
+                $('#editLectureTitle').val(data.td);
+                $('#editLectureDesc').val(data.mt);
                 // $('#editLectureClass').val(data.lopHocPhan);
 
                 // var $sel = $('#editLecturecl')
@@ -478,8 +486,10 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
         $('#editContentForm').on('submit', function (e) {
             e.preventDefault();  
             var $form = $(this);
+            $form.find('span.text-danger').text('');
             var token = $form.find('input[name="__RequestVerificationToken"]').val();
 
+  
             $.ajax({
                 url: $form.attr('action'),
                 type: 'POST',
@@ -554,6 +564,7 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
         $('#createContentForm').submit(function (e) {
     e.preventDefault();
     var $f = $(this);
+            $f.find('span.text-danger').text('');
 
 
     $.ajax({
@@ -599,7 +610,7 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
                 e.preventDefault();
                 var idbg = $(this).data('idbg');
                 if (!idbg) return;
-                // Hiển thị SweetAlert2 confirm
+    
                 Swal.fire({
                     title: 'Xác nhận xóa ?',
                     text: 'Bạn có chắc chắn muốn xóa bài giảng này?',
@@ -610,16 +621,16 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
                     reverseButtons: true
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // Lấy token
+
                         var token = $('#antiForgeryForm input[name="__RequestVerificationToken"]').val();
-                        // Gửi AJAX xóa
+         
                         $.ajax({
                             url: '@Url.Action("DeleteBaiGiang", "QuanLyBaiGiang", new { area = "User" })',
                             type: 'POST',
                             data: { idbg: idbg },
                             headers: { 'RequestVerificationToken': token }
                         }).done(function (resp) {
-                            // Thông báo thành công
+
                             Swal.fire({
                                 title: 'Đã xóa',
                                 text: 'Bài giảng đã được xóa.',
@@ -627,7 +638,6 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
                                 timer: 1500,
                                 showConfirmButton: false
                             });
-                            // Xóa row khỏi table hoặc reload
                             $('button.deletebutton[data-idbg="' + idbg + '"]').closest('tr').remove();
                         }).fail(function (xhr) {
                             var msg = 'Có lỗi xảy ra khi xóa.';

@@ -11,6 +11,8 @@ namespace Lecture_web.Models
         public string TieuDeBai { get; set; }
         public string NoiDungText { get; set; }
         public DateTime NgayTao { get; set; }
+
+        public DateTime NgayCapNhat { get; set; }
         public int IdChuong { get; set; }
 
         [ForeignKey(nameof(IdChuong))]

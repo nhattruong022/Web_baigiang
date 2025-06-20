@@ -299,21 +299,6 @@ function selectHocPhan(maHocPhan) {
     // Xử lý hiển thị nội dung học phần bên phải
 }
 
-// Mở popup chỉnh sửa chương và điền dữ liệu
-function openEditAssignmentModal(name = '', desc = '', course = '', classCode = '') {
-    document.getElementById('editChapterName').value = name;
-    document.getElementById('editChapterDesc').value = desc;
-    document.getElementById('editChapterCourse').value = course;
-    // Xử lý chọn nhiều lớp học phần
-    const selectClass = document.getElementById('editChapterClass');
-    for (let i = 0; i < selectClass.options.length; i++) {
-        selectClass.options[i].selected = false;
-        if (classCode.split(',').map(s => s.trim()).includes(selectClass.options[i].value)) {
-            selectClass.options[i].selected = true;
-        }
-    }
-    document.getElementById('editAssignmentModal').classList.add('active');
-}
 
 // Đóng popup chỉnh sửa chương
 function closeEditAssignmentModal() {
@@ -321,16 +306,17 @@ function closeEditAssignmentModal() {
 }
 
 // Xử lý lưu chỉnh sửa (demo, bạn có thể thay bằng logic thực tế)
-function saveEditAssignment() {
-    // Lấy dữ liệu từ form
-    const name = document.getElementById('editChapterName').value;
-    const desc = document.getElementById('editChapterDesc').value;
-    const course = document.getElementById('editChapterCourse').value;
-    const classCode = document.getElementById('editChapterClass').value;
-    // TODO: Gửi dữ liệu lên server hoặc cập nhật bảng
-    alert('Đã lưu chỉnh sửa chương: ' + name);
-    closeEditAssignmentModal();
-}
+//function saveEditAssignment() {
+//    // Lấy dữ liệu từ form
+//    const name = document.getElementById('editChapterName').value;
+//    const desc = document.getElementById('editChapterDesc').value;
+//    const course = document.getElementById('editChapterCourse').value;
+//    const classCode = document.getElementById('editChapterClass').value;
+//    // TODO: Gửi dữ liệu lên server hoặc cập nhật bảng
+//    alert('Đã lưu chỉnh sửa chương: ' + name);
+//    closeEditAssignmentModal();
+//}
+
 
 let chapterRowToDelete = null;
 document.querySelectorAll('.assignment-actions-btns .btn-danger[title="Xóa"]').forEach((btn) => {
@@ -579,30 +565,30 @@ function confirmDeleteBai() {
     closeConfirmDeleteBai();
 }
 
-function bindAssignmentTableEvents() {
-    const table = document.getElementById('assignmentTable');
-    if (!table) return;
-    table.onclick = function (e) {
-        const btn = e.target.closest('button');
-        if (!btn) return;
-        const row = btn.closest('tr');
-        if (!row) return;
-        // Chỉnh sửa
-        if (btn.classList.contains('btn-secondary') && btn.title === 'Chỉnh sửa') {
-            const name = row.children[0].innerText;
-            const desc = row.children[1].innerText;
-            const course = row.children[2].innerText;
-            const classCode = row.children[3].innerText;
-            openEditAssignmentModal(name, desc, course, classCode);
-        }
-        // Xóa
-        if (btn.classList.contains('btn-danger') && btn.title === 'Xóa') {
-            chapterRowToDelete = row;
-            document.getElementById('confirmDeleteChapterModal').classList.add('active');
-        }
-    }
-}
-document.addEventListener('DOMContentLoaded', bindAssignmentTableEvents);
+//function bindAssignmentTableEvents() {
+//    const table = document.getElementById('assignmentTable');
+//    if (!table) return;
+//    table.onclick = function (e) {
+//        const btn = e.target.closest('button');
+//        if (!btn) return;
+//        const row = btn.closest('tr');
+//        if (!row) return;
+//        // Chỉnh sửa
+//        if (btn.classList.contains('btn-secondary') && btn.title === 'Chỉnh sửa') {
+//            const name = row.children[0].innerText;
+//            const desc = row.children[1].innerText;
+//            const course = row.children[2].innerText;
+//            const classCode = row.children[3].innerText;
+//            openEditAssignmentModal(name, desc, course, classCode);
+//        }
+//        // Xóa
+//        if (btn.classList.contains('btn-danger') && btn.title === 'Xóa') {
+//            chapterRowToDelete = row;
+//            document.getElementById('confirmDeleteChapterModal').classList.add('active');
+//        }
+//    }
+//}
+/*document.addEventListener('DOMContentLoaded', bindAssignmentTableEvents);*/
 
 
 

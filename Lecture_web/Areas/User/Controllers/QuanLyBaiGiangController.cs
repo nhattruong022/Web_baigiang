@@ -7,6 +7,7 @@ using Lecture_web.Models.ViewModels;
 using Microsoft.AspNetCore.Components.Forms;
 using Lecture_web.Models;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Lecture_web.Service;
 
 namespace Lecture_web.Areas.User.Controllers
 {
@@ -18,11 +19,6 @@ namespace Lecture_web.Areas.User.Controllers
         {
             _context = context;
         }
-        //public IActionResult Index()
-        //{
-        //    // TODO: Lấy danh sách lớp học từ database
-        //    return View();
-        //}
         [HttpGet]
         public async Task<IActionResult> Index(string search, int page = 1)
         {
@@ -87,10 +83,12 @@ namespace Lecture_web.Areas.User.Controllers
           .FirstOrDefaultAsync();
             if (bg == null) return NotFound();
 
-            // Danh sách đã chọn
+            var td = StringHelper.NormalizeString(bg.TieuDe);
+            var mt = StringHelper.NormalizeString(bg.MoTa);
+
             var listSelected = bg.LopHocPhans.Select(lp => lp.IdLopHocPhan).ToList();
 
-            // Danh sách tất cả lớp giảng viên đang dạy
+
             var teacherClass = await _context.LopHocPhan
                 .Where(lp => lp.IdTaiKhoan == userId)
                 .Include(lp => lp.HocPhan)
@@ -112,8 +110,8 @@ namespace Lecture_web.Areas.User.Controllers
             return Json(new
             {
                 bg.IdBaiGiang,
-                bg.TieuDe,
-                bg.MoTa,
+                td,
+                mt,
                 Class = teacherClass,
                 Selected = listSelected,
                 Disable = disableClass
@@ -123,75 +121,61 @@ namespace Lecture_web.Areas.User.Controllers
         public async Task<IActionResult> LuuBaiGiang(LuuBaiGiangViewModel sbg)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+
+            sbg.tieude = StringHelper.NormalizeString(sbg.tieude);
+
             if (!ModelState.IsValid)
             {
                 var errors = ModelState
-               .Where(kvp => kvp.Value.Errors.Count > 0)
-               .ToDictionary(
-                 kvp => kvp.Key,
-                 kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
-               );
-
-                return BadRequest(new { errors });
-            }
-            bool exists = await _context.BaiGiang
-                .AnyAsync(b =>
-                    b.IdTaiKhoan == userId
-                    && b.TieuDe == sbg.tieude
-                    && b.IdBaiGiang != sbg.idbaigiang
-                );
-
-            if (exists)
-            {
-                ModelState.AddModelError(
-                  nameof(sbg.tieude),
-                  "Tiêu đề đã tồn tại."
-                );
-                var errors = ModelState
                     .Where(kvp => kvp.Value.Errors.Count > 0)
                     .ToDictionary(
-                       kvp => kvp.Key,
-                       kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                        kvp => kvp.Key,
+                        kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
                     );
                 return BadRequest(new { errors });
             }
 
-
+            if (await _context.BaiGiang.AnyAsync(b =>
+               b.IdTaiKhoan == userId && b.TieuDe == sbg.tieude && b.IdBaiGiang != sbg.idbaigiang))
+            {
+                return BadRequest(new
+                {
+                    errors = new
+                    {
+                        tieude = new[] { "Tiêu đề đã tồn tại" }
+                    }
+                });
+            }
             var bg = await _context.BaiGiang
-                .FirstOrDefaultAsync(b => b.IdBaiGiang == sbg.idbaigiang
-                                       && b.IdTaiKhoan == userId);
+                .FirstOrDefaultAsync(b =>
+                    b.IdBaiGiang == sbg.idbaigiang &&
+                    b.IdTaiKhoan == userId
+                );
             if (bg == null) return NotFound();
 
-
-            bg.TieuDe = sbg.tieude;
-            bg.MoTa = sbg.mota;
+            bg.TieuDe = StringHelper.NormalizeString(sbg.tieude);
+            bg.MoTa = StringHelper.NormalizeString(sbg.mota);
             bg.NgayCapNhat = DateTime.Now;
 
-
+            // 5) Cập nhật lớp học phần
             var allClasses = await _context.LopHocPhan
                 .Where(lp => lp.IdTaiKhoan == userId)
                 .ToListAsync();
-
 
             var selected = sbg.selectlophoc ?? new List<int>();
             foreach (var lp in allClasses)
             {
                 if (selected.Contains(lp.IdLopHocPhan))
-                {
-
                     lp.IdBaiGiang = bg.IdBaiGiang;
-                }
                 else if (lp.IdBaiGiang == bg.IdBaiGiang)
-                {
-
                     lp.IdBaiGiang = null;
-                }
             }
 
             await _context.SaveChangesAsync();
             return Ok(new { success = true });
-
         }
+
         [HttpGet]
         public async Task<IActionResult> GetListClass()
         {
@@ -237,22 +221,22 @@ namespace Lecture_web.Areas.User.Controllers
 
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
             if (await _context.BaiGiang.AnyAsync(b =>
-                    b.IdTaiKhoan == userId && b.TieuDe == bg.tieude))
+                    b.IdTaiKhoan == userId && b.TieuDe == StringHelper.NormalizeString(bg.tieude)))
             {
                 return BadRequest(new
                 {
                     errors = new
                     {
-                        TieuDe = new[] { "Tiêu đề đã tồn tại" }
+                        tieude = new[] { "Tiêu đề đã tồn tại" }
                     }
                 });
             }
 
-    
+
             var bai = new BaiGiangModels
             {
-                TieuDe = bg.tieude,
-                MoTa = bg.mota,
+                TieuDe = StringHelper.NormalizeString(bg.tieude),
+                MoTa = StringHelper.NormalizeString(bg.mota),
                 NgayTao = DateTime.Now,
                 NgayCapNhat = DateTime.Now,
                 IdTaiKhoan = userId
