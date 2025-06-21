@@ -3,10 +3,14 @@ using System.Linq;
 using System;
 using Lecture_web.Models;
 using Lecture_web.Service;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace Lecture_web.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class QuanLyHocPhanController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -66,6 +70,13 @@ namespace Lecture_web.Areas.Admin.Controllers
         {
             var hp = _context.HocPhan.FirstOrDefault(h => h.IdHocPhan == id);
             if (hp == null) return NotFound();
+
+            // Kiểm tra nếu trạng thái là Inactive
+            if (hp.TrangThai?.Trim().ToLower() == "inactive")
+            {
+                return Json(new { error = true, message = "Không thể chỉnh sửa học phần đang ở trạng thái Inactive!" });
+            }
+
             return Json(hp);
         }
 
@@ -74,20 +85,40 @@ namespace Lecture_web.Areas.Admin.Controllers
         {
             hocPhan.TenHocPhan = StringHelper.NormalizeString(hocPhan.TenHocPhan);
             hocPhan.MoTa = StringHelper.NormalizeString(hocPhan.MoTa);
+
+            // Dictionary chứa tất cả các lỗi
+            var errors = new Dictionary<string, string>();
+
+            // Kiểm tra trùng tên học phần
+            if (_context.HocPhan.Any(h => h.TenHocPhan == hocPhan.TenHocPhan))
+            {
+                errors.Add("tenHocPhan", "Tên học phần đã tồn tại!");
+                return Json(new { success = false, errors = errors });
+            }
+
             if (ModelState.IsValid)
             {
                 if (string.IsNullOrEmpty(hocPhan.TrangThai))
                 {
                     hocPhan.TrangThai = "Active";
                 }
+                
                 hocPhan.NgayTao = DateTime.Now;
                 hocPhan.NgayCapNhat = DateTime.Now;
                 _context.HocPhan.Add(hocPhan);
                 _context.SaveChanges();
                 return Json(new { success = true, message = "Thêm học phần thành công!" });
             }
-            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-            return Json(new { success = false, message = "Dữ liệu không hợp lệ", errors });
+
+            // Thêm các lỗi validation từ ModelState
+            var modelErrors = ModelState
+                .Where(x => x.Value.Errors.Count > 0)
+                .ToDictionary(
+                    kvp => kvp.Key.Substring(0, 1).ToLower() + kvp.Key.Substring(1), // Chuyển key về camelCase
+                    kvp => kvp.Value.Errors.First().ErrorMessage
+                );
+
+            return Json(new { success = false, errors = modelErrors });
         }
 
         [HttpPost]
@@ -95,23 +126,44 @@ namespace Lecture_web.Areas.Admin.Controllers
         {
             hocPhan.TenHocPhan = StringHelper.NormalizeString(hocPhan.TenHocPhan);
             hocPhan.MoTa = StringHelper.NormalizeString(hocPhan.MoTa);
+
+            // Dictionary chứa tất cả các lỗi
+            var errors = new Dictionary<string, string>();
+
+            // Kiểm tra trùng tên học phần (trừ chính học phần đang sửa)
+            if (_context.HocPhan.Any(h => h.TenHocPhan == hocPhan.TenHocPhan && h.IdHocPhan != hocPhan.IdHocPhan))
+            {
+                errors.Add("tenHocPhan", "Tên học phần đã tồn tại!");
+                return Json(new { success = false, errors = errors });
+            }
+
             if (ModelState.IsValid)
             {
                 var existing = _context.HocPhan.FirstOrDefault(h => h.IdHocPhan == hocPhan.IdHocPhan);
                 if (existing == null)
-                    return Json(new { success = false, message = "Không tìm thấy học phần!" });
+                {
+                    errors.Add("general", "Không tìm thấy học phần!");
+                    return Json(new { success = false, errors = errors });
+                }
 
                 existing.TenHocPhan = hocPhan.TenHocPhan;
                 existing.MoTa = hocPhan.MoTa;
-                existing.TrangThai = hocPhan.TrangThai;
                 existing.IdBoMon = hocPhan.IdBoMon;
                 existing.NgayCapNhat = DateTime.Now;
 
                 _context.SaveChanges();
                 return Json(new { success = true, message = "Cập nhật học phần thành công!" });
             }
-            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-            return Json(new { success = false, message = "Dữ liệu không hợp lệ", errors });
+
+            // Thêm các lỗi validation từ ModelState
+            var modelErrors = ModelState
+                .Where(x => x.Value.Errors.Count > 0)
+                .ToDictionary(
+                    kvp => kvp.Key.Substring(0, 1).ToLower() + kvp.Key.Substring(1), // Chuyển key về camelCase
+                    kvp => kvp.Value.Errors.First().ErrorMessage
+                );
+
+            return Json(new { success = false, errors = modelErrors });
         }
 
         [HttpPost]
@@ -120,6 +172,7 @@ namespace Lecture_web.Areas.Admin.Controllers
             var hocPhan = _context.HocPhan.FirstOrDefault(h => h.IdHocPhan == model.Id);
             if (hocPhan == null)
                 return Json(new { success = false, message = "Không tìm thấy học phần!" });
+         
 
             hocPhan.TrangThai = model.TrangThai;
             hocPhan.NgayCapNhat = DateTime.Now;

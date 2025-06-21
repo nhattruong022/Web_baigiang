@@ -22,6 +22,24 @@ Layout = null;
         <p>Hệ thống quản lý bài giảng</p>
       </div>
       <form class="login-form" method="post">
+        @* Hiển thị thông báo từ TempData *@
+        @if (TempData["Info"] != null)
+        {
+        <div style="background-color: #d1ecf1; color: #0c5460; padding: 10px; border-radius: 5px; margin-bottom: 15px; border: 1px solid #bee5eb;">
+          <i class="fas fa-info-circle"></i> @TempData["Info"]
+        </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+        <div style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 15px; border: 1px solid #f5c6cb;">
+          <i class="fas fa-exclamation-triangle"></i> @TempData["Error"]
+        </div>
+        }
+        @* Thêm hidden input để truyền returnUrl *@
+        @if (!string.IsNullOrEmpty(ViewBag.ReturnUrl as string))
+        {
+        <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+        }
         <div class="form-group">
           <label for="username">Tên đăng nhập</label>
           <div class="input-group">

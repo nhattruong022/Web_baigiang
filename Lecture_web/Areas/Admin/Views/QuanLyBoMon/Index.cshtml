@@ -47,7 +47,7 @@ ViewData["Title"] = "Quản lý bộ môn";
               <th>Mã bộ môn</th>
               <th>Tên bộ môn</th>
               <th>Mô tả</th>
-              <th>Mã khoa</th>
+              <th>Tên khoa</th>
               <th>Ngày tạo</th>
               <th>Ngày cập nhật</th>
               <th>Thao tác</th>
@@ -71,14 +71,19 @@ ViewData["Title"] = "Quản lý bộ môn";
       <div class="form-group">
         <label>Tên bộ môn</label>
         <input type="text" name="TenBoMon" required>
+        <span class="field-error" id="error-tenBoMon" style="display:none;color:#c0392b;font-size:0.95em;margin-top:5px;"></span>
       </div>
       <div class="form-group">
         <label>Mô tả</label>
         <textarea name="MoTa" required></textarea>
+        <span class="field-error" id="error-moTa" style="display:none;color:#c0392b;font-size:0.95em;margin-top:5px;"></span>
       </div>
       <div class="form-group">
-        <label>Mã khoa</label>
-        <input type="number" name="IdKhoa" required>
+        <label>Khoa</label>
+        <select name="IdKhoa" required>
+          <option value="">-- Chọn khoa --</option>
+        </select>
+        <span class="field-error" id="error-idKhoa" style="display:none;color:#c0392b;font-size:0.95em;margin-top:5px;"></span>
       </div>
       <div class="form-actions">
         <button type="button" class="btn btn-edit" onclick="closeModal('department')">Hủy</button>
@@ -98,14 +103,19 @@ ViewData["Title"] = "Quản lý bộ môn";
       <div class="form-group">
         <label>Tên bộ môn</label>
         <input type="text" name="TenBoMon" required>
+        <span class="field-error" id="error-tenBoMon-edit" style="display:none;color:#c0392b;font-size:0.95em;margin-top:5px;"></span>
       </div>
       <div class="form-group">
         <label>Mô tả</label>
         <textarea name="MoTa" required></textarea>
+        <span class="field-error" id="error-moTa-edit" style="display:none;color:#c0392b;font-size:0.95em;margin-top:5px;"></span>
       </div>
       <div class="form-group">
-        <label>Mã khoa</label>
-        <input type="number" name="IdKhoa" required>
+        <label>Khoa</label>
+        <select name="IdKhoa" required>
+          <option value="">-- Chọn khoa --</option>
+        </select>
+        <span class="field-error" id="error-idKhoa-edit" style="display:none;color:#c0392b;font-size:0.95em;margin-top:5px;"></span>
       </div>
       <div class="form-actions">
         <button type="button" class="btn btn-edit" onclick="closeModal('edit-department')">Hủy</button>
@@ -193,7 +203,7 @@ ViewData["Title"] = "Quản lý bộ môn";
           <td>${bm.idBoMon}</td>
           <td>${bm.tenBoMon}</td>
           <td>${bm.moTa ?? ''}</td>
-          <td>${bm.idKhoa}</td>
+          <td>${bm.tenKhoa}</td>
           <td>${bm.ngayTao ? new Date(bm.ngayTao).toLocaleString() : ''}</td>
           <td>${bm.ngayCapNhat ? new Date(bm.ngayCapNhat).toLocaleString() : ''}</td>
           <td class="actions">
@@ -265,14 +275,52 @@ ViewData["Title"] = "Quản lý bộ môn";
   }
 
   document.addEventListener('DOMContentLoaded', function() {
+    // Load danh sách khoa cho các select
+    function loadKhoaOptions() {
+      fetch('/Admin/QuanLyBoMon/GetKhoaList')
+        .then(res => res.json())
+        .then(khoas => {
+          const addSelect = document.querySelector('#modal-department select[name="IdKhoa"]');
+          const editSelect = document.querySelector('#modal-edit-department select[name="IdKhoa"]');
+
+          const options = khoas.map(k =>
+            `<option value="${k.idKhoa}">${k.tenKhoa}</option>`
+          ).join('');
+
+          addSelect.innerHTML = '<option value="">-- Chọn khoa --</option>' + options;
+          editSelect.innerHTML = '<option value="">-- Chọn khoa --</option>' + options;
+        });
+    }
+
+    // Load danh sách khoa khi trang được load
+    loadKhoaOptions();
+
+    // Load lại danh sách khoa khi mở modal thêm mới
+    document.querySelector('.quick-actions button').addEventListener('click', loadKhoaOptions);
+
     document.getElementById('addBoMonForm').addEventListener('submit', function(e) {
       e.preventDefault();
+
+      // Reset all error messages
+      this.querySelectorAll('.field-error').forEach(span => {
+        span.textContent = '';
+        span.style.display = 'none';
+      });
+
       const formData = new FormData(this);
       const data = {
         TenBoMon: formData.get('TenBoMon'),
         MoTa: formData.get('MoTa'),
         IdKhoa: parseInt(formData.get('IdKhoa'))
       };
+
+      if (!data.IdKhoa) {
+        const errorSpan = document.getElementById('error-idKhoa');
+        errorSpan.textContent = 'Vui lòng chọn khoa';
+        errorSpan.style.display = 'block';
+        return;
+      }
+
       fetch('/Admin/QuanLyBoMon/ThemBoMonAjax', {
           method: 'POST',
           headers: {
@@ -284,38 +332,46 @@ ViewData["Title"] = "Quản lý bộ môn";
         .then(result => {
           if (result.success) {
             closeModal('department');
-            loadBoMonList(1); // Reload danh sách
+            loadBoMonList(1);
             showBoMonAlert('Thêm bộ môn thành công!');
+            this.reset();
+          } else if (result.errors) {
+            Object.entries(result.errors).forEach(([key, message]) => {
+              const errorSpan = document.getElementById('error-' + key);
+              if (errorSpan) {
+                errorSpan.textContent = message;
+                errorSpan.style.display = 'block';
+              }
+            });
           } else {
-            alert(result.message || 'Có lỗi xảy ra!');
+            showBoMonAlert(result.message || 'Có lỗi xảy ra!', true);
           }
         });
     });
-  });
 
-  let editingBoMonId = null;
-
-  function openEditModal(id) {
-    fetch(`/Admin/QuanLyBoMon/GetBoMonById?id=${id}`)
-      .then(res => res.json())
-      .then(bm => {
-        editingBoMonId = bm.idBoMon;
-        document.querySelector('#modal-edit-department input[name="TenBoMon"]').value = bm.tenBoMon;
-        document.querySelector('#modal-edit-department textarea[name="MoTa"]').value = bm.moTa;
-        document.querySelector('#modal-edit-department input[name="IdKhoa"]').value = bm.idKhoa;
-        openModal('edit-department');
-      });
-  }
-
-  document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('#modal-edit-department form').addEventListener('submit', function(e) {
       e.preventDefault();
+
+      // Reset all error messages
+      this.querySelectorAll('.field-error').forEach(span => {
+        span.textContent = '';
+        span.style.display = 'none';
+      });
+
       const data = {
         IdBoMon: editingBoMonId,
         TenBoMon: this.querySelector('input[name="TenBoMon"]').value,
         MoTa: this.querySelector('textarea[name="MoTa"]').value,
-        IdKhoa: parseInt(this.querySelector('input[name="IdKhoa"]').value)
+        IdKhoa: parseInt(this.querySelector('select[name="IdKhoa"]').value)
       };
+
+      if (!data.IdKhoa) {
+        const errorSpan = document.getElementById('error-idKhoa-edit');
+        errorSpan.textContent = 'Vui lòng chọn khoa';
+        errorSpan.style.display = 'block';
+        return;
+      }
+
       fetch('/Admin/QuanLyBoMon/EditBoMonAjax', {
           method: 'POST',
           headers: {
@@ -329,12 +385,35 @@ ViewData["Title"] = "Quản lý bộ môn";
             closeModal('edit-department');
             loadBoMonList(1);
             showBoMonAlert('Cập nhật bộ môn thành công!');
+          } else if (result.errors) {
+            Object.entries(result.errors).forEach(([key, message]) => {
+              const errorSpan = document.getElementById('error-' + key + '-edit');
+              if (errorSpan) {
+                errorSpan.textContent = message;
+                errorSpan.style.display = 'block';
+              }
+            });
           } else {
-            alert(result.message || 'Có lỗi xảy ra!');
+            showBoMonAlert(result.message || 'Có lỗi xảy ra!', true);
           }
         });
     });
   });
+
+  let editingBoMonId = null;
+
+  function openEditModal(id) {
+    fetch(`/Admin/QuanLyBoMon/GetBoMonById?id=${id}`)
+      .then(res => res.json())
+      .then(bm => {
+        editingBoMonId = bm.idBoMon;
+        const form = document.querySelector('#modal-edit-department form');
+        form.querySelector('input[name="TenBoMon"]').value = bm.tenBoMon;
+        form.querySelector('textarea[name="MoTa"]').value = bm.moTa;
+        form.querySelector('select[name="IdKhoa"]').value = bm.idKhoa;
+        openModal('edit-department');
+      });
+  }
 
   let deletingBoMonId = null;
 

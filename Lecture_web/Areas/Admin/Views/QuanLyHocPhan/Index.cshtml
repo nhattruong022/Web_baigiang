@@ -79,11 +79,13 @@ ViewData["Title"] = "Quản lý học phần";
       <div class="form-group">
         <label>Tên học phần</label>
         <input type="text" name="TenHocPhan" required>
+        <span class="field-error" id="error-tenHocPhan" style="display:none;color:#c0392b;font-size:0.95em;margin-top:5px;"></span>
       </div>
 
       <div class="form-group">
         <label>Mô tả</label>
         <textarea name="MoTa" required></textarea>
+        <span class="field-error" id="error-moTa" style="display:none;color:#c0392b;font-size:0.95em;margin-top:5px;"></span>
       </div>
 
       <div class="form-group">
@@ -94,6 +96,7 @@ ViewData["Title"] = "Quản lý học phần";
           <option value="@boMon.IdBoMon">@boMon.TenBoMon</option>
           }
         </select>
+        <span class="field-error" id="error-idBoMon" style="display:none;color:#c0392b;font-size:0.95em;margin-top:5px;"></span>
       </div>
       <div class="form-actions">
         <button type="button" class="btn btn-edit" onclick="closeModal('subject')">Hủy</button>
@@ -128,17 +131,12 @@ ViewData["Title"] = "Quản lý học phần";
       <div class="form-group">
         <label>Tên học phần</label>
         <input type="text" name="TenHocPhan" required>
+        <span class="field-error" id="error-tenHocPhan-edit" style="display:none;color:#c0392b;font-size:0.95em;margin-top:5px;"></span>
       </div>
       <div class="form-group">
         <label>Mô tả</label>
         <textarea name="MoTa" required></textarea>
-      </div>
-      <div class="form-group">
-        <label>Trạng thái</label>
-        <select name="TrangThai" required>
-          <option value="Active" selected>Active</option>
-          <option value="Inactive">Inactive</option>
-        </select>
+        <span class="field-error" id="error-moTa-edit" style="display:none;color:#c0392b;font-size:0.95em;margin-top:5px;"></span>
       </div>
       <div class="form-group">
         <label>Bộ môn</label>
@@ -148,6 +146,7 @@ ViewData["Title"] = "Quản lý học phần";
           <option value="@boMon.IdBoMon">@boMon.TenBoMon</option>
           }
         </select>
+        <span class="field-error" id="error-idBoMon-edit" style="display:none;color:#c0392b;font-size:0.95em;margin-top:5px;"></span>
       </div>
       <div class="form-actions">
         <button type="button" class="btn btn-edit" onclick="closeModal('edit-subject')">Hủy</button>
@@ -317,26 +316,70 @@ ViewData["Title"] = "Quản lý học phần";
   function openEditSubjectModal(id) {
     fetch(`/Admin/QuanLyHocPhan/GetHocPhanById?id=${id}`)
       .then(res => res.json())
-      .then(hp => {
-        editingHocPhanId = hp.idHocPhan;
-        document.querySelector('#modal-edit-subject input[name="TenHocPhan"]').value = hp.tenHocPhan;
-        document.querySelector('#modal-edit-subject textarea[name="MoTa"]').value = hp.moTa;
-        document.querySelector('#modal-edit-subject select[name="TrangThai"]').value = hp.trangThai;
-        document.querySelector('#modal-edit-subject select[name="IdBoMon"]').value = hp.idBoMon;
+      .then(data => {
+        if (data.error) {
+          showHocPhanAlert(data.message, true);
+          return;
+        }
+
+        editingHocPhanId = data.idHocPhan;
+        document.querySelector('#modal-edit-subject input[name="TenHocPhan"]').value = data.tenHocPhan;
+        document.querySelector('#modal-edit-subject textarea[name="MoTa"]').value = data.moTa;
+        document.querySelector('#modal-edit-subject select[name="IdBoMon"]').value = data.idBoMon;
         openModal('edit-subject');
       });
+  }
+
+  function showHocPhanAlert(message, isError = false) {
+    const alertDiv = document.getElementById('hocphan-alert');
+    const alertContent = document.getElementById('hocphan-alert-content');
+    const alertMsg = document.getElementById('hocphan-alert-message');
+    const alertIcon = alertContent.querySelector('i');
+
+    alertMsg.textContent = message;
+
+    if (isError) {
+      alertContent.style.background = '#ffeaea';
+      alertContent.style.color = '#c0392b';
+      alertContent.style.border = '1px solid #e0b4b4';
+      alertIcon.className = 'fas fa-times-circle';
+    } else {
+      alertContent.style.background = '#e6fff0';
+      alertContent.style.color = '#1a7f37';
+      alertContent.style.border = '1px solid #b7ebc6';
+      alertIcon.className = 'fas fa-check-circle';
+    }
+
+    alertDiv.style.display = 'block';
+    setTimeout(() => {
+      alertDiv.style.display = 'none';
+      // Reset lại style về mặc định xanh cho lần sau
+      if (isError) {
+        alertContent.style.background = '#e6fff0';
+        alertContent.style.color = '#1a7f37';
+        alertContent.style.border = '1px solid #b7ebc6';
+        alertIcon.className = 'fas fa-check-circle';
+      }
+    }, 3000);
   }
 
   document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('#modal-edit-subject form').addEventListener('submit', function(e) {
       e.preventDefault();
+
+      // Reset all error messages
+      this.querySelectorAll('.field-error').forEach(span => {
+        span.textContent = '';
+        span.style.display = 'none';
+      });
+
       const data = {
         IdHocPhan: editingHocPhanId,
         TenHocPhan: this.querySelector('input[name="TenHocPhan"]').value,
         MoTa: this.querySelector('textarea[name="MoTa"]').value,
-        TrangThai: this.querySelector('select[name="TrangThai"]').value,
         IdBoMon: parseInt(this.querySelector('select[name="IdBoMon"]').value)
       };
+
       fetch('/Admin/QuanLyHocPhan/EditHocPhanAjax', {
           method: 'POST',
           headers: {
@@ -350,6 +393,15 @@ ViewData["Title"] = "Quản lý học phần";
             closeModal('edit-subject');
             loadHocPhanList(1);
             showHocPhanAlert('Cập nhật học phần thành công!');
+          } else if (result.errors) {
+            // Display validation errors
+            Object.entries(result.errors).forEach(([key, message]) => {
+              const errorSpan = document.getElementById('error-' + key + '-edit');
+              if (errorSpan) {
+                errorSpan.textContent = message;
+                errorSpan.style.display = 'block';
+              }
+            });
           } else {
             alert(result.message || 'Có lỗi xảy ra!');
           }
@@ -357,24 +409,22 @@ ViewData["Title"] = "Quản lý học phần";
     });
   });
 
-  function showHocPhanAlert(message) {
-    const alertDiv = document.getElementById('hocphan-alert');
-    const alertMsg = document.getElementById('hocphan-alert-message');
-    alertMsg.textContent = message;
-    alertDiv.style.display = 'block';
-    setTimeout(() => {
-      alertDiv.style.display = 'none';
-    }, 3000);
-  }
-
   document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('#modal-subject form').addEventListener('submit', function(e) {
       e.preventDefault();
+
+      // Reset all error messages
+      this.querySelectorAll('.field-error').forEach(span => {
+        span.textContent = '';
+        span.style.display = 'none';
+      });
+
       const data = {
         TenHocPhan: this.querySelector('input[name="TenHocPhan"]').value,
         MoTa: this.querySelector('textarea[name="MoTa"]').value,
         IdBoMon: parseInt(this.querySelector('select[name="IdBoMon"]').value)
       };
+
       fetch('/Admin/QuanLyHocPhan/ThemHocPhanAjax', {
           method: 'POST',
           headers: {
@@ -388,6 +438,17 @@ ViewData["Title"] = "Quản lý học phần";
             closeModal('subject');
             loadHocPhanList(1);
             showHocPhanAlert('Thêm học phần thành công!');
+            // Reset form
+            this.reset();
+          } else if (result.errors) {
+            // Display validation errors
+            Object.entries(result.errors).forEach(([key, message]) => {
+              const errorSpan = document.getElementById('error-' + key);
+              if (errorSpan) {
+                errorSpan.textContent = message;
+                errorSpan.style.display = 'block';
+              }
+            });
           } else {
             alert(result.message || 'Có lỗi xảy ra!');
           }

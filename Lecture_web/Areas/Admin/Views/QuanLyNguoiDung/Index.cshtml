@@ -22,6 +22,12 @@
       <!-- Main Content Area -->
       <!-- User Table -->
       <div class="dashboard-card">
+        <div id="user-alert" style="display:none; margin-bottom: 16px;">
+          <div id="user-alert-content" class="alert alert-success" style="padding: 12px 20px; border-radius: 6px; background: #e6fff0; color: #1a7f37; border: 1px solid #b7ebc6; display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-check-circle"></i>
+            <span id="user-alert-message"></span>
+          </div>
+        </div>
         <div id="success-alert" style="display:none;position:relative;margin-bottom:18px;">
           <div style="display:flex;align-items:center;gap:10px;justify-content:center;background:#e6ffed;border:1.5px solid #27ae60;color:#219150;padding:12px 28px;border-radius:8px;font-size:1.08rem;font-weight:500;box-shadow:0 2px 8px rgba(39,174,96,0.08);transition:opacity 0.5s;">
             <i class="fas fa-check-circle" style="font-size:1.3rem;color:#27ae60;"></i>
@@ -104,17 +110,17 @@
         <div class="form-group">
           <label>Tên đăng nhập</label>
           <input type="text" name="TenDangNhap" id="TenDangNhap">
-          <span class="field-error" id="error-TenDangNhap" style="color:#c0392b;font-size:0.95em"></span>
+          <span class="field-error" id="error-tenDangNhap" style="color:#c0392b;font-size:0.95em"></span>
         </div>
         <div class="form-group">
           <label>Mật khẩu</label>
           <input type="password" name="MatKhau" id="MatKhau">
-          <span class="field-error" id="error-MatKhau" style="color:#c0392b;font-size:0.95em"></span>
+          <span class="field-error" id="error-matKhau" style="color:#c0392b;font-size:0.95em"></span>
         </div>
         <div class="form-group">
           <label>Họ và tên</label>
           <input type="text" name="HoTen" id="HoTen">
-          <span class="field-error" id="error-HoTen" style="color:#c0392b;font-size:0.95em"></span>
+          <span class="field-error" id="error-hoTen" style="color:#c0392b;font-size:0.95em"></span>
         </div>
         <div class="form-group">
           <label>Vai trò</label>
@@ -127,12 +133,12 @@
         <div class="form-group">
           <label>Email</label>
           <input type="email" name="Email" id="Email">
-          <span class="field-error" id="error-Email" style="color:#c0392b;font-size:0.95em"></span>
+          <span class="field-error" id="error-email" style="color:#c0392b;font-size:0.95em"></span>
         </div>
         <div class="form-group">
           <label>Số điện thoại</label>
           <input type="text" name="SoDienThoai" id="SoDienThoai">
-          <span class="field-error" id="error-SoDienThoai" style="color:#c0392b;font-size:0.95em"></span>
+          <span class="field-error" id="error-soDienThoai" style="color:#c0392b;font-size:0.95em"></span>
         </div>
         <div class="form-group">
           <label>Ảnh đại diện</label>
@@ -145,6 +151,9 @@
       </form>
     </div>
   </div>
+
+
+
   <!-- Edit User Modal -->
   <div class="modal" id="editUserModal">
     <div class="modal-content">
@@ -194,21 +203,9 @@
       </form>
     </div>
   </div>
-  <!-- Confirm Delete Modal -->
-  <div class="modal" id="confirmDeleteModal">
-    <div class="modal-content" style="max-width: 350px;">
-      <div class="modal-header">
-        <h2>Xác nhận xóa</h2>
-      </div>
-      <div class="modal-body" style="padding: 16px 0;">
-        <p>Bạn có chắc chắn muốn xóa người dùng này không?</p>
-      </div>
-      <div class="form-actions" style="justify-content: flex-end;">
-        <button class="btn-secondary" onclick="closeConfirmDeleteModal()">Hủy</button>
-        <button class="btn-danger" id="confirmDeleteBtn">Xóa</button>
-      </div>
-    </div>
-  </div>
+
+
+
 
   <script>
     function toggleUserMenu() {
@@ -260,23 +257,6 @@
     });
     let userToDelete = null;
 
-    function openConfirmDeleteModal(userId) {
-      userToDelete = userId;
-      document.getElementById('confirmDeleteModal').classList.add('active');
-    }
-
-    function closeConfirmDeleteModal() {
-      userToDelete = null;
-      document.getElementById('confirmDeleteModal').classList.remove('active');
-    }
-    document.getElementById('confirmDeleteBtn').onclick = function() {
-      if (userToDelete !== null) {
-        // Thực hiện xóa user ở đây, ví dụ gọi API hoặc xóa trên giao diện
-        // Ví dụ: deleteUser(userToDelete);
-        closeConfirmDeleteModal();
-        // Hiện thông báo hoặc cập nhật lại bảng nếu cần
-      }
-    };
 
 
     //AddUserAjax
@@ -311,7 +291,6 @@
             })
             .then(response => response.json())
             .then(data => {
-              var alert = document.getElementById('success-alert');
               // Xóa hết lỗi cũ
               document.querySelectorAll('.field-error').forEach(e => e.innerHTML = '');
               if (data.success) {
@@ -319,6 +298,7 @@
                 closeAddUserModal();
                 form.reset();
                 // Hiện thông báo thành công như cũ
+                var alert = document.getElementById('success-alert');
                 alert.querySelector('span').innerHTML = "Thêm người dùng thành công!";
                 alert.style.background = "#e6ffed";
                 alert.style.color = "#219150";
@@ -333,9 +313,12 @@
               } else {
                 // Hiện lỗi từng trường vào đúng <span>
                 if (data.errors) {
+                  console.log(data.errors); // debug
                   Object.keys(data.errors).forEach(function(key) {
                     var errSpan = document.getElementById('error-' + key);
-                    if (errSpan) errSpan.innerHTML = data.errors[key];
+                    if (errSpan) {
+                      errSpan.innerHTML = data.errors[key];
+                    }
                   });
                 }
               }
@@ -392,6 +375,39 @@
       loadUserList(page);
     }
 
+    function showUserAlert(message, isError = false) {
+      const alertDiv = document.getElementById('user-alert');
+      const alertContent = document.getElementById('user-alert-content');
+      const alertMsg = document.getElementById('user-alert-message');
+      const alertIcon = alertContent.querySelector('i');
+
+      alertMsg.textContent = message;
+
+      if (isError) {
+        alertContent.style.background = '#ffeaea';
+        alertContent.style.color = '#c0392b';
+        alertContent.style.border = '1px solid #e0b4b4';
+        alertIcon.className = 'fas fa-times-circle';
+      } else {
+        alertContent.style.background = '#e6fff0';
+        alertContent.style.color = '#1a7f37';
+        alertContent.style.border = '1px solid #b7ebc6';
+        alertIcon.className = 'fas fa-check-circle';
+      }
+
+      alertDiv.style.display = 'block';
+      setTimeout(() => {
+        alertDiv.style.display = 'none';
+        // Reset lại style về mặc định xanh cho lần sau
+        if (isError) {
+          alertContent.style.background = '#e6fff0';
+          alertContent.style.color = '#1a7f37';
+          alertContent.style.border = '1px solid #b7ebc6';
+          alertIcon.className = 'fas fa-check-circle';
+        }
+      }, 3000);
+    }
+
     // Hàm mở modal chỉnh sửa và load dữ liệu user
     function editUser(id) {
       fetch(`/Admin/QuanLyNguoiDung/EditUserPartial?id=${id}`, {
@@ -402,20 +418,33 @@
         })
         .then(response => response.text())
         .then(html => {
-          // Render partial vào modal
+          if (html.includes("Không thể chỉnh sửa")) {
+            showUserAlert("Không thể chỉnh sửa người dùng đang ở trạng thái Không hoạt động!", true);
+            return;
+          }
+
           document.querySelector('#editUserModal .modal-content').innerHTML = `
-            <div class=\"modal-header\">
+            <div class="modal-header">
               <h2>Chỉnh sửa người dùng</h2>
-              <button class=\"close-modal\" onclick=\"closeEditUserModal()\"><i class=\"fas fa-times\"></i></button>
+              <button class="close-modal" onclick="closeEditUserModal()"><i class="fas fa-times"></i></button>
             </div>
             ${html}
           `;
           openEditUserModal();
-          // Gắn submit AJAX cho form chỉnh sửa
+
           var form = document.getElementById('editUserForm');
           if (form) {
             form.onsubmit = function(e) {
               e.preventDefault();
+
+              // Reset all error messages and log current error spans
+              console.log('Available error spans:');
+              form.querySelectorAll('.field-error').forEach(span => {
+                console.log('Error span ID:', span.id);
+                span.textContent = '';
+                span.style.display = 'none';
+              });
+
               var formData = new FormData(form);
               fetch('/Admin/QuanLyNguoiDung/EditUserAjax', {
                   method: 'POST',
@@ -423,34 +452,45 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                  // Xóa hết lỗi cũ
-                  document.querySelectorAll('.field-error').forEach(e => e.innerHTML = '');
+                  console.log('Full server response:', data);
+
                   if (data.success) {
                     loadUserList(1);
                     closeEditUserModal();
-                    // Hiện thông báo thành công
-                    var alert = document.getElementById('success-alert');
-                    alert.querySelector('span').innerHTML = "Cập nhật người dùng thành công!";
-                    alert.style.background = "#e6ffed";
-                    alert.style.color = "#219150";
-                    alert.style.display = 'block';
-                    alert.style.opacity = 1;
-                    setTimeout(function() {
-                      alert.style.opacity = 0;
-                      setTimeout(function() {
-                        alert.style.display = 'none';
-                      }, 500);
-                    }, 2000);
-                  } else {
-                    // Hiện lỗi từng trường vào đúng <span>
-                    if (data.errors) {
-                      Object.keys(data.errors).forEach(function(key) {
-                        var errSpan = document.getElementById('error-' + key);
-                        if (errSpan) errSpan.innerHTML = data.errors[key];
-                      });
-                    }
+                    showUserAlert("Cập nhật người dùng thành công!");
+                  } else if (data.errors) {
+                    console.log('Processing errors object:', data.errors);
+
+                    // Log all error spans again for comparison
+                    console.log('Current error spans in form:');
+                    form.querySelectorAll('.field-error').forEach(span => {
+                      console.log('Available span:', span.id);
+                    });
+
+                    // Process each error
+                    Object.entries(data.errors).forEach(([key, message]) => {
+                      console.log(`Trying to display error for key "${key}" with message "${message}"`);
+                      const errorSpan = form.querySelector(`#error-${key}`);
+                      console.log('Found error span:', errorSpan);
+
+                      if (errorSpan) {
+                        console.log(`Setting error message for ${key}`);
+                        errorSpan.textContent = message;
+                        errorSpan.style.display = 'block';
+                        // Force a reflow
+                        errorSpan.offsetHeight;
+                      } else {
+                        console.warn(`Error span not found for key: ${key}`);
+                      }
+                    });
                   }
+                })
+                .catch(error => {
+                  console.error('Fetch error:', error);
+                  showUserAlert("Có lỗi xảy ra khi cập nhật!", true);
                 });
+
+              return false;
             }
           }
         });
