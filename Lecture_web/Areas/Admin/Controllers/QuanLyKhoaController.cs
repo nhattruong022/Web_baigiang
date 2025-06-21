@@ -1,13 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Lecture_web.Models;
 using System.Linq;
 using System;
 using System.Collections.Generic;
 using Lecture_web.Service;
-
+    
 namespace Lecture_web.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class QuanLyKhoaController : Controller
     {
         private readonly ApplicationDbContext _context;

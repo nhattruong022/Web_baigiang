@@ -4,10 +4,13 @@ using System;
 using Lecture_web.Models;
 using Lecture_web.Service;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace Lecture_web.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class QuanLyHocPhanController : Controller
     {
         private readonly ApplicationDbContext _context;
