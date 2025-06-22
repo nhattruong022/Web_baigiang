@@ -1,0 +1,24 @@
+﻿@model IEnumerable<Lecture_web.Models.BaiGiangModels>
+
+<li class="menu-khoa">
+    <a href="#" onclick="toggleSubMenu(event, this)">
+        <i class="fas fa-university"></i>
+        <span>Danh sách bài giảng</span>
+        <i class="fas fa-chevron-down submenu-arrow"></i>
+    </a>
+    <ul class="submenu">
+        @foreach (var l in Model)
+        {
+            <!-- Cấp 1: Khoa  -->
+            <li class="menu-khoa-cntt">
+                <a asp-area="User"
+                   asp-controller="QuanLyChuong"
+                   asp-action="Index"
+                   asp-route-idbg="@l.IdBaiGiang">
+                    <i class="fas fa-layer-group"></i>
+                    @l.TieuDe
+                </a>
+            </li>
+        }
+    </ul>
+</li>

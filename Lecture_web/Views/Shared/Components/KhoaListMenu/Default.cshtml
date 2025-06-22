@@ -1,0 +1,47 @@
+﻿@model IEnumerable<Lecture_web.Models.KhoaModels>
+
+<li class="menu-khoa">
+    <a href="#" onclick="toggleSubMenu(event, this)">
+        <i class="fas fa-university"></i>
+        <span>Khoa</span>
+        <i class="fas fa-chevron-down submenu-arrow"></i>
+    </a>
+    <ul class="submenu">
+        @foreach(var khoa in Model) 
+        {
+        <!-- Cấp 1: Khoa  -->
+        <li class="menu-khoa-cntt">
+            <a href="#" onclick="toggleSubMenu(event, this)">
+                <i class="fas fa-university"></i>
+                    <span>@khoa.TenKhoa</span>
+                <i class="fas fa-chevron-down submenu-arrow"></i>
+            </a>
+            <ul class="submenu">
+                <!-- Cấp 2: Bộ môn -->
+                    @foreach (var bomon in khoa.BoMons)
+                    {
+                        <li class="menu-bomon">
+                            <a href="#" onclick="toggleSubMenu(event, this)">
+                                <i class="fas fa-code"></i>
+                                <span>@bomon.TenBoMon</span>
+                                <i class="fas fa-chevron-down submenu-arrow"></i>
+                            </a>
+                            <ul class="submenu">
+                                <!-- Cấp 3: Học phần-->
+                                @foreach (var hocphan in bomon.HocPhans)
+                                {
+                                    <li>
+                                        <a href="#" onclick="showLopHocPhan('LTWEB01')">
+                                            <i class="fas fa-book"></i>
+                                            <span>@hocphan.TenHocPhan</span>
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                </ul>
+        </li>               
+        }
+    </ul>
+</li>
