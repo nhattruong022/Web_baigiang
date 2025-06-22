@@ -198,18 +198,35 @@ var userRole = ViewBag.UserRole as string;
             </div>
             <div class="modal-body" style="padding:20px 24px;">
               <div style="margin-bottom:16px;">
-                <input type="text" id="searchStudentEmail" placeholder="nganpham" style="width:100%; padding:12px 16px; border:1px solid #ddd; border-radius:8px; font-size:1rem; outline:none;" oninput="searchStudent(this.value)">
+                <input type="text" id="searchStudentEmail" placeholder="Tìm kiếm theo email..." style="width:100%; padding:12px 16px; border:1px solid #ddd; border-radius:8px; font-size:1rem; outline:none;" oninput="searchStudent(this.value)">
               </div>
+
+              <!-- Hiển thị sinh viên đã chọn -->
+              <div id="selectedStudentsContainer" style="margin-bottom:16px; display:none;">
+                <h4 style="font-size:0.9rem; color:#333; margin-bottom:8px;">Sinh viên đã chọn:</h4>
+                <div id="selectedStudentsList" style="max-height:100px; overflow-y:auto; border:1px solid #e0e0e0; border-radius:6px; padding:8px;">
+                  <!-- Selected students will be displayed here -->
+                </div>
+                <div style="margin-top:8px; text-align:right;">
+                  <button type="button" onclick="clearSelectedStudents()" style="background:none; border:1px solid #ddd; color:#666; padding:4px 8px; border-radius:4px; font-size:0.8rem; cursor:pointer;">Xóa tất cả chọn</button>
+                </div>
+              </div>
+
               <div id="searchResults" style="max-height:200px; overflow-y:auto;">
                 <!-- Kết quả tìm kiếm sẽ hiển thị ở đây -->
               </div>
               <div style="color:#666; font-size:0.9rem; margin-top:12px; text-align:center;">
-                click the "plus sign" in the Student list and enter the Student email
+                Tìm kiếm và chọn nhiều sinh viên để mời cùng lúc
               </div>
             </div>
-            <div class="modal-footer" style="padding:16px 24px; background:#f8f9fa; display:flex; justify-content:flex-end; gap:12px;">
-              <button type="button" onclick="closeInviteStudentModal()" style="padding:8px 20px; border:1px solid #ddd; background:#fff; color:#666; border-radius:6px; font-size:0.95rem; cursor:pointer;">Hủy</button>
-              <button type="button" onclick="inviteSelectedStudent()" style="padding:8px 20px; background:#007bff; color:#fff; border:none; border-radius:6px; font-size:0.95rem; cursor:pointer;">Mời</button>
+            <div class="modal-footer" style="padding:16px 24px; background:#f8f9fa; display:flex; justify-content:space-between; align-items:center;">
+              <div id="selectedCount" style="font-size:0.9rem; color:#666;">
+                Đã chọn: <span id="selectedCountNumber">0</span> sinh viên
+              </div>
+              <div style="display:flex; gap:12px;">
+                <button type="button" onclick="closeInviteStudentModal()" style="padding:8px 20px; border:1px solid #ddd; background:#fff; color:#666; border-radius:6px; font-size:0.95rem; cursor:pointer;">Hủy</button>
+                <button type="button" onclick="inviteSelectedStudent()" id="inviteButton" style="padding:8px 20px; background:#007bff; color:#fff; border:none; border-radius:6px; font-size:0.95rem; cursor:pointer;" disabled>Mời</button>
+              </div>
             </div>
           </div>
         </div>
@@ -426,7 +443,7 @@ var userRole = ViewBag.UserRole as string;
 </div>
 
 <script>
-  let selectedStudentForInvite = null;
+  let selectedStudentsForInvite = []; // Thay đổi từ single student thành array
   let currentLopHocPhanId = @(ViewBag.IdLopHocPhan ?? 1);
 
   console.log('DEBUG: currentLopHocPhanId =', currentLopHocPhanId);
@@ -639,11 +656,14 @@ var userRole = ViewBag.UserRole as string;
     document.getElementById('inviteStudentModal').style.display = 'flex';
     document.getElementById('searchStudentEmail').value = '';
     document.getElementById('searchResults').innerHTML = '';
-    selectedStudentForInvite = null;
+    selectedStudentsForInvite = []; // Reset selected students
+    updateSelectedStudentsDisplay();
   }
 
   function closeInviteStudentModal() {
     document.getElementById('inviteStudentModal').style.display = 'none';
+    selectedStudentsForInvite = []; // Reset selected students when closing
+    updateSelectedStudentsDisplay();
   }
 
   function searchStudent(query) {
@@ -671,15 +691,21 @@ var userRole = ViewBag.UserRole as string;
           return;
         }
 
-        resultsContainer.innerHTML = data.data.map(student => `
-           <div class="search-result-item" onclick="selectStudentForInvite(${student.idTaiKhoan}, '${student.email.replace(/'/g, "\\'")}', '${student.hoTen.replace(/'/g, "\\'")}', '${(student.anhDaiDien || '~/images/avatar.jpg').replace(/'/g, "\\'")}'); event.stopPropagation();" style="padding:12px; display:flex; align-items:center; gap:12px; cursor:pointer; border-radius:6px; margin-bottom:4px; transition:background 0.2s; border: 2px solid transparent;" onmouseover="this.style.background='#f5f5f5'" onmouseout="if(!this.classList.contains('selected')) this.style.background='transparent'">
-             <img src="${student.anhDaiDien || '~/images/avatar.jpg'}" alt="${student.hoTen}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
-             <div style="flex:1;">
-               <div style="font-weight:500; color:#333;">${student.hoTen}</div>
-               <div style="font-size:0.9rem; color:#666;">${student.email}</div>
-             </div>
-           </div>
-         `).join('');
+        resultsContainer.innerHTML = data.data.map(student => {
+          const isSelected = selectedStudentsForInvite.some(s => s.idTaiKhoan === student.idTaiKhoan);
+          return `
+            <div class="search-result-item ${isSelected ? 'selected' : ''}" onclick="toggleStudentSelection(${student.idTaiKhoan}, '${student.email.replace(/'/g, "\\'")}', '${student.hoTen.replace(/'/g, "\\'")}', '${(student.anhDaiDien || '~/images/avatar.jpg').replace(/'/g, "\\'")}'); event.stopPropagation();" style="padding:12px; display:flex; align-items:center; gap:12px; cursor:pointer; border-radius:6px; margin-bottom:4px; transition:all 0.2s; border: 2px solid ${isSelected ? '#2196F3' : 'transparent'}; background: ${isSelected ? '#e3f2fd' : 'transparent'};" onmouseover="if(!this.classList.contains('selected')) this.style.background='#f5f5f5'" onmouseout="if(!this.classList.contains('selected')) this.style.background='transparent'">
+              <div style="width:20px; height:20px; border:2px solid ${isSelected ? '#2196F3' : '#ddd'}; border-radius:4px; display:flex; align-items:center; justify-content:center; background:${isSelected ? '#2196F3' : 'white'};">
+                ${isSelected ? '<i class="fas fa-check" style="color:white; font-size:12px;"></i>' : ''}
+              </div>
+              <img src="${student.anhDaiDien || '~/images/avatar.jpg'}" alt="${student.hoTen}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+              <div style="flex:1;">
+                <div style="font-weight:500; color:#333;">${student.hoTen}</div>
+                <div style="font-size:0.9rem; color:#666;">${student.email}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
       })
       .catch(error => {
         console.error('Error searching students:', error);
@@ -687,73 +713,174 @@ var userRole = ViewBag.UserRole as string;
       });
   }
 
-  function selectStudentForInvite(idTaiKhoan, email, name, avatar) {
-    selectedStudentForInvite = {
-      idTaiKhoan,
-      email,
-      name,
-      avatar
-    };
+  function toggleStudentSelection(idTaiKhoan, email, name, avatar) {
+    const existingIndex = selectedStudentsForInvite.findIndex(s => s.idTaiKhoan === idTaiKhoan);
 
-    // Highlight selected item
-    document.querySelectorAll('.search-result-item').forEach(item => {
-      item.classList.remove('selected');
-      item.style.background = 'transparent';
-      item.style.border = '2px solid transparent';
-    });
+    if (existingIndex >= 0) {
+      // Remove from selection
+      selectedStudentsForInvite.splice(existingIndex, 1);
+      console.log('Removed student from selection:', name);
+    } else {
+      // Add to selection
+      selectedStudentsForInvite.push({
+        idTaiKhoan,
+        email,
+        name,
+        avatar
+      });
+      console.log('Added student to selection:', name);
+    }
 
-    // Highlight current selection
-    event.currentTarget.classList.add('selected');
-    event.currentTarget.style.background = '#e3f2fd';
-    event.currentTarget.style.border = '2px solid #2196F3';
+    // Update display
+    updateSelectedStudentsDisplay();
 
-    console.log('Selected student:', selectedStudentForInvite);
+    // Refresh search results to update checkboxes
+    const searchQuery = document.getElementById('searchStudentEmail').value;
+    if (searchQuery.trim()) {
+      searchStudent(searchQuery);
+    }
+
+    console.log('Selected students:', selectedStudentsForInvite);
+  }
+
+  function updateSelectedStudentsDisplay() {
+    const container = document.getElementById('selectedStudentsContainer');
+    const list = document.getElementById('selectedStudentsList');
+
+    // Update count in footer
+    const countElement = document.getElementById('selectedCountNumber');
+    const inviteButton = document.getElementById('inviteButton');
+
+    if (countElement) {
+      countElement.textContent = selectedStudentsForInvite.length;
+    }
+
+    if (inviteButton) {
+      if (selectedStudentsForInvite.length > 0) {
+        inviteButton.disabled = false;
+        inviteButton.style.background = '#007bff';
+        inviteButton.style.cursor = 'pointer';
+        inviteButton.textContent = `Mời (${selectedStudentsForInvite.length})`;
+      } else {
+        inviteButton.disabled = true;
+        inviteButton.style.background = '#ccc';
+        inviteButton.style.cursor = 'not-allowed';
+        inviteButton.textContent = 'Mời';
+      }
+    }
+
+    if (selectedStudentsForInvite.length === 0) {
+      container.style.display = 'none';
+      return;
+    }
+
+    container.style.display = 'block';
+    list.innerHTML = selectedStudentsForInvite.map((student, index) => `
+      <div style="display:flex; align-items:center; gap:8px; padding:6px; border-bottom:1px solid #f0f0f0; ${index === selectedStudentsForInvite.length - 1 ? 'border-bottom:none;' : ''}">
+        <img src="${student.avatar}" alt="${student.name}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">
+        <div style="flex:1; font-size:0.85rem;">
+          <div style="font-weight:500; color:#333;">${student.name}</div>
+          <div style="color:#666;">${student.email}</div>
+        </div>
+        <button onclick="removeStudentFromSelection(${student.idTaiKhoan})" style="background:none; border:none; color:#e74c3c; cursor:pointer; padding:2px; border-radius:3px;" title="Bỏ chọn">
+          <i class="fas fa-times" style="font-size:12px;"></i>
+        </button>
+      </div>
+    `).join('');
+  }
+
+  function removeStudentFromSelection(idTaiKhoan) {
+    selectedStudentsForInvite = selectedStudentsForInvite.filter(s => s.idTaiKhoan !== idTaiKhoan);
+    updateSelectedStudentsDisplay();
+
+    // Refresh search results if there's a query
+    const searchQuery = document.getElementById('searchStudentEmail').value;
+    if (searchQuery.trim()) {
+      searchStudent(searchQuery);
+    }
+  }
+
+  function clearSelectedStudents() {
+    selectedStudentsForInvite = [];
+    updateSelectedStudentsDisplay();
+
+    // Refresh search results if there's a query
+    const searchQuery = document.getElementById('searchStudentEmail').value;
+    if (searchQuery.trim()) {
+      searchStudent(searchQuery);
+    }
   }
 
   function inviteSelectedStudent() {
-    if (!selectedStudentForInvite) {
-      alert('Vui lòng chọn một học viên để mời');
+    if (!selectedStudentsForInvite || selectedStudentsForInvite.length === 0) {
+      alert('Vui lòng chọn ít nhất một sinh viên để mời');
       return;
     }
 
     // Hiển thị loading
-    const inviteBtn = document.querySelector('.modal-footer button[onclick="inviteSelectedStudent()"]');
+    const inviteBtn = document.getElementById('inviteButton');
     const originalText = inviteBtn.textContent;
     inviteBtn.disabled = true;
     inviteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+    inviteBtn.style.background = '#6c757d';
 
     // Debug log trước khi gửi
     console.log('Sending invite request:', {
       idLopHocPhan: currentLopHocPhanId,
-      idTaiKhoan: selectedStudentForInvite.idTaiKhoan,
-      selectedStudent: selectedStudentForInvite
+      selectedStudents: selectedStudentsForInvite,
+      studentCount: selectedStudentsForInvite.length
     });
 
-    // Gửi API để mời học viên (sử dụng FormData cho CSRF token)
+    // Gửi API để mời nhiều sinh viên (sử dụng FormData cho CSRF token)
     const formData = new FormData();
     formData.append('idLopHocPhan', currentLopHocPhanId);
-    formData.append('idTaiKhoan', selectedStudentForInvite.idTaiKhoan);
+
+    // Thêm tất cả ID sinh viên được chọn
+    selectedStudentsForInvite.forEach((student, index) => {
+      formData.append(`idTaiKhoans[${index}]`, student.idTaiKhoan);
+    });
+
     formData.append('__RequestVerificationToken', document.querySelector('input[name="__RequestVerificationToken"]')?.value || '');
 
-    fetch('/User/ChiTietHocPhan/InviteStudent', {
+    fetch('/User/ChiTietHocPhan/InviteStudents', { // Đổi endpoint thành InviteStudents
         method: 'POST',
         body: formData
       })
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          alert(`✅ ${data.message}`);
+          // Hiển thị thông báo chi tiết hơn
+          let message = data.message;
+          if (data.details) {
+            message += `\n\nChi tiết:`;
+            message += `\n- Thành công: ${data.details.successful}`;
+            if (data.details.failed > 0) {
+              message += `\n- Lỗi: ${data.details.failed}`;
+            }
+            if (data.details.alreadyMembers > 0) {
+              message += `\n- Đã tham gia: ${data.details.alreadyMembers}`;
+            }
+          }
+          alert(`✅ ${message}`);
           closeInviteStudentModal();
+
+          // Refresh students list after successful invite
+          setTimeout(() => {
+            if (typeof refreshStudentsList === 'function') {
+              refreshStudentsList();
+            }
+          }, 2000);
         } else {
           alert(`❌ ${data.message}`);
         }
       })
       .catch(error => {
-        console.error('Error inviting student:', error);
+        console.error('Error inviting students:', error);
         alert('❌ Lỗi khi gửi lời mời');
       })
       .finally(() => {
         inviteBtn.disabled = false;
+        inviteBtn.style.background = '#007bff';
         inviteBtn.textContent = originalText;
       });
   }
