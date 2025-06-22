@@ -25,7 +25,7 @@ var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
         <span>Trang chủ</span>
       </a>
     </li>
-    <!-- Menu Khoa đa cấp -->
+    @* <!-- Menu Khoa đa cấp -->
     <li class="menu-khoa">
       <a href="#" onclick="toggleSubMenu(event, this)">
         <i class="fas fa-university"></i>
@@ -116,7 +116,10 @@ var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
           </ul>
         </li>
       </ul>
-    </li>
+    </li> *@
+
+    @await Component.InvokeAsync("KhoaListMenu")
+    @await Component.InvokeAsync("BaiGiangListMenu")
     }
     @if (userRole == "Giangvien")
     {

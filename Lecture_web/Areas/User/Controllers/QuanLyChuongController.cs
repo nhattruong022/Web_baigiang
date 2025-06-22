@@ -58,7 +58,7 @@ namespace Lecture_web.Areas.User.Controllers
             var totalItems = await q.CountAsync();
             var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
             var items = await q
-                .OrderByDescending(x => x.NgayCapNhat)
+                .OrderByDescending(x => x.NgayTao)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();

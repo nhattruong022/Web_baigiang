@@ -29,7 +29,7 @@ namespace Lecture_web.Areas.User.Controllers
 
             var q = _context.BaiGiang
                 .Where(b => b.IdTaiKhoan == userId)
-                .OrderByDescending(o=>o.NgayCapNhat)
+                .OrderByDescending(o=>o.NgayTao)
                 .Include(b => b.LopHocPhans).ThenInclude(lp => lp.HocPhan)
                 .Select(p => new BaiGiangViewModel
                 {

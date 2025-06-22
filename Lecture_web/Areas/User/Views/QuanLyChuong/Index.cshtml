@@ -121,10 +121,10 @@
                   class="search-form"
                   style="display:flex; align-items:center; gap:0.5rem; margin-bottom:1rem;">
 
-                @* Reset về trang 1 mỗi lần submit *@
+            
                 <input type="hidden" name="page" value="1" />
 
-                @* Dropdown lọc theo bài giảng *@
+            
                 <select name="tenbg"
                         style="padding:0.5rem 1rem; border:1px solid #ddd; border-radius:5px;">
                     <option value="" @(string.IsNullOrEmpty(Model.baigiang) ? "selected" : "")>
