@@ -21,24 +21,27 @@ namespace Lecture_web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Login()
+        public IActionResult Login(string returnUrl = null)
         {
+            ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(string username, string password)
+        public async Task<IActionResult> Login(string username, string password, string returnUrl = null)
         {
             var user = _context.TaiKhoan.FirstOrDefault(u => u.TenDangNhap == username);
             if (user == null || user.MatKhau != password)
             {
                 ModelState.AddModelError("username", "Tên đăng nhập hoặc mật khẩu không đúng.");
                 ModelState.AddModelError("password", "Tên đăng nhập hoặc mật khẩu không đúng.");
+                ViewBag.ReturnUrl = returnUrl;
                 return View();
             }
             if (user.TrangThai != null && user.TrangThai.Trim() == "KhongHoatDong")
             {
                 ModelState.AddModelError("username", "Tài khoản của bạn đã bị khóa hoặc không hoạt động.");
+                ViewBag.ReturnUrl = returnUrl;
                 return View();
             }
             var claims = new List<Claim>
@@ -50,7 +53,13 @@ namespace Lecture_web.Controllers
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
-            // Redirect theo role
+            // Nếu có returnUrl, redirect về đó
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+
+            // Redirect theo role (mặc định)
             if (user.VaiTro == "Admin")
                 return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
             if (user.VaiTro == "Giangvien")

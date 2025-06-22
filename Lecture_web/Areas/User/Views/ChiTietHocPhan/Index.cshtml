@@ -6,7 +6,8 @@ var userRole = ViewBag.UserRole as string;
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 }
 
-
+@* CSRF Token for AJAX calls *@
+@Html.AntiForgeryToken()
 
 <div class="app-container">
   <div class="header-row" style="display: flex; align-items: center; gap: 16px; margin: 24px 24px 0 32px;">
@@ -24,23 +25,44 @@ var userRole = ViewBag.UserRole as string;
     <aside class="sidebar-chapters" style="border-radius: 0; min-height: 100%; height: 100%; box-shadow: none; margin: 0; width: 260px;">
       <h2>Chương & Bài</h2>
       <ul class="chapter-list">
-        <li class="chapter open">
-          <button class="chapter-title active" onclick="toggleChapter(this)">Chương 1: HTML cơ bản <i class="fas fa-chevron-down" style="margin-left:auto"></i></button>
-          <ul class="lesson-list">
-            <li><button class="lesson-btn active" onclick="showLesson(0,0)">Bài 1: Giới thiệu HTML</button></li>
-            <li><button class="lesson-btn" onclick="showLesson(0,1)">Bài 2: Thẻ cơ bản</button></li>
-          </ul>
-        </li>
-        <li class="chapter">
-          <button class="chapter-title" onclick="toggleChapter(this)">Chương 2: CSS cơ bản <i class="fas fa-chevron-down" style="margin-left:auto"></i></button>
-          <ul class="lesson-list">
-            <li><button class="lesson-btn" onclick="showLesson(1,0)">Bài 1: Giới thiệu CSS</button></li>
-            <li><button class="lesson-btn" onclick="showLesson(1,1)">Bài 2: Bộ chọn</button></li>
-          </ul>
-        </li>
+        @{
+        var chuongs = ViewBag.Chuongs as List<dynamic>;
+          }
+          @if (chuongs != null && chuongs.Any())
+          {
+          @for (int chapterIdx = 0; chapterIdx
 
+          < chuongs.Count; chapterIdx++) { var chuong=chuongs[chapterIdx]; <li class="chapter @(chapterIdx == 0 ? " open" : "" )">
+            <button class="chapter-title @(chapterIdx == 0 ? " active" : "" )" onclick="toggleChapter(this)">
+              @chuong.TenChuong
+              <i class="fas fa-chevron-down" style="margin-left:auto"></i>
+            </button>
+            <ul class="lesson-list">
+              @if (chuong.Bais != null)
+              {
+              @for (int lessonIdx = 0; lessonIdx
 
-
+              < ((List<dynamic>)chuong.Bais).Count; lessonIdx++)
+                {
+                var bai = ((List<dynamic>)chuong.Bais)[lessonIdx];
+                  <li>
+                    <button class="lesson-btn @(chapterIdx == 0 && lessonIdx == 0 ? " active" : "" )" onclick="showLesson(@chapterIdx, @lessonIdx)">
+                      @bai.TieuDeBai
+                    </button>
+                  </li>
+                  }
+                  }
+            </ul>
+            </li>
+            }
+            }
+            else
+            {
+            <li style="padding: 20px; text-align: center; color: #666;">
+              <i class="fas fa-book" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
+              Chưa có chương nào được tạo
+            </li>
+            }
       </ul>
     </aside>
     <div style="flex:1;display:flex;flex-direction:column;min-height: 600px;">
@@ -61,7 +83,6 @@ var userRole = ViewBag.UserRole as string;
               <option>Hoạt động</option>
               <option>Không hoạt động</option>
             </select>
-
           </div>
           <div style="display:flex; align-items:center; gap:12px;">
             <div class="search-box">
@@ -70,8 +91,8 @@ var userRole = ViewBag.UserRole as string;
             </div>
             @if (userRole != "Sinhvien")
             {
-            <button class="btn-primary" onclick="openAddStudentModal()" style="padding:8px 18px; font-size:1rem; border-radius:6px; margin-left:8px; display:flex; align-items:center; gap:8px; background-color: #3498db; color: #fff; border: none;">
-              <i class="fas fa-user-plus"></i> Thêm sinh viên
+            <button onclick="openInviteStudentModal()" style="background: #007bff; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center;" title="Mời sinh viên">
+              <i class="fas fa-plus"></i>
             </button>
             }
           </div>
@@ -93,25 +114,67 @@ var userRole = ViewBag.UserRole as string;
                 }
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td>tranvanb</td>
-                <td>Trần Văn B</td>
-                <td>Sinh viên</td>
-                <td>tranvanb@example.com</td>
-                <td>0123456789</td>
-                <td><img style="width:52px; height:52px; border-radius:50%;" src="~/images/avatar.jpg" class="student-avatar" /></td>
-                <td><span class="status-badge active">Hoạt động</span></td>
+            <tbody id="studentsTableBody">
+              @{
+              var studentsInClass = ViewBag.StudentsInClass as IEnumerable<dynamic>;
+                }
 
-                <td>
+                <!-- DEBUG: Kiểm tra data sinh viên -->
+                @if (ViewBag.StudentsInClass != null)
+                {
+                <script>
+                  console.log('StudentsInClass data:', @Html.Raw(Json.Serialize(ViewBag.StudentsInClass)));
+                </script>
+                }
+
+                @if (studentsInClass != null && studentsInClass.Any())
+                {
+                @foreach (var student in studentsInClass)
+                {
+                <tr>
+                  <td>@student.TenDangNhap</td>
+                  <td>@student.HoTen</td>
+                  <td>@(student.VaiTro == "Sinhvien" ? "Sinh viên" : student.VaiTro)</td>
+                  <td>@student.Email</td>
+                  <td>@(student.SoDienThoai ?? "Chưa cập nhật")</td>
+                  <td>
+                    @if (!string.IsNullOrEmpty(student.AnhDaiDien))
+                    {
+                    <img style="width:52px; height:52px; border-radius:50%;" src="@student.AnhDaiDien" class="student-avatar" />
+                    }
+                    else
+                    {
+                    <img style="width:52px; height:52px; border-radius:50%;" src="~/images/avatar.jpg" class="student-avatar" />
+                    }
+                  </td>
+                  <td><span class="status-badge @(student.TrangThai == " HoatDong" ? "hoatdong" : "" )">@(student.TrangThai == "HoatDong" ? "Hoạt động" : (student.TrangThai ?? "Chưa cập nhật"))</span></td>
                   @if (userRole != "Sinhvien")
                   {
-                  <button class="btn-icon" onclick="openEditStudentModal(this)"><i class="fas fa-edit"></i></button>
-                  <button class="btn-icon" onclick="openConfirmDeleteStudentModal(this)"><i class="fas fa-trash"></i></button>
+                  <td>
+                    <button class="btn-icon" onclick="openEditStudentModal(this)"><i class="fas fa-edit"></i></button>
+                    <button class="btn-icon" onclick="openConfirmDeleteStudentModal(this)"><i class="fas fa-trash"></i></button>
+                  </td>
                   }
-                </td>
-              </tr>
-              <!-- Thêm các dòng sinh viên khác -->
+                </tr>
+                }
+                }
+                else
+                {
+                <tr>
+                  <td colspan="@(userRole != " Sinhvien" ? "8" : "7" )" style="text-align: center; padding: 20px; color: #666;">
+                    <i class="fas fa-users" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
+                    Chưa có sinh viên nào trong lớp học này
+                    @if (userRole != "Sinhvien")
+                    {
+                    <div style="margin-top: 12px;">
+                      <button onclick="openInviteStudentModal()" style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">
+                        <i class="fas fa-plus"></i> Mời sinh viên tham gia
+                      </button>
+                    </div>
+                    }
+                  </td>
+                </tr>
+                }
             </tbody>
           </table>
         </div>
@@ -123,58 +186,35 @@ var userRole = ViewBag.UserRole as string;
           <button>3</button>
           <button>&gt;</button>
         </div>
-        <!-- Popup Thêm sinh viên -->
+
+        <!-- Popup Mời học viên -->
         @if (userRole != "Sinhvien")
         {
-        <div class="modal" id="addStudentModal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100vw; height:100vh; background:rgba(44,62,80,0.18); justify-content:center; align-items:center;">
-          <div class="modal-content add-student-modal-content">
-            <div class="modal-header" style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #e0e6ed; padding-bottom:18px; margin-bottom:24px;">
-              <h2 style="font-size:1.35rem; font-weight:700; color:#22334d; margin:0;">Thêm sinh viên</h2>
-              <button onclick="closeAddStudentModal()" style="background:none; border:none; font-size:1.3rem; color:#888; cursor:pointer;"><i class="fas fa-times"></i></button>
+        <div class="modal" id="inviteStudentModal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100vw; height:100vh; background:rgba(44,62,80,0.18); justify-content:center; align-items:center;">
+          <div class="modal-content" style="background:#fff; border-radius:14px; box-shadow:0 8px 32px rgba(52,152,219,0.18),0 1.5px 8px rgba(0,0,0,0.08); padding:0; width:420px; max-width:90vw; position:relative; overflow:hidden;">
+            <div class="modal-header" style="background:#fff; padding:20px 24px 16px 24px; border-bottom:1px solid #e5e5e5;">
+              <h2 style="font-size:1.2rem; font-weight:600; color:#333; margin:0;">Mời học viên</h2>
+              <button onclick="closeInviteStudentModal()" style="position:absolute; top:16px; right:20px; background:none; border:none; font-size:1.3rem; color:#666; cursor:pointer;"><i class="fas fa-times"></i></button>
             </div>
-            <form id="addStudentForm" onsubmit="submitAddStudent(event)">
-              <div class="form-group">
-                <label for="studentUsername">Tên đăng nhập</label>
-                <input type="text" id="studentUsername" required>
+            <div class="modal-body" style="padding:20px 24px;">
+              <div style="margin-bottom:16px;">
+                <input type="text" id="searchStudentEmail" placeholder="nganpham" style="width:100%; padding:12px 16px; border:1px solid #ddd; border-radius:8px; font-size:1rem; outline:none;" oninput="searchStudent(this.value)">
               </div>
-              <div class="form-group">
-                <label for="studentName">Họ và tên</label>
-                <input type="text" id="studentName" required>
+              <div id="searchResults" style="max-height:200px; overflow-y:auto;">
+                <!-- Kết quả tìm kiếm sẽ hiển thị ở đây -->
               </div>
-              <div class="form-group">
-                <label for="studentRole">Vai trò</label>
-                <select id="studentRole" required>
-                  <option value="student">Sinh viên</option>
-                  <option value="teacher">Giảng viên</option>
-                </select>
+              <div style="color:#666; font-size:0.9rem; margin-top:12px; text-align:center;">
+                click the "plus sign" in the Student list and enter the Student email
               </div>
-              <div class="form-group">
-                <label for="studentEmail">Email</label>
-                <input type="email" id="studentEmail" required>
-              </div>
-              <div class="form-group">
-                <label for="studentPhone">Số điện thoại</label>
-                <input type="text" id="studentPhone">
-              </div>
-              <div class="form-group">
-                <label for="studentAvatar">Ảnh đại diện</label>
-                <input type="file" id="studentAvatar" accept="image/*">
-              </div>
-              <div class="form-group">
-                <label for="studentStatus">Trạng thái</label>
-                <select id="studentStatus" required>
-                  <option value="active">Hoạt động</option>
-                  <option value="inactive">Không hoạt động</option>
-                </select>
-              </div>
-              <div class="form-actions modal-actions">
-                <button type="button" onclick="closeAddStudentModal()" class="btn-cancel">Hủy</button>
-                <button type="submit" class="btn-primary">Thêm sinh viên</button>
-              </div>
-            </form>
+            </div>
+            <div class="modal-footer" style="padding:16px 24px; background:#f8f9fa; display:flex; justify-content:flex-end; gap:12px;">
+              <button type="button" onclick="closeInviteStudentModal()" style="padding:8px 20px; border:1px solid #ddd; background:#fff; color:#666; border-radius:6px; font-size:0.95rem; cursor:pointer;">Hủy</button>
+              <button type="button" onclick="inviteSelectedStudent()" style="padding:8px 20px; background:#007bff; color:#fff; border:none; border-radius:6px; font-size:0.95rem; cursor:pointer;">Mời</button>
+            </div>
           </div>
         </div>
         }
+
         <!-- Popup chỉnh sửa sinh viên -->
         @if (userRole != "Sinhvien")
         {
@@ -215,8 +255,8 @@ var userRole = ViewBag.UserRole as string;
               <div class="form-group">
                 <label for="editStudentStatus">Trạng thái</label>
                 <select id="editStudentStatus" required>
-                  <option value="active">Hoạt động</option>
-                  <option value="inactive">Không hoạt động</option>
+                  <option value="hoatdong">Hoạt động</option>
+                  <option value="khonghoatdong">Không hoạt động</option>
                 </select>
               </div>
               <div class="form-actions modal-actions">
@@ -253,7 +293,6 @@ var userRole = ViewBag.UserRole as string;
             @if (userRole != "Sinhvien")
             {
             <div class="notice-menu-popup" style="display:none; position:absolute; right:24px; top:48px; background:#fff; box-shadow:0 2px 8px rgba(44,62,80,0.12); border-radius:8px; min-width:160px; z-index:10;">
-
               <button onclick="addNotice()" class="notice-menu-item">Thêm thông báo</button>
               <button onclick="editNotice(this)" class="notice-menu-item">Sửa thông báo</button>
               <button onclick="deleteNotice(this)" class="notice-menu-item" style="color:#e74c3c;">Xóa thông báo</button>
@@ -386,78 +425,151 @@ var userRole = ViewBag.UserRole as string;
   </div>
 </div>
 
-
-
 <script>
-  // Dữ liệu mẫu
+  let selectedStudentForInvite = null;
+  let currentLopHocPhanId = @(ViewBag.IdLopHocPhan ?? 1);
+
+  console.log('DEBUG: currentLopHocPhanId =', currentLopHocPhanId);
+
+  // Dữ liệu lessons đơn giản để test
   const lessons = [
     [{
-        title: 'Bài 1: Giới thiệu HTML',
-        meta: 'Thời lượng: 45 phút | Tài liệu: 2 file',
-        video: 'lecture1.mp4',
-        materials: [{
-            icon: 'fa-file-pdf',
-            name: 'Slide bài giảng',
-            link: '#',
-            size: '2.5 MB'
-          },
-          {
-            icon: 'fa-file-word',
-            name: 'Tài liệu tham khảo',
-            link: '#',
-            size: '1.8 MB'
-          }
-        ],
-        desc: 'Giới thiệu về HTML và cấu trúc cơ bản của một trang web.'
-      },
-      {
-        title: 'Bài 2: Thẻ cơ bản',
-        meta: 'Thời lượng: 30 phút | Tài liệu: 1 file',
-        video: '',
-        materials: [{
-          icon: 'fa-file-pdf',
-          name: 'Tài liệu PDF',
-          link: '#',
-          size: '1.2 MB'
-        }],
-        desc: 'Tìm hiểu các thẻ HTML cơ bản như h1, p, a, img...'
-      }
-    ],
-    [{
-        title: 'Bài 1: Giới thiệu CSS',
-        meta: 'Thời lượng: 40 phút | Tài liệu: 1 file',
-        video: '',
-        materials: [{
-          icon: 'fa-file-pdf',
-          name: 'Slide CSS',
-          link: '#',
-          size: '1.1 MB'
-        }],
-        desc: 'Giới thiệu về CSS và cách áp dụng vào HTML.'
-      },
-      {
-        title: 'Bài 2: Bộ chọn',
-        meta: 'Thời lượng: 35 phút | Tài liệu: 1 file',
-        video: '',
-        materials: [{
-          icon: 'fa-file-pdf',
-          name: 'Tài liệu bộ chọn',
-          link: '#',
-          size: '1.0 MB'
-        }],
-        desc: 'Học về các loại bộ chọn trong CSS.'
-      }
-    ]
+      id: 1,
+      title: 'Bài học từ database',
+      meta: 'Dữ liệu từ chương và bài trong CSDL',
+      video: '',
+      materials: [{
+        icon: 'fa-file-pdf',
+        name: 'Tài liệu bài học',
+        link: '#',
+        size: '1.2 MB'
+      }],
+      desc: 'Hiển thị nội dung bài học từ cơ sở dữ liệu. Sidebar sẽ hiển thị dữ liệu thực từ ViewBag.Chuongs.'
+    }]
   ];
+
+  console.log('DEBUG: lessons data =', lessons);
+
   // Hiển thị bài đầu tiên mặc định
   window.onload = function() {
-    showLesson(0, 0);
+    // Update currentLopHocPhanId from ViewBag
+    currentLopHocPhanId = @(ViewBag.IdLopHocPhan ?? 1);
+    console.log('DEBUG: currentLopHocPhanId updated to =', currentLopHocPhanId);
+
+    // Chỉ hiển thị bài đầu tiên nếu có dữ liệu
+    if (lessons.length > 0 && lessons[0].length > 0) {
+      showLesson(0, 0);
+    } else {
+      // Hiển thị thông báo khi không có bài học
+      document.getElementById('tab-lessons').innerHTML = `
+        <div style="padding: 40px; text-align: center; color: #666;">
+          <i class="fas fa-book-open" style="font-size: 48px; margin-bottom: 16px; display: block; color: #ddd;"></i>
+          <h3 style="margin-bottom: 8px; color: #666;">Chưa có bài giảng</h3>
+          <p style="margin: 0;">Lớp học này chưa có chương và bài giảng nào được tạo.</p>
+        </div>
+      `;
+    }
+
+    // Auto-refresh students list every 30 seconds if on students tab
+    setInterval(() => {
+      const studentsTab = document.getElementById('tab-students');
+      if (studentsTab && studentsTab.style.display !== 'none') {
+        refreshStudentsList();
+      }
+    }, 30000);
   };
 
+  // Function để refresh danh sách sinh viên
+  function refreshStudentsList() {
+    console.log('Refreshing students list for class:', currentLopHocPhanId);
+
+    fetch(`/User/ChiTietHocPhan/GetStudentsList?idLopHocPhan=${currentLopHocPhanId}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          updateStudentsTable(data.data);
+        } else {
+          console.error('Failed to refresh students list:', data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error refreshing students list:', error);
+      });
+  }
+
+  // Function để update students table với data mới
+  function updateStudentsTable(students) {
+    const tableBody = document.getElementById('studentsTableBody');
+    const userRole = '@userRole';
+
+    if (!students || students.length === 0) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="${userRole !== "Sinhvien" ? "8" : "7"}" style="text-align: center; padding: 20px; color: #666;">
+            <i class="fas fa-users" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
+            Chưa có sinh viên nào trong lớp học này
+            ${userRole !== "Sinhvien" ? `
+              <div style="margin-top: 12px;">
+                <button onclick="openInviteStudentModal()" style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">
+                  <i class="fas fa-plus"></i> Mời sinh viên tham gia
+                </button>
+              </div>
+            ` : ''}
+          </td>
+        </tr>`;
+      return;
+    }
+
+    tableBody.innerHTML = students.map(student => `
+      <tr>
+        <td>${student.tenDangNhap || 'N/A'}</td>
+        <td>${student.hoTen || 'N/A'}</td>
+        <td>${student.vaiTro === "Sinhvien" ? "Sinh viên" : student.vaiTro}</td>
+        <td>${student.email || 'N/A'}</td>
+        <td>${student.soDienThoai || 'Chưa cập nhật'}</td>
+        <td>
+          <img style="width:52px; height:52px; border-radius:50%;" 
+               src="${student.anhDaiDien || '~/images/avatar.jpg'}" 
+               class="student-avatar" />
+        </td>
+        <td><span class="status-badge ${student.trangThai === 'HoatDong' ? 'hoatdong' : ''}">${student.trangThai === 'HoatDong' ? 'Hoạt động' : (student.trangThai || 'Chưa cập nhật')}</span></td>
+        ${userRole !== "Sinhvien" ? `
+          <td>
+            <button class="btn-icon" onclick="openEditStudentModal(this)"><i class="fas fa-edit"></i></button>
+            <button class="btn-icon" onclick="openConfirmDeleteStudentModal(this)"><i class="fas fa-trash"></i></button>
+          </td>
+        ` : ''}
+      </tr>
+    `).join('');
+
+    console.log(`Updated students table with ${students.length} students`);
+  }
+
   function showLesson(chapterIdx, lessonIdx) {
+    // Kiểm tra dữ liệu hợp lệ
+    if (!lessons || lessons.length === 0 ||
+      !lessons[chapterIdx] || lessons[chapterIdx].length === 0 ||
+      !lessons[chapterIdx][lessonIdx]) {
+      document.getElementById('tab-lessons').innerHTML = `
+        <div style="padding: 40px; text-align: center; color: #666;">
+          <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 16px; display: block; color: #ffa500;"></i>
+          <h3 style="margin-bottom: 8px; color: #666;">Không tìm thấy bài học</h3>
+          <p style="margin: 0;">Bài học này không tồn tại hoặc đã bị xóa.</p>
+        </div>
+      `;
+      return;
+    }
+
+    // Cập nhật trạng thái active cho các button
     document.querySelectorAll('.lesson-btn').forEach(btn => btn.classList.remove('active'));
-    const btns = document.querySelectorAll('.chapter')[chapterIdx].querySelectorAll('.lesson-btn');
-    btns[lessonIdx].classList.add('active');
+    const chapters = document.querySelectorAll('.chapter');
+    if (chapters[chapterIdx]) {
+      const lessonBtns = chapters[chapterIdx].querySelectorAll('.lesson-btn');
+      if (lessonBtns[lessonIdx]) {
+        lessonBtns[lessonIdx].classList.add('active');
+      }
+    }
+
     const lesson = lessons[chapterIdx][lessonIdx];
     document.getElementById('tab-lessons').innerHTML = `
         <div class="lesson-header">
@@ -472,7 +584,10 @@ var userRole = ViewBag.UserRole as string;
                     ${lesson.materials.map(m => `<li><i class="fas ${m.icon}"></i> <a href="${m.link}">${m.name}</a> <span class="file-size">${m.size}</span></li>`).join('')}
                 </ul>
             </div>
-            <div class="lesson-desc">${lesson.desc}</div>
+            <div class="lesson-desc">
+                <h4>Mô tả</h4>
+                <p>${lesson.desc}</p>
+            </div>
         </div>
         <div class="comments-section">
             <h2>Bình luận</h2>
@@ -482,7 +597,7 @@ var userRole = ViewBag.UserRole as string;
             </form>
             <div class="comments-list">
                 <div class="comment">
-                    <img src="avatar1.png" alt="User Avatar" class="comment-avatar">
+                    <img src="~/images/avatar.jpg" alt="User Avatar" class="comment-avatar">
                     <div class="comment-content">
                         <div class="comment-header">
                             <h4>Nguyễn Văn A</h4>
@@ -495,6 +610,7 @@ var userRole = ViewBag.UserRole as string;
         </div>
     `;
   }
+
   // Mở/đóng chương
   function toggleChapter(btn) {
     const li = btn.parentElement;
@@ -502,6 +618,7 @@ var userRole = ViewBag.UserRole as string;
     document.querySelectorAll('.chapter-title').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
   }
+
   // Tab switching for course detail
   function showTab(tab, btn) {
     document.querySelectorAll('.course-tab-btn').forEach(b => b.classList.remove('active'));
@@ -517,26 +634,128 @@ var userRole = ViewBag.UserRole as string;
     }
   }
 
-  function openAddStudentModal() {
-    document.getElementById('addStudentModal').style.display = 'flex';
-    document.getElementById('addStudentModal').style.alignItems = 'center';
-    document.getElementById('addStudentModal').style.justifyContent = 'center';
-    document.getElementById('addStudentForm').reset();
+  // Popup mời học viên
+  function openInviteStudentModal() {
+    document.getElementById('inviteStudentModal').style.display = 'flex';
+    document.getElementById('searchStudentEmail').value = '';
+    document.getElementById('searchResults').innerHTML = '';
+    selectedStudentForInvite = null;
   }
 
-  function closeAddStudentModal() {
-    document.getElementById('addStudentModal').style.display = 'none';
+  function closeInviteStudentModal() {
+    document.getElementById('inviteStudentModal').style.display = 'none';
   }
 
-  function submitAddStudent(e) {
-    e.preventDefault();
-    // Lấy dữ liệu từ form
-    const email = document.getElementById('studentEmail').value;
-    const name = document.getElementById('studentName').value;
-    const mssv = document.getElementById('studentUsername').value;
-    const phone = document.getElementById('studentPhone').value;
-    alert('Đã thêm sinh viên: ' + name + ' (' + email + ')');
-    closeAddStudentModal();
+  function searchStudent(query) {
+    const resultsContainer = document.getElementById('searchResults');
+
+    if (!query.trim()) {
+      resultsContainer.innerHTML = '';
+      return;
+    }
+
+    // Hiển thị loading
+    resultsContainer.innerHTML = '<div style="padding:12px; color:#666; text-align:center;"><i class="fas fa-spinner fa-spin"></i> Đang tìm kiếm...</div>';
+
+    // Call API để tìm kiếm sinh viên
+    fetch(`/User/ChiTietHocPhan/SearchStudents?email=${encodeURIComponent(query)}`)
+      .then(response => response.json())
+      .then(data => {
+        if (!data.success) {
+          resultsContainer.innerHTML = `<div style="padding:12px; color:#e74c3c; text-align:center;">${data.message}</div>`;
+          return;
+        }
+
+        if (!data.data || data.data.length === 0) {
+          resultsContainer.innerHTML = '<div style="padding:12px; color:#666; text-align:center;">Không tìm thấy sinh viên</div>';
+          return;
+        }
+
+        resultsContainer.innerHTML = data.data.map(student => `
+           <div class="search-result-item" onclick="selectStudentForInvite(${student.idTaiKhoan}, '${student.email.replace(/'/g, "\\'")}', '${student.hoTen.replace(/'/g, "\\'")}', '${(student.anhDaiDien || '~/images/avatar.jpg').replace(/'/g, "\\'")}'); event.stopPropagation();" style="padding:12px; display:flex; align-items:center; gap:12px; cursor:pointer; border-radius:6px; margin-bottom:4px; transition:background 0.2s; border: 2px solid transparent;" onmouseover="this.style.background='#f5f5f5'" onmouseout="if(!this.classList.contains('selected')) this.style.background='transparent'">
+             <img src="${student.anhDaiDien || '~/images/avatar.jpg'}" alt="${student.hoTen}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+             <div style="flex:1;">
+               <div style="font-weight:500; color:#333;">${student.hoTen}</div>
+               <div style="font-size:0.9rem; color:#666;">${student.email}</div>
+             </div>
+           </div>
+         `).join('');
+      })
+      .catch(error => {
+        console.error('Error searching students:', error);
+        resultsContainer.innerHTML = '<div style="padding:12px; color:#e74c3c; text-align:center;">Lỗi tìm kiếm</div>';
+      });
+  }
+
+  function selectStudentForInvite(idTaiKhoan, email, name, avatar) {
+    selectedStudentForInvite = {
+      idTaiKhoan,
+      email,
+      name,
+      avatar
+    };
+
+    // Highlight selected item
+    document.querySelectorAll('.search-result-item').forEach(item => {
+      item.classList.remove('selected');
+      item.style.background = 'transparent';
+      item.style.border = '2px solid transparent';
+    });
+
+    // Highlight current selection
+    event.currentTarget.classList.add('selected');
+    event.currentTarget.style.background = '#e3f2fd';
+    event.currentTarget.style.border = '2px solid #2196F3';
+
+    console.log('Selected student:', selectedStudentForInvite);
+  }
+
+  function inviteSelectedStudent() {
+    if (!selectedStudentForInvite) {
+      alert('Vui lòng chọn một học viên để mời');
+      return;
+    }
+
+    // Hiển thị loading
+    const inviteBtn = document.querySelector('.modal-footer button[onclick="inviteSelectedStudent()"]');
+    const originalText = inviteBtn.textContent;
+    inviteBtn.disabled = true;
+    inviteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+
+    // Debug log trước khi gửi
+    console.log('Sending invite request:', {
+      idLopHocPhan: currentLopHocPhanId,
+      idTaiKhoan: selectedStudentForInvite.idTaiKhoan,
+      selectedStudent: selectedStudentForInvite
+    });
+
+    // Gửi API để mời học viên (sử dụng FormData cho CSRF token)
+    const formData = new FormData();
+    formData.append('idLopHocPhan', currentLopHocPhanId);
+    formData.append('idTaiKhoan', selectedStudentForInvite.idTaiKhoan);
+    formData.append('__RequestVerificationToken', document.querySelector('input[name="__RequestVerificationToken"]')?.value || '');
+
+    fetch('/User/ChiTietHocPhan/InviteStudent', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert(`✅ ${data.message}`);
+          closeInviteStudentModal();
+        } else {
+          alert(`❌ ${data.message}`);
+        }
+      })
+      .catch(error => {
+        console.error('Error inviting student:', error);
+        alert('❌ Lỗi khi gửi lời mời');
+      })
+      .finally(() => {
+        inviteBtn.disabled = false;
+        inviteBtn.textContent = originalText;
+      });
   }
 
   function toggleNoticeMenu(btn) {
@@ -574,19 +793,17 @@ var userRole = ViewBag.UserRole as string;
 
   function submitAddNotice(e) {
     e.preventDefault();
-    // Lấy dữ liệu từ form
     const title = document.getElementById('noticeTitle').value;
     const content = document.getElementById('noticeContent').value;
     alert('Đã thêm thông báo: ' + title);
     closeAddNoticeModal();
   }
+
   let currentEditNoticeCard = null;
   let currentDeleteNoticeCard = null;
 
   function editNotice(btn) {
-    // Lấy card hiện tại
     currentEditNoticeCard = btn.closest('.notice-card');
-    // Lấy dữ liệu từ card (giả lập, thực tế nên lấy từ data hoặc API)
     const title = currentEditNoticeCard.querySelector('.notice-author')?.innerText || '';
     const content = currentEditNoticeCard.querySelector('.notice-body')?.innerText || '';
     document.getElementById('editNoticeTitle').value = title;
@@ -604,10 +821,8 @@ var userRole = ViewBag.UserRole as string;
 
   function submitEditNotice(e) {
     e.preventDefault();
-    // Lấy dữ liệu từ form
     const title = document.getElementById('editNoticeTitle').value;
     const content = document.getElementById('editNoticeContent').value;
-    // Cập nhật lại giao diện (giả lập)
     if (currentEditNoticeCard) {
       currentEditNoticeCard.querySelector('.notice-author').innerText = title;
       currentEditNoticeCard.querySelector('.notice-body').innerText = content;
@@ -636,7 +851,6 @@ var userRole = ViewBag.UserRole as string;
   }
 
   function openEditStudentModal(btn) {
-    // Lấy dòng sinh viên (giả lập, thực tế nên lấy từ data hoặc API)
     const row = btn.closest('tr');
     document.getElementById('editStudentUsername').value = row.children[0]?.innerText || '';
     document.getElementById('editStudentName').value = row.children[1]?.innerText || '';
@@ -644,7 +858,7 @@ var userRole = ViewBag.UserRole as string;
     document.getElementById('editStudentEmail').value = row.children[3]?.innerText || '';
     document.getElementById('editStudentPhone').value = row.children[4]?.innerText || '';
     document.getElementById('editStudentAvatar').value = '';
-    document.getElementById('editStudentStatus').value = row.querySelector('.status-badge')?.classList.contains('active') ? 'active' : 'inactive';
+    document.getElementById('editStudentStatus').value = row.querySelector('.status-badge')?.classList.contains('hoatdong') ? 'hoatdong' : 'khonghoatdong';
     document.getElementById('editStudentModal').style.display = 'flex';
     document.getElementById('editStudentModal').style.alignItems = 'center';
     document.getElementById('editStudentModal').style.justifyContent = 'center';
@@ -657,10 +871,9 @@ var userRole = ViewBag.UserRole as string;
 
   function submitEditStudent(e) {
     e.preventDefault();
-    // Lấy dữ liệu từ form
-    // Cập nhật lại giao diện nếu cần
     closeEditStudentModal();
   }
+
   let currentDeleteStudentRow = null;
 
   function openConfirmDeleteStudentModal(btn) {
@@ -674,7 +887,6 @@ var userRole = ViewBag.UserRole as string;
     document.getElementById('confirmDeleteStudentModal').style.display = 'none';
   }
 
-
   function confirmDeleteStudent() {
     if (currentDeleteStudentRow) {
       currentDeleteStudentRow.remove();
@@ -683,3 +895,45 @@ var userRole = ViewBag.UserRole as string;
     closeConfirmDeleteStudentModal();
   }
 </script>
+
+@* Handle TempData messages *@
+@if (TempData["Success"] != null)
+{
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+    alert('✅ @TempData["Success"]');
+    setTimeout(() => {
+      if (typeof refreshStudentsList === 'function') {
+        refreshStudentsList();
+      }
+    }, 1000);
+  });
+</script>
+}
+
+@if (TempData["Error"] != null)
+{
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+    alert('❌ @TempData["Error"]');
+  });
+</script>
+}
+
+@if (TempData["Warning"] != null)
+{
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+    alert('⚠️ @TempData["Warning"]');
+  });
+</script>
+}
+
+@if (TempData["Info"] != null)
+{
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+    alert('ℹ️ @TempData["Info"]');
+  });
+</script>
+}

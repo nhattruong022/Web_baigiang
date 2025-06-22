@@ -1,13 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Linq;
 using Lecture_web.Models;
 using Lecture_web.Service;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace Lecture_web.Areas.Admin.Controllers
 {
     
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class QuanLyBoMonController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -25,22 +29,28 @@ namespace Lecture_web.Areas.Admin.Controllers
         {
             int pageSize = 5;
             var boMons = _context.BoMon
+                .Join(_context.Khoa,
+                    b => b.IdKhoa,
+                    k => k.IdKhoa,
+                    (b, k) => new {
+                        b.IdBoMon,
+                        b.TenBoMon,
+                        b.MoTa,
+                        b.IdKhoa,
+                        TenKhoa = k.TenKhoa,
+                        b.NgayTao,
+                        b.NgayCapNhat
+                    })
                 .Where(b => string.IsNullOrEmpty(search) || b.TenBoMon.Contains(search));
+
             int total = boMons.Count();
             int totalPages = (int)Math.Ceiling((double)total / pageSize);
             if (totalPages < 1) totalPages = 1;
+
             var paged = boMons
                 .OrderBy(b => b.IdBoMon)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .Select(b => new {
-                    b.IdBoMon,
-                    b.TenBoMon,
-                    b.MoTa,
-                    b.IdKhoa,
-                    b.NgayTao,
-                    b.NgayCapNhat
-                })
                 .ToList();
 
             return Json(new {
@@ -63,6 +73,17 @@ namespace Lecture_web.Areas.Admin.Controllers
         {
             boMon.TenBoMon = StringHelper.NormalizeString(boMon.TenBoMon);
             boMon.MoTa = StringHelper.NormalizeString(boMon.MoTa);
+
+            // Dictionary chứa tất cả các lỗi
+            var errors = new Dictionary<string, string>();
+
+            // Kiểm tra trùng tên bộ môn
+            if (_context.BoMon.Any(b => b.TenBoMon == boMon.TenBoMon))
+            {
+                errors.Add("tenBoMon", "Tên bộ môn đã tồn tại!");
+                return Json(new { success = false, errors = errors });
+            }
+
             if(ModelState.IsValid)
             {
                 boMon.NgayTao = DateTime.Now;
@@ -71,8 +92,16 @@ namespace Lecture_web.Areas.Admin.Controllers
                 _context.SaveChanges();
                 return Json(new { success = true, message = "Thêm bộ môn thành công!" });
             }
-            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-            return Json(new { success = false, message = "Dữ liệu không hợp lệ", errors });
+
+            // Thêm các lỗi validation từ ModelState
+            var modelErrors = ModelState
+                .Where(x => x.Value.Errors.Count > 0)
+                .ToDictionary(
+                    kvp => kvp.Key.Substring(0, 1).ToLower() + kvp.Key.Substring(1), // Chuyển key về camelCase
+                    kvp => kvp.Value.Errors.First().ErrorMessage
+                );
+
+            return Json(new { success = false, errors = modelErrors });
         }
 
         [HttpGet]
@@ -89,11 +118,25 @@ namespace Lecture_web.Areas.Admin.Controllers
         {
             boMon.TenBoMon = StringHelper.NormalizeString(boMon.TenBoMon);
             boMon.MoTa = StringHelper.NormalizeString(boMon.MoTa);
+
+            // Dictionary chứa tất cả các lỗi
+            var errors = new Dictionary<string, string>();
+
+            // Kiểm tra trùng tên bộ môn (trừ chính bộ môn đang sửa)
+            if (_context.BoMon.Any(b => b.TenBoMon == boMon.TenBoMon && b.IdBoMon != boMon.IdBoMon))
+            {
+                errors.Add("tenBoMon", "Tên bộ môn đã tồn tại!");
+                return Json(new { success = false, errors = errors });
+            }
+
             if (ModelState.IsValid)
             {
                 var existing = _context.BoMon.FirstOrDefault(b => b.IdBoMon == boMon.IdBoMon);
                 if (existing == null)
-                    return Json(new { success = false, message = "Không tìm thấy bộ môn!" });
+                {
+                    errors.Add("general", "Không tìm thấy bộ môn!");
+                    return Json(new { success = false, errors = errors });
+                }
 
                 existing.TenBoMon = boMon.TenBoMon;
                 existing.MoTa = boMon.MoTa;
@@ -103,10 +146,27 @@ namespace Lecture_web.Areas.Admin.Controllers
                 _context.SaveChanges();
                 return Json(new { success = true, message = "Cập nhật bộ môn thành công!" });
             }
-            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-            return Json(new { success = false, message = "Dữ liệu không hợp lệ", errors });
+
+            // Thêm các lỗi validation từ ModelState
+            var modelErrors = ModelState
+                .Where(x => x.Value.Errors.Count > 0)
+                .ToDictionary(
+                    kvp => kvp.Key.Substring(0, 1).ToLower() + kvp.Key.Substring(1), // Chuyển key về camelCase
+                    kvp => kvp.Value.Errors.First().ErrorMessage
+                );
+
+            return Json(new { success = false, errors = modelErrors });
         }
 
+        [HttpGet]
+        public IActionResult GetKhoaList()
+        {
+            var khoas = _context.Khoa
+                .Select(k => new { k.IdKhoa, k.TenKhoa })
+                .OrderBy(k => k.TenKhoa)
+                .ToList();
+            return Json(khoas);
+        }
 
         [HttpPost]
         public IActionResult XoaBoMonAjax([FromBody] XoaBoMonModel model)
@@ -122,8 +182,6 @@ namespace Lecture_web.Areas.Admin.Controllers
             _context.SaveChanges();
             return Json(new { success = true, message = "Xóa bộ môn thành công" });
         }
-
-
 
         public class XoaBoMonModel
         {

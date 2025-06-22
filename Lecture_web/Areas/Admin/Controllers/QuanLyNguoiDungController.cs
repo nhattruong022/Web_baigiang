@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Lecture_web.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -6,13 +7,14 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Lecture_web.Service;
-
 
 namespace Lecture_web.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class QuanLyNguoiDungController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -66,36 +68,44 @@ namespace Lecture_web.Areas.Admin.Controllers
 
         // Thêm dữ liệu
         [HttpPost]
-        public IActionResult AddUserAjax(TaiKhoanModels model, IFormFile AnhDaiDien, int page = 1)
+        public IActionResult AddUserAjax(TaiKhoanModels model, IFormFile AnhDaiDien)
         {
             // Bỏ validate field file nếu không bắt buộc
             ModelState.Remove("AnhDaiDien");
 
+            // Dictionary chứa tất cả các lỗi
+            var errors = new Dictionary<string, string>();
+
+            // Kiểm tra trùng tên đăng nhập
             if (_context.TaiKhoan.Any(u => u.TenDangNhap == model.TenDangNhap))
             {
-                // Trả về lỗi cho trường TenDangNhap
-                return Json(new { success = false, errors = new { TenDangNhap = "Tên đăng nhập đã tồn tại!" } });
+                errors.Add("tenDangNhap", "Tên đăng nhập đã tồn tại!");
             }
-            else if(_context.TaiKhoan.Any(u => u.Email == model.Email))
+
+            // Kiểm tra trùng email
+            if (_context.TaiKhoan.Any(u => u.Email == model.Email))
             {
-                return Json(new { success = false, errors = new { Email = "Email đã tồn tại!" } });
+                errors.Add("email", "Email đã tồn tại!");
             }
-            else if(_context.TaiKhoan.Any(u => u.SoDienThoai == model.SoDienThoai))
+
+            // Kiểm tra trùng số điện thoại
+            if (_context.TaiKhoan.Any(u => u.SoDienThoai == model.SoDienThoai))
             {
-                return Json(new { success = false, errors = new { SoDienThoai = "Số điện thoại đã tồn tại!" } });
+                errors.Add("soDienThoai", "Số điện thoại đã tồn tại!");
             }
-            
+
+            // Nếu có bất kỳ lỗi nào, trả về tất cả các lỗi
+            if (errors.Any())
+            {
+                return Json(new { success = false, errors = errors });
+            }
 
             if (ModelState.IsValid)
             {
-                model.TenDangNhap = StringHelper.NormalizeString(model.TenDangNhap);
-                model.HoTen = StringHelper.NormalizeString(model.HoTen);
-                model.Email = StringHelper.NormalizeString(model.Email);
-                model.SoDienThoai = StringHelper.NormalizeString(model.SoDienThoai);
                 model.TrangThai = "HoatDong";
                 model.NgayTao = DateTime.Now;
                 model.NgayCapNhat = DateTime.Now;
-                
+
                 // Xử lý lưu file ảnh nếu có
                 if (AnhDaiDien != null && AnhDaiDien.Length > 0)
                 {
@@ -108,22 +118,27 @@ namespace Lecture_web.Areas.Admin.Controllers
                     model.AnhDaiDien = "/images/" + fileName;
                 }
 
+                // Chuẩn hóa dữ liệu trước khi lưu
+                model.TenDangNhap = StringHelper.NormalizeString(model.TenDangNhap);
+                model.HoTen = StringHelper.NormalizeString(model.HoTen);
+                model.Email = StringHelper.NormalizeString(model.Email);
+                model.SoDienThoai = StringHelper.NormalizeString(model.SoDienThoai);
+
                 _context.TaiKhoan.Add(model);
                 _context.SaveChanges();
                 return Json(new { success = true });
             }
             else
             {
-                // Trả về lỗi từng trường
-                var errors = ModelState
+                // Thêm các lỗi validation từ ModelState
+                var modelErrors = ModelState
                     .Where(x => x.Value.Errors.Count > 0)
                     .ToDictionary(
-                        kvp => kvp.Key,
+                        kvp => kvp.Key.Substring(0, 1).ToLower() + kvp.Key.Substring(1), // Chuyển key về camelCase
                         kvp => kvp.Value.Errors.First().ErrorMessage
                     );
-                // Log lỗi ra console để debug
-                System.Diagnostics.Debug.WriteLine(JsonConvert.SerializeObject(errors));
-                return Json(new { success = false, errors });
+
+                return Json(new { success = false, errors = modelErrors });
             }
         }
 
@@ -137,20 +152,31 @@ namespace Lecture_web.Areas.Admin.Controllers
             if (string.IsNullOrEmpty(model.TrangThai))
                 model.TrangThai = "HoatDong";
 
+            // Dictionary chứa tất cả các lỗi
+            var errors = new Dictionary<string, string>();
+
             // Kiểm tra trùng tên đăng nhập (trừ chính user đang sửa)
             if (_context.TaiKhoan.Any(u => u.TenDangNhap == model.TenDangNhap && u.IdTaiKhoan != model.IdTaiKhoan))
             {
-                return Json(new { success = false, errors = new { TenDangNhap = "Tên đăng nhập đã tồn tại!" } });
+                errors.Add("tenDangNhap", "Tên đăng nhập đã tồn tại!");
             }
+
             // Kiểm tra trùng email
-            else if (_context.TaiKhoan.Any(u => u.Email == model.Email && u.IdTaiKhoan != model.IdTaiKhoan))
+            if (_context.TaiKhoan.Any(u => u.Email == model.Email && u.IdTaiKhoan != model.IdTaiKhoan))
             {
-                return Json(new { success = false, errors = new { Email = "Email đã tồn tại!" } });
+                errors.Add("email", "Email đã tồn tại!");
             }
+
             // Kiểm tra trùng số điện thoại
-            else if (_context.TaiKhoan.Any(u => u.SoDienThoai == model.SoDienThoai && u.IdTaiKhoan != model.IdTaiKhoan))
+            if (_context.TaiKhoan.Any(u => u.SoDienThoai == model.SoDienThoai && u.IdTaiKhoan != model.IdTaiKhoan))
             {
-                return Json(new { success = false, errors = new { SoDienThoai = "Số điện thoại đã tồn tại!" } });
+                errors.Add("soDienThoai", "Số điện thoại đã tồn tại!");
+            }
+
+            // Nếu có bất kỳ lỗi nào, trả về tất cả các lỗi
+            if (errors.Any())
+            {
+                return Json(new { success = false, errors = errors });
             }
 
             if (ModelState.IsValid)
@@ -158,7 +184,8 @@ namespace Lecture_web.Areas.Admin.Controllers
                 var user = _context.TaiKhoan.FirstOrDefault(u => u.IdTaiKhoan == model.IdTaiKhoan);
                 if (user == null)
                 {
-                    return Json(new { success = false, errors = new { General = "Người dùng không tồn tại!" } });
+                    errors.Add("general", "Người dùng không tồn tại!");
+                    return Json(new { success = false, errors = errors });
                 }
 
                 // Cập nhật thông tin
@@ -189,23 +216,31 @@ namespace Lecture_web.Areas.Admin.Controllers
             }
             else
             {
-                var errors = ModelState
+                // Thêm các lỗi validation từ ModelState
+                var modelErrors = ModelState
                     .Where(x => x.Value.Errors.Count > 0)
                     .ToDictionary(
-                        kvp => kvp.Key,
+                        kvp => kvp.Key.Substring(0, 1).ToLower() + kvp.Key.Substring(1), // Chuyển key về camelCase
                         kvp => kvp.Value.Errors.First().ErrorMessage
                     );
-                return Json(new { success = false, errors });
+
+                return Json(new { success = false, errors = modelErrors });
             }
         }
         
 
-     [HttpGet]
+        [HttpGet]
         public IActionResult EditUserPartial(int id)
         {
             var user = _context.TaiKhoan.FirstOrDefault(u => u.IdTaiKhoan == id);
             if (user == null)
                 return Content("Không tìm thấy người dùng");
+
+            if (user.TrangThai == "KhongHoatDong")
+            {
+                return Content("Không thể chỉnh sửa người dùng đang ở trạng thái Không hoạt động!", "text/plain; charset=utf-8");
+            }
+
             return PartialView("_EditUserPartial", user);
         }
 
@@ -219,6 +254,7 @@ namespace Lecture_web.Areas.Admin.Controllers
 
             user.TrangThai = TrangThai?.Trim();
             _context.TaiKhoan.Update(user);
+            
             _context.SaveChanges();
 
             return Json(new { success = true });
