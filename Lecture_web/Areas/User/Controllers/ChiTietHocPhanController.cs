@@ -30,6 +30,11 @@ namespace Lecture_web.Areas.User.Controllers
             var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
             ViewBag.UserRole = userRole;
 
+            // DEBUG: Log ID được truyền vào
+            Console.WriteLine($"=== CHITIET HOCPHAN DEBUG ===");
+            Console.WriteLine($"Received idLopHocPhan parameter: {idLopHocPhan}");
+            Console.WriteLine($"User role: {userRole}");
+
             try
             {
                 // Lấy danh sách tất cả lớp học phần để hiển thị trong dropdown
@@ -48,8 +53,16 @@ namespace Lecture_web.Areas.User.Controllers
 
                 ViewBag.AllLopHocPhan = allLopHocPhan;
 
+                Console.WriteLine($"Found {allLopHocPhan.Count} total lớp học phần in dropdown");
+                foreach (var item in allLopHocPhan.Take(5))
+                {
+                    Console.WriteLine($"  LHP: ID={item.IdLopHocPhan}, TenLop={item.TenLop}, HocPhan={item.TenHocPhan}");
+                }
+
                 // Nếu không có idLopHocPhan, lấy lớp học phần đầu tiên để test
                 int targetLopHocPhanId = idLopHocPhan ?? allLopHocPhan.FirstOrDefault()?.IdLopHocPhan ?? 1;
+                
+                Console.WriteLine($"Target LopHocPhan ID determined: {targetLopHocPhanId} (from parameter: {idLopHocPhan})");
 
                 // Lấy thông tin lớp học phần
                 var lopHocPhan = await _context.LopHocPhan
@@ -92,6 +105,17 @@ namespace Lecture_web.Areas.User.Controllers
                     })
                     .OrderBy(c => c.NgayTao)
                     .ToListAsync();
+
+                // DEBUG: Kiểm tra raw data trong LopHocPhan_SinhVien trước
+                var rawStudentRecords = await _context.LopHocPhan_SinhVien
+                    .Where(lhp_sv => lhp_sv.IdLopHocPhan == targetLopHocPhanId)
+                    .ToListAsync();
+                
+                Console.WriteLine($"Raw LopHocPhan_SinhVien records for class {targetLopHocPhanId}: {rawStudentRecords.Count}");
+                foreach (var record in rawStudentRecords.Take(5))
+                {
+                    Console.WriteLine($"  Record: IdLopHocPhan={record.IdLopHocPhan}, IdTaiKhoan={record.IdTaiKhoan}");
+                }
 
                 // Lấy danh sách sinh viên trong lớp (chỉ lấy những user có vai trò Sinhvien)
                 var studentsInClass = await _context.LopHocPhan_SinhVien
@@ -199,19 +223,24 @@ namespace Lecture_web.Areas.User.Controllers
             }
         }
 
-        // API để gửi lời mời tham gia lớp học
+        // API để gửi lời mời tham gia lớp học (nhiều sinh viên)
         [HttpPost]
         [Authorize(Roles = "Giangvien")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> InviteStudent(int idLopHocPhan, int idTaiKhoan)
+        public async Task<IActionResult> InviteStudents(int idLopHocPhan, int[] idTaiKhoans)
         {
             try
             {
                 // Debug log để kiểm tra dữ liệu đầu vào
                 var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-                Console.WriteLine($"DEBUG: idLopHocPhan={idLopHocPhan}, idTaiKhoan={idTaiKhoan}, currentUserId={currentUserId}");
+                Console.WriteLine($"DEBUG: idLopHocPhan={idLopHocPhan}, số sinh viên cần mời={idTaiKhoans?.Length ?? 0}, currentUserId={currentUserId}");
                 
-                // Lấy thông tin lớp học phần (bỏ kiểm tra ownership tạm thời để debug)
+                if (idTaiKhoans == null || idTaiKhoans.Length == 0)
+                {
+                    return Json(new { success = false, message = "Vui lòng chọn ít nhất một sinh viên để mời" });
+                }
+
+                // Lấy thông tin lớp học phần
                 var lopHocPhan = await _context.LopHocPhan
                     .FirstOrDefaultAsync(lhp => lhp.IdLopHocPhan == idLopHocPhan);
 
@@ -221,98 +250,124 @@ namespace Lecture_web.Areas.User.Controllers
                 }
                 
                 Console.WriteLine($"DEBUG: LopHocPhan found - IdTaiKhoan={lopHocPhan.IdTaiKhoan}, TenLop={lopHocPhan.TenLop}");
-                
-                // TODO: BỎ KIỂM TRA OWNER TẠM THỜI ĐỂ TEST
-                // Kiểm tra quyền - chỉ giảng viên của lớp mới được mời
-                // if (lopHocPhan.IdTaiKhoan != currentUserId)
-                // {
-                //     return Json(new { success = false, message = $"Bạn không có quyền mời sinh viên vào lớp này (Owner: {lopHocPhan.IdTaiKhoan}, You: {currentUserId})" });
-                // }
-                
-                Console.WriteLine($"DEBUG: Skipping owner check - Owner: {lopHocPhan.IdTaiKhoan}, Current: {currentUserId}");
 
-                // Kiểm tra sinh viên có tồn tại và hoạt động không
-                var student = await _context.TaiKhoan
-                    .FirstOrDefaultAsync(tk => tk.IdTaiKhoan == idTaiKhoan && 
-                                              tk.VaiTro == "Sinhvien" && 
-                                              tk.TrangThai == "HoatDong");
+                // Lấy thông tin tất cả sinh viên được chọn
+                var students = await _context.TaiKhoan
+                    .Where(tk => idTaiKhoans.Contains(tk.IdTaiKhoan) && 
+                                tk.VaiTro == "Sinhvien" && 
+                                tk.TrangThai == "HoatDong")
+                    .ToListAsync();
 
-                Console.WriteLine($"DEBUG: Student lookup - IdTaiKhoan={idTaiKhoan}, Found={student != null}");
-                if (student != null)
+                Console.WriteLine($"DEBUG: Found {students.Count} valid students from {idTaiKhoans.Length} requested IDs");
+
+                // Kiểm tra các sinh viên đã tham gia lớp chưa
+                var existingMembers = await _context.LopHocPhan_SinhVien
+                    .Where(lhp_sv => lhp_sv.IdLopHocPhan == idLopHocPhan && 
+                                    idTaiKhoans.Contains(lhp_sv.IdTaiKhoan))
+                    .Select(lhp_sv => lhp_sv.IdTaiKhoan)
+                    .ToListAsync();
+
+                Console.WriteLine($"DEBUG: Found {existingMembers.Count} students already in class");
+
+                // Lọc ra những sinh viên chưa tham gia lớp
+                var studentsToInvite = students
+                    .Where(s => !existingMembers.Contains(s.IdTaiKhoan))
+                    .ToList();
+
+                if (studentsToInvite.Count == 0)
                 {
-                    Console.WriteLine($"DEBUG: Student details - HoTen={student.HoTen}, Email={student.Email}, VaiTro={student.VaiTro}, TrangThai={student.TrangThai}");
+                    return Json(new { success = false, message = "Tất cả sinh viên đã tham gia lớp học này rồi" });
                 }
 
-                if (student == null)
+                Console.WriteLine($"DEBUG: Will invite {studentsToInvite.Count} students");
+
+                var successfulInvites = new List<string>();
+                var failedInvites = new List<string>();
+
+                // Gửi lời mời cho từng sinh viên
+                foreach (var student in studentsToInvite)
                 {
-                    return Json(new { success = false, message = "Sinh viên không tồn tại hoặc không hoạt động" });
+                    try
+                    {
+                        // Tạo token mời riêng cho mỗi sinh viên
+                        var inviteToken = Guid.NewGuid().ToString();
+                        var inviteExpiry = DateTime.Now.AddDays(7);
+                        
+                        // Lưu thông tin lời mời vào database
+                        var invitation = new ThongBaoModels
+                        {
+                            IdTaiKhoan = student.IdTaiKhoan,
+                            IdLopHocPhan = idLopHocPhan,
+                            NoiDung = $"INVITE|{inviteToken}|{idLopHocPhan}|Lời mời tham gia lớp: {lopHocPhan.TenLop}",
+                            NgayTao = DateTime.Now,
+                            NgayCapNhat = DateTime.Now
+                        };
+
+                        _context.ThongBao.Add(invitation);
+
+                        // Gửi email mời
+                        var acceptUrl = $"{Request.Scheme}://{Request.Host}/User/ChiTietHocPhan/AcceptInvitation?token={inviteToken}";
+                        var emailBody = $@"
+                            <h2>Lời mời tham gia lớp học</h2>
+                            <p>Chào {student.HoTen},</p>
+                            <p>Bạn được mời tham gia lớp học: <strong>{lopHocPhan.TenLop}</strong></p>
+                            <p>Mô tả: {lopHocPhan.MoTa ?? "Không có mô tả"}</p>
+                            <p>Vui lòng click vào link bên dưới để tham gia:</p>
+                            <a href='{acceptUrl}' style='background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;'>Tham gia lớp học</a>
+                            <p><small>Link này có hiệu lực đến {inviteExpiry:dd/MM/yyyy HH:mm}</small></p>
+                        ";
+
+                        try 
+                        {
+                            await _emailService.SendEmailAsync(student.Email, $"Lời mời tham gia lớp {lopHocPhan.TenLop}", emailBody);
+                            successfulInvites.Add($"{student.HoTen} ({student.Email})");
+                            Console.WriteLine($"DEBUG: Email sent successfully to {student.Email}");
+                        }
+                        catch (Exception emailEx)
+                        {
+                            Console.WriteLine($"DEBUG: Email sending failed for {student.Email}: {emailEx.Message}");
+                            successfulInvites.Add($"{student.HoTen} ({student.Email}) - Email failed");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"DEBUG: Failed to invite {student.Email}: {ex.Message}");
+                        failedInvites.Add($"{student.HoTen} ({student.Email}): {ex.Message}");
+                    }
                 }
 
-                // Kiểm tra sinh viên đã tham gia lớp chưa
-                var existingMember = await _context.LopHocPhan_SinhVien
-                    .FirstOrDefaultAsync(lhp_sv => lhp_sv.IdLopHocPhan == idLopHocPhan && 
-                                                  lhp_sv.IdTaiKhoan == idTaiKhoan);
-
-                Console.WriteLine($"DEBUG: Existing member check - Already joined={existingMember != null}");
-
-                if (existingMember != null)
-                {
-                    return Json(new { success = false, message = "Sinh viên đã tham gia lớp học này" });
-                }
-
-                // Tạo token mời
-                var inviteToken = Guid.NewGuid().ToString();
-                var inviteExpiry = DateTime.Now.AddDays(7); // Token có hiệu lực 7 ngày
-                
-                Console.WriteLine($"DEBUG: Generated invite token={inviteToken}");
-
-                // Lưu thông tin lời mời vào database (cần tạo bảng ClassInvitation)
-                // Tạm thời lưu vào bảng ThongBao
-                var invitation = new ThongBaoModels
-                {
-                    IdTaiKhoan = idTaiKhoan,
-                    IdLopHocPhan = idLopHocPhan,
-                    NoiDung = $"INVITE|{inviteToken}|{idLopHocPhan}|Lời mời tham gia lớp: {lopHocPhan.TenLop}",
-                    NgayTao = DateTime.Now,
-                    NgayCapNhat = DateTime.Now
-                };
-
-                Console.WriteLine($"DEBUG: Saving invitation to database...");
-                _context.ThongBao.Add(invitation);
+                // Lưu tất cả invitations vào database
                 await _context.SaveChangesAsync();
-                Console.WriteLine($"DEBUG: Invitation saved successfully");
+                Console.WriteLine($"DEBUG: All invitations saved to database");
 
-                // Gửi email mời
-                var acceptUrl = $"{Request.Scheme}://{Request.Host}/User/ChiTietHocPhan/AcceptInvitation?token={inviteToken}";
-                var emailBody = $@"
-                    <h2>Lời mời tham gia lớp học</h2>
-                    <p>Chào {student.HoTen},</p>
-                    <p>Bạn được mời tham gia lớp học: <strong>{lopHocPhan.TenLop}</strong></p>
-                    <p>Mô tả: {lopHocPhan.MoTa ?? "Không có mô tả"}</p>
-                    <p>Vui lòng click vào link bên dưới để tham gia:</p>
-                    <a href='{acceptUrl}' style='background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;'>Tham gia lớp học</a>
-                    <p><small>Link này có hiệu lực đến {inviteExpiry:dd/MM/yyyy HH:mm}</small></p>
-                ";
-
-                Console.WriteLine($"DEBUG: Sending email to {student.Email}...");
-                Console.WriteLine($"DEBUG: Accept URL: {acceptUrl}");
+                // Tạo message kết quả
+                var resultMessage = $"Đã gửi lời mời thành công cho {successfulInvites.Count} sinh viên";
                 
-                try 
+                if (existingMembers.Count > 0)
                 {
-                    await _emailService.SendEmailAsync(student.Email, $"Lời mời tham gia lớp {lopHocPhan.TenLop}", emailBody);
-                    Console.WriteLine($"DEBUG: Email sent successfully");
-                    return Json(new { success = true, message = $"Đã gửi lời mời đến {student.Email}" });
+                    resultMessage += $" ({existingMembers.Count} sinh viên đã tham gia lớp)";
                 }
-                catch (Exception emailEx)
+                
+                if (failedInvites.Count > 0)
                 {
-                    Console.WriteLine($"DEBUG: Email sending failed: {emailEx.Message}");
-                    // Vẫn trả về success vì đã lưu invitation vào DB
-                    return Json(new { success = true, message = $"Đã tạo lời mời (Email failed: {emailEx.Message})" });
+                    resultMessage += $"\nLỗi: {string.Join(", ", failedInvites)}";
                 }
+
+                return Json(new { 
+                    success = true, 
+                    message = resultMessage,
+                    details = new {
+                        successful = successfulInvites.Count,
+                        failed = failedInvites.Count,
+                        alreadyMembers = existingMembers.Count,
+                        successfulList = successfulInvites,
+                        failedList = failedInvites
+                    }
+                });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"DEBUG: Exception in InviteStudent: {ex.Message}");
+                Console.WriteLine($"DEBUG: Exception in InviteStudents: {ex.Message}");
                 Console.WriteLine($"DEBUG: Stack trace: {ex.StackTrace}");
                 return Json(new { success = false, message = $"Lỗi gửi lời mời: {ex.Message}" });
             }

@@ -34,9 +34,10 @@ namespace Lecture_web.Areas.User.Controllers
                       .Where(lp => lp.LopHocPhan_SinhViens.Any(sv => sv.IdTaiKhoan == userId));
 
 
-            var getLop = typeUser
+                         var getLop = typeUser
                 .Include(lp => lp.HocPhan)
-
+                .Include(lp => lp.LopHocPhan_SinhViens)
+                    .ThenInclude(sv => sv.TaiKhoan)
                 .Select(lp => new
                 {
                     lp.IdLopHocPhan,
@@ -44,7 +45,9 @@ namespace Lecture_web.Areas.User.Controllers
                     TenHP = lp.HocPhan.TenHocPhan,
                     lp.NgayTao,
                     lp.NgayCapNhat,
-                    SoSV = lp.LopHocPhan_SinhViens.Count,
+                    // Chỉ đếm sinh viên thực sự (VaiTro = "Sinhvien")
+                    SoSV = lp.LopHocPhan_SinhViens.Count(sv => 
+                        sv.TaiKhoan != null && sv.TaiKhoan.VaiTro == "Sinhvien"),
                     GiangVienId = lp.IdTaiKhoan,
                     Mota = lp.MoTa
                 });
