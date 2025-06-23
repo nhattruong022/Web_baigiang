@@ -8,10 +8,12 @@ using Microsoft.AspNetCore.Components.Forms;
 using Lecture_web.Models;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using Lecture_web.Service;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Lecture_web.Areas.User.Controllers
 {
     [Area("User")]
+    [Authorize(Roles = "Giangvien")]
     public class QuanLyBaiGiangController : Controller
     {
         private readonly ApplicationDbContext _context;

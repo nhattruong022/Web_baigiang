@@ -5,10 +5,13 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Lecture_web.Service;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Lecture_web.Areas.User.Controllers
 {
     [Area("User")]
+    [Authorize(Roles = "Giangvien")]
+
     public class QuanLyChuongController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -18,31 +21,54 @@ namespace Lecture_web.Areas.User.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index( string tenbg,string search, int page = 1)
+        public async Task<IActionResult> Index( int idbg, string tenbg,string search, int page = 1)
         {
             const int pageSize = 5;
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
 
             var bg = await _context.BaiGiang
-                .Where(b => b.IdTaiKhoan == userId)
-                .Select(b => new {b.TieuDe })
-                .Distinct()
-                .ToListAsync();
+                            .Where(b => b.IdTaiKhoan == userId)
+                            .Select(b => new {b.TieuDe })
+                            .Distinct()
+                            .ToListAsync();
             ViewBag.Lectures = bg;
 
-           
+
+            var tbg = await _context.BaiGiang
+                            .Where(b => b.IdBaiGiang == idbg && b.IdTaiKhoan == userId)
+                            .Select(b => b.TieuDe)
+                            .FirstOrDefaultAsync();
+
+            if (tbg == null)
+            {
+                return Forbid();
+            }
+
             var q = _context.BaiGiang
-                .Where(b => b.IdTaiKhoan == userId)
-                .SelectMany(b => b.Chuongs, (b, c) => new { b, c })
-                .Select(x => new ListChuongViewModel
-                {
-                    IdChuong = x.c.IdChuong,
-                    Ten = x.c.TenChuong,
-                    BaiGiang = x.b.TieuDe,
-                    NgayTao = x.c.NgayTao,
-                    NgayCapNhat = x.c.NgayCapNhat
-                });
+                            .Where(b => b.IdTaiKhoan == userId && b.IdBaiGiang == idbg)
+                            .SelectMany(b => b.Chuongs, (b, c) => new { b, c })
+                            .Select(x => new ListChuongViewModel
+                            {
+                                IdChuong = x.c.IdChuong,
+                                Ten = x.c.TenChuong,
+                                BaiGiang = x.b.TieuDe,
+                                NgayTao = x.c.NgayTao,
+                                NgayCapNhat = x.c.NgayCapNhat,
+                                Bai = _context.Bai
+                                 .Where(l => l.IdChuong == x.c.IdChuong)
+                                 .Select(l => new BaiViewModel
+                                 {
+                                     IdBai = l.IdBai,
+                                     IdChuong = l.IdChuong,
+                                     TenBai = l.TieuDeBai,
+                                     NoiDung = l.NoiDungText,
+                                     NgayTao = l.NgayTao,
+                                     NgayCapNhat = l.NgayCapNhat
+                                 }).ToList()
+                            });
+
+ 
 
             if (!string.IsNullOrWhiteSpace(tenbg))
                 q = q.Where(x => x.BaiGiang == tenbg);
@@ -58,10 +84,10 @@ namespace Lecture_web.Areas.User.Controllers
             var totalItems = await q.CountAsync();
             var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
             var items = await q
-                .OrderByDescending(x => x.NgayTao)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+                            .OrderByDescending(x => x.NgayTao)
+                            .Skip((page - 1) * pageSize)
+                            .Take(pageSize)
+                            .ToListAsync();
 
   
             var listch = new SearchChuongViewModel<ListChuongViewModel>
@@ -70,18 +96,27 @@ namespace Lecture_web.Areas.User.Controllers
                 CurrentPage = page,
                 TotalPages = totalPages,
                 SearchTerm = search,
-                baigiang = tenbg
+                baigiang = tenbg,
+                IdBaiGiang = idbg,
+                TenBaiGiang = tbg
+
             };
             return View(listch);
         }
         [HttpGet]
         public async Task<IActionResult> EditChuong(int id)
         {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
             var chuong = await _context.Chuong
                 .Include(c => c.BaiGiang)
                 .FirstOrDefaultAsync(c => c.IdChuong == id);
             if (chuong == null) return NotFound();
-    //var normalizedTitle = StringHelper.NormalizeString(chuong.TenChuong);
+
+            if (chuong.BaiGiang.IdTaiKhoan != userId)
+            {
+                return NotFound();
+            }
 
             return Json(new
             {
