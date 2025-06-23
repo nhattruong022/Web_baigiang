@@ -422,6 +422,11 @@ html, body, .app-container {
   margin-bottom: 16px;
   white-space: pre-line;
 }
+.notice-body p, .notice-body div {
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
 .notice-comment {
   display: flex;
   align-items: center;

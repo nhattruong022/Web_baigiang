@@ -70,6 +70,13 @@ namespace Lecture_web.Controllers
             return RedirectToAction("Login");
         }
 
+        // Thêm hàm làm sạch email
+        private string CleanEmail(string email)
+        {
+            if (string.IsNullOrEmpty(email)) return "";
+            // Loại bỏ các ký tự invisible Unicode và khoảng trắng
+            return new string(email.Where(c => c != '\u200B' && c != '\u200C' && c != '\u200D' && c != '\uFEFF').ToArray()).Trim().ToLower();
+        }
 
         [HttpPost]
         public async Task<JsonResult> SendOTP(string email)
@@ -79,8 +86,8 @@ namespace Lecture_web.Controllers
                 if (string.IsNullOrWhiteSpace(email))
                     return Json(new { success = false, message = "Vui lòng nhập email!" });
 
-                var emailCheck = email.Trim().ToLower();
-                var user = _context.TaiKhoan.FirstOrDefault(u => u.Email.Trim().ToLower() == emailCheck);
+                var emailCheck = CleanEmail(email);
+                var user = _context.TaiKhoan.AsEnumerable().FirstOrDefault(u => CleanEmail(u.Email) == emailCheck);
                 if (user == null)
                     return Json(new { success = false, message = "Email không tồn tại!" });
 
@@ -112,7 +119,8 @@ namespace Lecture_web.Controllers
         [HttpPost]
         public IActionResult VerifyOTP(string email, string otp)
         {
-            var user = _context.TaiKhoan.FirstOrDefault(u => u.Email == email);
+            var emailCheck = CleanEmail(email);
+            var user = _context.TaiKhoan.AsEnumerable().FirstOrDefault(u => CleanEmail(u.Email) == emailCheck);
             if (user == null)
                 return Json(new { success = false, message = "Email không tồn tại!" });
             var otpModel = _context.Set<OtpModels>()
@@ -130,7 +138,8 @@ namespace Lecture_web.Controllers
         [HttpPost]
         public IActionResult ResetPassword(string email, string newPassword)
         {
-            var user = _context.TaiKhoan.FirstOrDefault(u => u.Email == email);
+            var emailCheck = CleanEmail(email);
+            var user = _context.TaiKhoan.AsEnumerable().FirstOrDefault(u => CleanEmail(u.Email) == emailCheck);
             if (user == null)
                 return Json(new { success = false, message = "Email không tồn tại!" });
             user.MatKhau = newPassword;

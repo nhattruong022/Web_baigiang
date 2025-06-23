@@ -72,7 +72,7 @@ namespace Lecture_web.Areas.User.Controllers
                 if (lopHocPhan == null)
                 {
                     // Nếu không tìm thấy, tạo dữ liệu mặc định
-                    ViewBag.IdLopHocPhan = 1;
+                    ViewBag.IdLopHocPhan = targetLopHocPhanId;
                     ViewBag.TenLop = "LTCB23-01";
                     ViewBag.IdBaiGiang = 1;
                     ViewBag.StudentsInClass = new List<object>();
@@ -180,7 +180,7 @@ namespace Lecture_web.Areas.User.Controllers
             {
                 Console.WriteLine($"ERROR in Index: {ex.Message}");
                 // Trả về dữ liệu mặc định nếu có lỗi
-                ViewBag.IdLopHocPhan = 1;
+                ViewBag.IdLopHocPhan = idLopHocPhan ?? 1;
                 ViewBag.TenLop = "Lớp mặc định";
                 ViewBag.IdBaiGiang = 1;
                 ViewBag.StudentsInClass = new List<object>();
