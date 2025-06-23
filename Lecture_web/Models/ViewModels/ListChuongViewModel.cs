@@ -7,5 +7,7 @@
         public string BaiGiang { get; set; }
         public DateTime NgayTao { get; set; }
         public DateTime NgayCapNhat { get; set; }
+
+        public List<BaiViewModel> Bai { get; set; }
     }
 }

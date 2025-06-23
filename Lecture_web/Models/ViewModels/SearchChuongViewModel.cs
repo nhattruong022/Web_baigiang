@@ -7,6 +7,9 @@
         public int TotalPages { get; set; }
         public string SearchTerm { get; set; }
 
+        public int IdBaiGiang { get; set; }
         public string baigiang {  get; set; }
+
+        public string TenBaiGiang { get; set; }
     }
 }
