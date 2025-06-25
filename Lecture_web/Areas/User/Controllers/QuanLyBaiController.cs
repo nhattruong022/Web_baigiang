@@ -1,4 +1,4 @@
-using Lecture_web.Models.ViewModels;
+﻿using Lecture_web.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,11 +20,8 @@ namespace Lecture_web.Areas.User.Controllers
             return View();
         }
 
-        public IActionResult AddBai()
-        {
-          return View();
-        }
 
+        [HttpGet]
         public async Task<IActionResult> EditBai(int idbai, int idchuong)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
@@ -32,47 +29,51 @@ namespace Lecture_web.Areas.User.Controllers
                 .Include(b => b.Chuong).ThenInclude(c => c.BaiGiang)
                 .FirstOrDefaultAsync(b =>
                     b.IdBai == idbai &&
-                    b.Chuong.BaiGiang.IdTaiKhoan == userId
-                );
+                    b.Chuong.BaiGiang.IdTaiKhoan == userId);
             if (bai == null) return NotFound();
 
-      
-            var vmbai = new EditBaiViewModel
+            var vmb = new EditBaiViewModel
             {
                 IdBai = bai.IdBai,
                 TieuDeBai = bai.TieuDeBai,
                 NoiDung = bai.NoiDungText,
-                IdChuong = idchuong
+                IdChuong = idchuong,
+                IdBaiGiang = bai.Chuong.IdBaiGiang
             };
-            return View(vmbai);
+            return View(vmb);
         }
 
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditBai(EditBaiViewModel vm)
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditBai(EditBaiViewModel vmb)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
             var bai = await _context.Bai
                 .Include(b => b.Chuong).ThenInclude(c => c.BaiGiang)
                 .FirstOrDefaultAsync(b =>
-                    b.IdBai == vm.IdBai &&
-                    b.Chuong.BaiGiang.IdTaiKhoan == userId
-                );
+                    b.IdBai == vmb.IdBai &&
+                    b.Chuong.BaiGiang.IdTaiKhoan == userId);
             if (bai == null) return NotFound();
 
             if (!ModelState.IsValid)
-                return View(vm);
+            {
+                var errors = ModelState
+                  .Where(x => x.Value.Errors.Any())
+                  .ToDictionary(
+                    kv => kv.Key,
+                    kv => kv.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                  );
+                return BadRequest(new { errors });
+            }
 
-
-            bai.TieuDeBai = vm.TieuDeBai.Trim();
-            bai.NoiDungText = vm.NoiDung;
+            bai.TieuDeBai = vmb.TieuDeBai.Trim();
+            bai.NoiDungText = vmb.NoiDung;
             bai.NgayCapNhat = DateTime.Now;
             await _context.SaveChangesAsync();
 
-            var idbg = bai.Chuong.IdBaiGiang;
-            return RedirectToAction("Index", "QuanLyChuong", new { area = "User", idbg = idbg });
+            return Json(new { success = true });
         }
+
+
 
     }
 } 
