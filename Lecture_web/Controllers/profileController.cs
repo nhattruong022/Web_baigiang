@@ -62,19 +62,34 @@ namespace Lecture_web.Controllers
             var username = User.Identity?.Name;
             if (string.IsNullOrEmpty(username) || avatar == null || avatar.Length == 0)
                 return Json(new { success = false, message = "Không có file ảnh." });
+            
             var user = _context.TaiKhoan.FirstOrDefault(u => u.TenDangNhap == username);
             if (user == null)
                 return Json(new { success = false, message = "Không tìm thấy user." });
+
+            // Xóa avatar cũ nếu có
+            if (!string.IsNullOrEmpty(user.AnhDaiDien) && user.AnhDaiDien.StartsWith("/images/avatars/"))
+            {
+                var oldAvatarPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", user.AnhDaiDien.TrimStart('/'));
+                if (System.IO.File.Exists(oldAvatarPath))
+                {
+                    System.IO.File.Delete(oldAvatarPath);
+                }
+            }
+            
             var fileName = $"avatar_{user.IdTaiKhoan}_{DateTime.Now.Ticks}{System.IO.Path.GetExtension(avatar.FileName)}";
             var savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/avatars", fileName);
             Directory.CreateDirectory(Path.GetDirectoryName(savePath));
+            
             using (var stream = new FileStream(savePath, FileMode.Create))
             {
                 await avatar.CopyToAsync(stream);
             }
+            
             user.AnhDaiDien = $"/images/avatars/{fileName}";
             _context.TaiKhoan.Update(user);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+            
             return Json(new { success = true, url = user.AnhDaiDien });
         }
 

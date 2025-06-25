@@ -1,4 +1,6 @@
-﻿using Lecture_web;
+
+using Lecture_web;
+using Lecture_web.Hubs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using elFinder.Net;
@@ -17,6 +19,11 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     
 builder.Services.AddScoped<Lecture_web.Service.EmailService>();
 
+
+// Add SignalR
+builder.Services.AddSignalR();
+
+
 //builder.Services.AddElFinderAspN(options =>
 //{
 //    var uploadsRoot = Path.Combine(builder.Environment.WebRootPath, "uploads");
@@ -25,6 +32,7 @@ builder.Services.AddScoped<Lecture_web.Service.EmailService>();
 //    options.Url = "/uploads";
 //    options.Drivers = new[] { new FileSystemDriver() };
 //});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -43,6 +51,9 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Map SignalR Hub
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.MapControllerRoute(
     name: "areas",

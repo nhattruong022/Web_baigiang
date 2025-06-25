@@ -24,45 +24,12 @@ var userRole = ViewBag.UserRole as string;
     <!-- Sidebar chương & bài -->
     <aside class="sidebar-chapters" style="border-radius: 0; min-height: 100%; height: 100%; box-shadow: none; margin: 0; width: 260px;">
       <h2>Chương & Bài</h2>
-      <ul class="chapter-list">
-        @{
-        var chuongs = ViewBag.Chuongs as List<dynamic>;
-          }
-          @if (chuongs != null && chuongs.Any())
-          {
-          @for (int chapterIdx = 0; chapterIdx
-
-          < chuongs.Count; chapterIdx++) { var chuong=chuongs[chapterIdx]; <li class="chapter @(chapterIdx == 0 ? " open" : "" )">
-            <button class="chapter-title @(chapterIdx == 0 ? " active" : "" )" onclick="toggleChapter(this)">
-              @chuong.TenChuong
-              <i class="fas fa-chevron-down" style="margin-left:auto"></i>
-            </button>
-            <ul class="lesson-list">
-              @if (chuong.Bais != null)
-              {
-              @for (int lessonIdx = 0; lessonIdx
-
-              < ((List<dynamic>)chuong.Bais).Count; lessonIdx++)
-                {
-                var bai = ((List<dynamic>)chuong.Bais)[lessonIdx];
-                  <li>
-                    <button class="lesson-btn @(chapterIdx == 0 && lessonIdx == 0 ? " active" : "" )" onclick="showLesson(@chapterIdx, @lessonIdx)">
-                      @bai.TieuDeBai
-                    </button>
-                  </li>
-                  }
-                  }
-            </ul>
-            </li>
-            }
-            }
-            else
-            {
-            <li style="padding: 20px; text-align: center; color: #666;">
-              <i class="fas fa-book" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
-              Chưa có chương nào được tạo
-            </li>
-            }
+      <ul class="chapter-list" id="chaptersList">
+        <!-- Sẽ được render bởi JavaScript từ ViewBag.Chuongs -->
+        <li style="padding: 20px; text-align: center; color: #666;">
+          <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
+          Đang tải chương và bài...
+        </li>
       </ul>
     </aside>
     <div style="flex:1;display:flex;flex-direction:column;min-height: 600px;">
@@ -140,11 +107,11 @@ var userRole = ViewBag.UserRole as string;
                   <td>
                     @if (!string.IsNullOrEmpty(student.AnhDaiDien))
                     {
-                    <img style="width:52px; height:52px; border-radius:50%;" src="@student.AnhDaiDien" class="student-avatar" />
+                    <img style="width:52px; height:52px; border-radius:50%;" src="@(!string.IsNullOrEmpty(student.AnhDaiDien) ? student.AnhDaiDien : " /images/avatar.jpg")" class="student-avatar" />
                     }
                     else
                     {
-                    <img style="width:52px; height:52px; border-radius:50%;" src="~/images/avatar.jpg" class="student-avatar" />
+                    <img style="width:52px; height:52px; border-radius:50%;" src="/images/avatar.jpg" class="student-avatar" />
                     }
                   </td>
                   <td><span class="status-badge @(student.TrangThai == " HoatDong" ? "hoatdong" : "" )">@(student.TrangThai == "HoatDong" ? "Hoạt động" : (student.TrangThai ?? "Chưa cập nhật"))</span></td>
@@ -301,13 +268,13 @@ var userRole = ViewBag.UserRole as string;
       <section class="main-lesson-content course-tab-content" id="tab-notices" style="display:none;">
         <div class="notice-card">
           <div class="notice-header">
-            <img src="~/images/avatar.jpg" alt="Avatar" class="notice-avatar">
+            <img src="/images/avatar.jpg" alt="Avatar" class="notice-avatar">
             <div class="notice-info">
               <div class="notice-author">ND Duy</div>
               <div class="notice-time">3 thg 6</div>
             </div>
             <button class="notice-menu" onclick="toggleNoticeMenu(this)"><i class="fas fa-ellipsis-v"></i></button>
-            @if (userRole != "Sinhvien")
+            @if (userRole == null || userRole.ToLower() != "sinhvien")
             {
             <div class="notice-menu-popup" style="display:none; position:absolute; right:24px; top:48px; background:#fff; box-shadow:0 2px 8px rgba(44,62,80,0.12); border-radius:8px; min-width:160px; z-index:10;">
               <button onclick="addNotice()" class="notice-menu-item">Thêm thông báo</button>
@@ -317,22 +284,22 @@ var userRole = ViewBag.UserRole as string;
             }
           </div>
           <div class="notice-body">
-            <p>
+            <div style="white-space:normal;word-break:break-word;overflow-wrap:break-word;">
               Các nhóm lưu ý,<br>
               Không share tài liệu đồ án nhóm mình cho các nhóm khác (các nhóm không do Thầy hướng dẫn). Thầy đã cố gắng tạo các tài liệu cho khác nhau giữa các nhóm -> chia sẻ cho các bạn sẽ tạo ra những báo cáo giống nhau. Các em public ra -> sẽ bị các giáo viên, sinh viên khác biết Thầy tạo tài liệu cho các nhóm hướng dẫn -> fail chắc!<br>
               T.Duy<br>
               P/s: Vì có nhiều mail của các bạn không có trong nhóm -> yêu cầu quyền truy cập cái file Thầy gửi -> chứng tỏ trong nhóm có bạn share link.
-            </p>
+            </div>
           </div>
           <div class="notice-comment">
-            <img src="~/images/avatar.jpg" alt="Avatar" class="comment-avatar">
+            <img src="/images/avatar.jpg" alt="Avatar" class="comment-avatar">
             <input type="text" placeholder="Thêm nhận xét trong lớp học...">
             <button class="comment-send"><i class="fas fa-paper-plane"></i></button>
           </div>
         </div>
         <div class="notice-card">
           <div class="notice-header">
-            <img src="~/images/avatar.jpg" alt="Avatar" class="notice-avatar">
+            <img src="/images/avatar.jpg" alt="Avatar" class="notice-avatar">
             <div class="notice-info">
               <div class="notice-author">Nguyễn Văn B</div>
               <div class="notice-time">1 thg 6</div>
@@ -340,20 +307,20 @@ var userRole = ViewBag.UserRole as string;
             <button class="notice-menu"><i class="fas fa-ellipsis-v"></i></button>
           </div>
           <div class="notice-body">
-            <p>
+            <div style="white-space:normal;word-break:break-word;overflow-wrap:break-word;">
               Lịch học tuần này chuyển sang phòng B203.<br>
               Các bạn chú ý đến đúng giờ!
-            </p>
+            </div>
           </div>
           <div class="notice-comment">
-            <img src="~/images/avatar.jpg" alt="Avatar" class="comment-avatar">
+            <img src="/images/avatar.jpg" alt="Avatar" class="comment-avatar">
             <input type="text" placeholder="Thêm nhận xét trong lớp học...">
             <button class="comment-send"><i class="fas fa-paper-plane"></i></button>
           </div>
         </div>
         <div class="notice-card">
           <div class="notice-header">
-            <img src="~/images/avatar.jpg" alt="Avatar" class="notice-avatar">
+            <img src="/images/avatar.jpg" alt="Avatar" class="notice-avatar">
             <div class="notice-info">
               <div class="notice-author">Admin</div>
               <div class="notice-time">28 thg 5</div>
@@ -361,86 +328,89 @@ var userRole = ViewBag.UserRole as string;
             <button class="notice-menu"><i class="fas fa-ellipsis-v"></i></button>
           </div>
           <div class="notice-body">
-            <p>
+            <div style="white-space:normal;word-break:break-word;overflow-wrap:break-word;">
               Nhớ nộp bài tập chương 1 trước 10/06.<br>
               Nếu có thắc mắc liên hệ trợ giảng.
-            </p>
+            </div>
           </div>
           <div class="notice-comment">
-            <img src="~/images/avatar.jpg" alt="Avatar" class="comment-avatar">
+            <img src="/images/avatar.jpg" alt="Avatar" class="comment-avatar">
             <input type="text" placeholder="Thêm nhận xét trong lớp học...">
             <button class="comment-send"><i class="fas fa-paper-plane"></i></button>
           </div>
         </div>
-        <!-- Popup Thêm thông báo -->
-        @if (userRole != "Sinhvien")
-        {
-        <div class="modal" id="addNoticeModal" style="display:none; position:fixed; z-index:1001; left:0; top:0; width:100vw; height:100vh; background:rgba(44,62,80,0.18); justify-content:center; align-items:center;">
-          <div class="modal-content add-notice-modal-content">
-            <div class="modal-header" style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #e0e6ed; padding-bottom:18px; margin-bottom:24px;">
-              <h2 style="font-size:1.35rem; font-weight:700; color:#22334d; margin:0;">Thêm thông báo</h2>
-              <button onclick="closeAddNoticeModal()" style="background:none; border:none; font-size:1.3rem; color:#888; cursor:pointer;"><i class="fas fa-times"></i></button>
-            </div>
-            <form id="addNoticeForm" onsubmit="submitAddNotice(event)">
-              <div class="form-group">
-                <label for="noticeTitle">Tiêu đề</label>
-                <input type="text" id="noticeTitle" required>
-              </div>
-              <div class="form-group">
-                <label for="noticeContent">Nội dung</label>
-                <textarea id="noticeContent" rows="5" required style="resize:vertical;"></textarea>
-              </div>
-              <div class="modal-actions">
-                <button type="button" onclick="closeAddNoticeModal()" class="btn-cancel">Hủy</button>
-                <button type="submit" class="btn-primary">Thêm</button>
-              </div>
-            </form>
-          </div>
-        </div>
-        }
-        <!-- Popup Sửa thông báo -->
-        @if (userRole != "Sinhvien")
-        {
-        <div class="modal" id="editNoticeModal" style="display:none; position:fixed; z-index:1001; left:0; top:0; width:100vw; height:100vh; background:rgba(44,62,80,0.18); justify-content:center; align-items:center;">
-          <div class="modal-content add-notice-modal-content">
-            <div class="modal-header" style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #e0e6ed; padding-bottom:18px; margin-bottom:24px;">
-              <h2 style="font-size:1.35rem; font-weight:700; color:#22334d; margin:0;">Sửa thông báo</h2>
-              <button onclick="closeEditNoticeModal()" style="background:none; border:none; font-size:1.3rem; color:#888; cursor:pointer;"><i class="fas fa-times"></i></button>
-            </div>
-            <form id="editNoticeForm" onsubmit="submitEditNotice(event)">
-              <div class="form-group">
-                <label for="editNoticeTitle">Tiêu đề</label>
-                <input type="text" id="editNoticeTitle" required>
-              </div>
-              <div class="form-group">
-                <label for="editNoticeContent">Nội dung</label>
-                <textarea id="editNoticeContent" rows="5" required style="resize:vertical;"></textarea>
-              </div>
-              <div class="modal-actions">
-                <button type="button" onclick="closeEditNoticeModal()" class="btn-cancel">Hủy</button>
-                <button type="submit" class="btn-primary">Lưu</button>
-              </div>
-            </form>
-          </div>
-        </div>
-        }
-        <!-- Modal xác nhận xóa thông báo -->
-        @if (userRole != "Sinhvien")
-        {
-        <div class="modal" id="confirmDeleteNoticeModal" style="display:none; position:fixed; z-index:1002; left:0; top:0; width:100vw; height:100vh; background:rgba(44,62,80,0.18); justify-content:center; align-items:center;">
-          <div class="modal-content" style="min-width:350px; max-width:400px; background:#fff; border-radius:14px; box-shadow:0 8px 32px rgba(52,152,219,0.18),0 1.5px 8px rgba(0,0,0,0.08); padding:32px 28px 24px 28px; position:relative; display:flex; flex-direction:column; align-items:center;">
-            <h2 style="font-size:1.2rem; font-weight:600; color:#22334d; margin-bottom:18px; text-align:center;">Xác nhận xóa thông báo?</h2>
-            <div style="display:flex; justify-content:center; gap:16px; margin-top:18px;">
-              <button type="button" onclick="closeConfirmDeleteNoticeModal()" class="btn-cancel">Hủy</button>
-              <button type="button" onclick="confirmDeleteNotice()" class="btn-primary" style="background:#e74c3c; border:none;">Xóa</button>
-            </div>
-          </div>
-        </div>
-        }
       </section>
+      <!-- Popup Thêm thông báo -->
+      @if (userRole == null || userRole.ToLower() != "sinhvien")
+      {
+      <div class="modal" id="addNoticeModal" style="display:none; position:fixed; z-index:1001; left:0; top:0; width:100vw; height:100vh; background:rgba(44,62,80,0.18); justify-content:center; align-items:center;">
+        <div class="modal-content add-notice-modal-content">
+          <div class="modal-header" style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #e0e6ed; padding-bottom:18px; margin-bottom:24px;">
+            <h2 style="font-size:1.35rem; font-weight:700; color:#22334d; margin:0;">Thêm thông báo</h2>
+            <button onclick="closeAddNoticeModal()" style="background:none; border:none; font-size:1.3rem; color:#888; cursor:pointer;"><i class="fas fa-times"></i></button>
+          </div>
+          <form id="addNoticeForm" onsubmit="submitAddNotice(event)">
+            <div class="form-group">
+              <label for="noticeTitle">Tiêu đề</label>
+              <input type="text" id="noticeTitle" required>
+            </div>
+            <div class="form-group">
+              <label for="noticeContent">Nội dung</label>
+              <textarea id="noticeContent" rows="5" required style="resize:vertical;"></textarea>
+            </div>
+            <div class="modal-actions">
+              <button type="button" onclick="closeAddNoticeModal()" class="btn-cancel">Hủy</button>
+              <button type="submit" class="btn-primary">Thêm</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      }
+      <!-- Popup Sửa thông báo -->
+      @if (userRole == null || userRole.ToLower() != "sinhvien")
+      {
+      <div class="modal" id="editNoticeModal" style="display:none; position:fixed; z-index:1001; left:0; top:0; width:100vw; height:100vh; background:rgba(44,62,80,0.18); justify-content:center; align-items:center;">
+        <div class="modal-content add-notice-modal-content">
+          <div class="modal-header" style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #e0e6ed; padding-bottom:18px; margin-bottom:24px;">
+            <h2 style="font-size:1.35rem; font-weight:700; color:#22334d; margin:0;">Sửa thông báo</h2>
+            <button onclick="closeEditNoticeModal()" style="background:none; border:none; font-size:1.3rem; color:#888; cursor:pointer;"><i class="fas fa-times"></i></button>
+          </div>
+          <form id="editNoticeForm" onsubmit="submitEditNotice(event)">
+            <div class="form-group">
+              <label for="editNoticeTitle">Tiêu đề</label>
+              <input type="text" id="editNoticeTitle" required>
+            </div>
+            <div class="form-group">
+              <label for="editNoticeContent">Nội dung</label>
+              <textarea id="editNoticeContent" rows="5" required style="resize:vertical;"></textarea>
+            </div>
+            <div class="modal-actions">
+              <button type="button" onclick="closeEditNoticeModal()" class="btn-cancel">Hủy</button>
+              <button type="submit" class="btn-primary">Lưu</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      }
+      <!-- Modal xác nhận xóa thông báo -->
+      @if (userRole == null || userRole.ToLower() != "sinhvien")
+      {
+      <div class="modal" id="confirmDeleteNoticeModal" style="display:none; position:fixed; z-index:1002; left:0; top:0; width:100vw; height:100vh; background:rgba(44,62,80,0.18); justify-content:center; align-items:center;">
+        <div class="modal-content" style="min-width:350px; max-width:400px; background:#fff; border-radius:14px; box-shadow:0 8px 32px rgba(52,152,219,0.18),0 1.5px 8px rgba(0,0,0,0.08); padding:32px 28px 24px 28px; position:relative; display:flex; flex-direction:column; align-items:center;">
+          <h2 style="font-size:1.2rem; font-weight:600; color:#22334d; margin-bottom:18px; text-align:center;">Xác nhận xóa thông báo?</h2>
+          <div style="display:flex; justify-content:center; gap:16px; margin-top:18px;">
+            <button type="button" onclick="closeConfirmDeleteNoticeModal()" class="btn-cancel">Hủy</button>
+            <button type="button" onclick="confirmDeleteNotice()" class="btn-primary" style="background:#e74c3c; border:none;">Xóa</button>
+          </div>
+        </div>
+      </div>
+      }
     </div>
   </div>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
 
 <script>
   let selectedStudentsForInvite = []; // Thay đổi từ single student thành array
@@ -448,24 +418,86 @@ var userRole = ViewBag.UserRole as string;
 
   console.log('DEBUG: currentLopHocPhanId =', currentLopHocPhanId);
 
-  // Dữ liệu lessons đơn giản để test
-  const lessons = [
-    [{
-      id: 1,
-      title: 'Bài học từ database',
-      meta: 'Dữ liệu từ chương và bài trong CSDL',
-      video: '',
-      materials: [{
-        icon: 'fa-file-pdf',
-        name: 'Tài liệu bài học',
-        link: '#',
-        size: '1.2 MB'
-      }],
-      desc: 'Hiển thị nội dung bài học từ cơ sở dữ liệu. Sidebar sẽ hiển thị dữ liệu thực từ ViewBag.Chuongs.'
-    }]
-  ];
+  // Dữ liệu lessons từ ViewBag.Chuongs
+  const chuongsData = @Html.Raw(Json.Serialize(ViewBag.Chuongs ?? new List < object > ()));
 
-  console.log('DEBUG: lessons data =', lessons);
+  console.log('DEBUG: chuongsData =', chuongsData);
+  console.log('DEBUG: chuongsData type =', typeof chuongsData);
+  console.log('DEBUG: chuongsData length =', chuongsData ? chuongsData.length : 'null');
+
+  // Debug từng chương
+  if (chuongsData && chuongsData.length > 0) {
+    chuongsData.forEach((chuong, idx) => {
+      console.log(`DEBUG: Chuong ${idx}:`, chuong);
+      console.log(`DEBUG: Chuong ${idx} - tenChuong:`, chuong.tenChuong || chuong.TenChuong);
+      console.log(`DEBUG: Chuong ${idx} - bais:`, chuong.bais || chuong.Bais);
+      const baisList = chuong.bais || chuong.Bais;
+      if (baisList && baisList.length > 0) {
+        baisList.forEach((bai, baiIdx) => {
+          console.log(`DEBUG: Bai ${baiIdx}:`, bai);
+          console.log(`DEBUG: Bai ${baiIdx} - tieuDeBai:`, bai.tieuDeBai || bai.TieuDeBai);
+        });
+      }
+    });
+  } else {
+    console.log('DEBUG: No chuongsData found or empty array');
+  }
+
+  // Function để render sidebar từ dữ liệu
+  function renderChaptersList() {
+    const chaptersList = document.getElementById('chaptersList');
+
+    if (!chuongsData || chuongsData.length === 0) {
+      chaptersList.innerHTML = `
+        <li style="padding: 20px; text-align: center; color: #666;">
+          <i class="fas fa-book" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
+          Chưa có chương nào được tạo
+        </li>
+      `;
+      return;
+    }
+
+    let html = '';
+    chuongsData.forEach((chuong, chapterIdx) => {
+      const tenChuong = chuong.tenChuong || chuong.TenChuong || `Chương ${chapterIdx + 1}`;
+      const baisList = chuong.bais || chuong.Bais || [];
+
+      html += `
+        <li class="chapter ${chapterIdx === 0 ? 'open' : ''}">
+          <button class="chapter-title ${chapterIdx === 0 ? 'active' : ''}" onclick="toggleChapter(this)">
+            ${tenChuong}
+            <i class="fas fa-chevron-down" style="margin-left:auto"></i>
+          </button>
+          <ul class="lesson-list">
+      `;
+
+      if (baisList && baisList.length > 0) {
+        baisList.forEach((bai, lessonIdx) => {
+          const tieuDeBai = bai.tieuDeBai || bai.TieuDeBai || `Bài ${lessonIdx + 1}`;
+          const lessonNumber = lessonIdx + 1;
+          html += `
+            <li>
+              <button class="lesson-btn ${chapterIdx === 0 && lessonIdx === 0 ? 'active' : ''}" onclick="showLesson(${chapterIdx}, ${lessonIdx})">
+                <span class="lesson-number">${lessonNumber}</span>
+                <span class="lesson-title">${tieuDeBai}</span>
+              </button>
+            </li>
+          `;
+        });
+      } else {
+        html += `
+          <li style="padding: 10px; text-align: center; color: #888; font-style: italic;">
+            Chưa có bài học nào
+          </li>
+        `;
+      }
+
+      html += '</ul></li>';
+    });
+
+    chaptersList.innerHTML = html;
+    console.log('DEBUG: Rendered chapters list with', chuongsData.length, 'chapters');
+  }
 
   // Hiển thị bài đầu tiên mặc định
   window.onload = function() {
@@ -473,8 +505,12 @@ var userRole = ViewBag.UserRole as string;
     currentLopHocPhanId = @(ViewBag.IdLopHocPhan ?? 1);
     console.log('DEBUG: currentLopHocPhanId updated to =', currentLopHocPhanId);
 
+    // Render sidebar trước
+    renderChaptersList();
+
     // Chỉ hiển thị bài đầu tiên nếu có dữ liệu
-    if (lessons.length > 0 && lessons[0].length > 0) {
+    const firstChapterBais = chuongsData && chuongsData.length > 0 ? (chuongsData[0].bais || chuongsData[0].Bais) : null;
+    if (chuongsData && chuongsData.length > 0 && firstChapterBais && firstChapterBais.length > 0) {
       showLesson(0, 0);
     } else {
       // Hiển thị thông báo khi không có bài học
@@ -494,6 +530,8 @@ var userRole = ViewBag.UserRole as string;
         refreshStudentsList();
       }
     }, 30000);
+
+    connectNotificationHub();
   };
 
   // Function để refresh danh sách sinh viên
@@ -546,7 +584,7 @@ var userRole = ViewBag.UserRole as string;
         <td>${student.soDienThoai || 'Chưa cập nhật'}</td>
         <td>
           <img style="width:52px; height:52px; border-radius:50%;" 
-               src="${student.anhDaiDien || '~/images/avatar.jpg'}" 
+               src="${student.anhDaiDien || '/images/avatar.jpg'}" 
                class="student-avatar" />
         </td>
         <td><span class="status-badge ${student.trangThai === 'HoatDong' ? 'hoatdong' : ''}">${student.trangThai === 'HoatDong' ? 'Hoạt động' : (student.trangThai || 'Chưa cập nhật')}</span></td>
@@ -563,10 +601,12 @@ var userRole = ViewBag.UserRole as string;
   }
 
   function showLesson(chapterIdx, lessonIdx) {
-    // Kiểm tra dữ liệu hợp lệ
-    if (!lessons || lessons.length === 0 ||
-      !lessons[chapterIdx] || lessons[chapterIdx].length === 0 ||
-      !lessons[chapterIdx][lessonIdx]) {
+    // Kiểm tra dữ liệu hợp lệ từ chuongsData - hỗ trợ cả PascalCase và camelCase
+    const chuong = chuongsData && chuongsData[chapterIdx] ? chuongsData[chapterIdx] : null;
+    const baisList = chuong ? (chuong.bais || chuong.Bais) : null;
+    const bai = baisList && baisList[lessonIdx] ? baisList[lessonIdx] : null;
+
+    if (!chuong || !baisList || baisList.length === 0 || !bai) {
       document.getElementById('tab-lessons').innerHTML = `
         <div style="padding: 40px; text-align: center; color: #666;">
           <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 16px; display: block; color: #ffa500;"></i>
@@ -587,34 +627,43 @@ var userRole = ViewBag.UserRole as string;
       }
     }
 
-    const lesson = lessons[chapterIdx][lessonIdx];
+    console.log('DEBUG showLesson - chuong:', chuong);
+    console.log('DEBUG showLesson - bai:', bai);
+
+    // Lấy properties hỗ trợ cả PascalCase và camelCase
+    const tenChuong = chuong.tenChuong || chuong.TenChuong || 'Chương';
+    const tieuDeBai = bai.tieuDeBai || bai.TieuDeBai || 'Tiêu đề bài học';
+    const noiDungText = bai.noiDungText || bai.NoiDungText || '';
+    const ngayTao = (bai.ngayTao || bai.NgayTao) ? new Date(bai.ngayTao || bai.NgayTao).toLocaleDateString('vi-VN') : 'Chưa cập nhật';
+
     document.getElementById('tab-lessons').innerHTML = `
         <div class="lesson-header">
-            <h1>${lesson.title}</h1>
-            <div class="lesson-meta">${lesson.meta}</div>
+            <h1>${tieuDeBai}</h1>
+            <div class="lesson-meta">Chương: ${tenChuong} | Ngày tạo: ${ngayTao}</div>
         </div>
         <div class="lesson-body">
-            ${lesson.video ? `<div class="lesson-video"><video controls><source src="${lesson.video}" type="video/mp4">Trình duyệt không hỗ trợ video.</video></div>` : ''}
             <div class="lesson-materials">
                 <h4>Tài liệu bài giảng</h4>
                 <ul>
-                    ${lesson.materials.map(m => `<li><i class="fas ${m.icon}"></i> <a href="${m.link}">${m.name}</a> <span class="file-size">${m.size}</span></li>`).join('')}
+                    <li><i class="fas fa-file-text"></i> <a href="#" onclick="alert('Chức năng đang phát triển')">Nội dung bài học</a> <span class="file-size">Text</span></li>
                 </ul>
             </div>
             <div class="lesson-desc">
-                <h4>Mô tả</h4>
-                <p>${lesson.desc}</p>
+                <h4>Nội dung bài học</h4>
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid #007bff;">
+                    ${noiDungText ? noiDungText.replace(/\n/g, '<br>') : 'Chưa có nội dung cho bài học này.'}
+                </div>
             </div>
         </div>
         <div class="comments-section">
             <h2>Bình luận</h2>
-            <form class="comment-form" onsubmit="event.preventDefault();">
-                <textarea placeholder="Viết bình luận của bạn..."></textarea>
+            <form class="comment-form" onsubmit="event.preventDefault(); addComment();">
+                <textarea id="commentText" placeholder="Viết bình luận của bạn..." required></textarea>
                 <button type="submit">Gửi</button>
             </form>
-            <div class="comments-list">
+            <div class="comments-list" id="commentsList">
                 <div class="comment">
-                    <img src="~/images/avatar.jpg" alt="User Avatar" class="comment-avatar">
+                    <img src="/images/avatar.jpg" alt="User Avatar" class="comment-avatar">
                     <div class="comment-content">
                         <div class="comment-header">
                             <h4>Nguyễn Văn A</h4>
@@ -648,6 +697,9 @@ var userRole = ViewBag.UserRole as string;
       sidebar.style.display = 'block';
     } else {
       sidebar.style.display = 'none';
+    }
+    if (tab === 'notices') {
+      loadNotifications(currentLopHocPhanId);
     }
   }
 
@@ -694,11 +746,11 @@ var userRole = ViewBag.UserRole as string;
         resultsContainer.innerHTML = data.data.map(student => {
           const isSelected = selectedStudentsForInvite.some(s => s.idTaiKhoan === student.idTaiKhoan);
           return `
-            <div class="search-result-item ${isSelected ? 'selected' : ''}" onclick="toggleStudentSelection(${student.idTaiKhoan}, '${student.email.replace(/'/g, "\\'")}', '${student.hoTen.replace(/'/g, "\\'")}', '${(student.anhDaiDien || '~/images/avatar.jpg').replace(/'/g, "\\'")}'); event.stopPropagation();" style="padding:12px; display:flex; align-items:center; gap:12px; cursor:pointer; border-radius:6px; margin-bottom:4px; transition:all 0.2s; border: 2px solid ${isSelected ? '#2196F3' : 'transparent'}; background: ${isSelected ? '#e3f2fd' : 'transparent'};" onmouseover="if(!this.classList.contains('selected')) this.style.background='#f5f5f5'" onmouseout="if(!this.classList.contains('selected')) this.style.background='transparent'">
+            <div class="search-result-item ${isSelected ? 'selected' : ''}" onclick="toggleStudentSelection(${student.idTaiKhoan}, '${student.email.replace(/'/g, "\\'")}', '${student.hoTen.replace(/'/g, "\\'")}', '${(student.anhDaiDien || '/images/avatar.jpg').replace(/'/g, "\\'")}'); event.stopPropagation();" style="padding:12px; display:flex; align-items:center; gap:12px; cursor:pointer; border-radius:6px; margin-bottom:4px; transition:all 0.2s; border: 2px solid ${isSelected ? '#2196F3' : 'transparent'}; background: ${isSelected ? '#e3f2fd' : 'transparent'};" onmouseover="if(!this.classList.contains('selected')) this.style.background='#f5f5f5'" onmouseout="if(!this.classList.contains('selected')) this.style.background='transparent'">
               <div style="width:20px; height:20px; border:2px solid ${isSelected ? '#2196F3' : '#ddd'}; border-radius:4px; display:flex; align-items:center; justify-content:center; background:${isSelected ? '#2196F3' : 'white'};">
                 ${isSelected ? '<i class="fas fa-check" style="color:white; font-size:12px;"></i>' : ''}
               </div>
-              <img src="${student.anhDaiDien || '~/images/avatar.jpg'}" alt="${student.hoTen}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+              <img src="${student.anhDaiDien || '/images/avatar.jpg'}" alt="${student.hoTen}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
               <div style="flex:1;">
                 <div style="font-weight:500; color:#333;">${student.hoTen}</div>
                 <div style="font-size:0.9rem; color:#666;">${student.email}</div>
@@ -777,7 +829,7 @@ var userRole = ViewBag.UserRole as string;
     container.style.display = 'block';
     list.innerHTML = selectedStudentsForInvite.map((student, index) => `
       <div style="display:flex; align-items:center; gap:8px; padding:6px; border-bottom:1px solid #f0f0f0; ${index === selectedStudentsForInvite.length - 1 ? 'border-bottom:none;' : ''}">
-        <img src="${student.avatar}" alt="${student.name}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">
+        <img src="${student.avatar || '/images/avatar.jpg'}" alt="${student.name}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">
         <div style="flex:1; font-size:0.85rem;">
           <div style="font-weight:500; color:#333;">${student.name}</div>
           <div style="color:#666;">${student.email}</div>
@@ -912,6 +964,10 @@ var userRole = ViewBag.UserRole as string;
     document.getElementById('addNoticeModal').style.justifyContent = 'center';
     document.getElementById('addNoticeForm').reset();
     document.querySelectorAll('.notice-menu-popup').forEach(p => p.style.display = 'none');
+    if (window.CKEDITOR && CKEDITOR.instances.noticeContent) {
+      CKEDITOR.instances.noticeContent.destroy(true);
+    }
+    CKEDITOR.replace('noticeContent');
   }
 
   function closeAddNoticeModal() {
@@ -921,9 +977,26 @@ var userRole = ViewBag.UserRole as string;
   function submitAddNotice(e) {
     e.preventDefault();
     const title = document.getElementById('noticeTitle').value;
-    const content = document.getElementById('noticeContent').value;
-    alert('Đã thêm thông báo: ' + title);
-    closeAddNoticeModal();
+    const content = CKEDITOR.instances.noticeContent.getData();
+    fetch('/User/ThongBao/AddNotification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          TieuDe: title,
+          NoiDung: content,
+          IdLopHocPhan: currentLopHocPhanId
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          closeAddNoticeModal();
+        } else {
+          alert('❌ ' + data.message);
+        }
+      });
   }
 
   let currentEditNoticeCard = null;
@@ -931,10 +1004,48 @@ var userRole = ViewBag.UserRole as string;
 
   function editNotice(btn) {
     currentEditNoticeCard = btn.closest('.notice-card');
-    const title = currentEditNoticeCard.querySelector('.notice-author')?.innerText || '';
-    const content = currentEditNoticeCard.querySelector('.notice-body')?.innerText || '';
+    // Lấy HTML nội dung cũ
+    const htmlContent = currentEditNoticeCard.querySelector('.notice-body div')?.innerHTML || '';
+    let title = '';
+    let content = htmlContent;
+
+    // Tạo thẻ tạm để parse HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlContent;
+
+    // Lấy dòng đầu tiên (có thể là <p> hoặc text)
+    let firstText = '';
+    if (tempDiv.firstChild && tempDiv.firstChild.nodeType === 1 && tempDiv.firstChild.tagName === 'P') {
+      firstText = tempDiv.firstChild.innerText.trim();
+      title = firstText;
+      // Xóa dòng tiêu đề khỏi nội dung
+      tempDiv.removeChild(tempDiv.firstChild);
+      content = tempDiv.innerHTML.trim();
+    } else if (tempDiv.firstChild && tempDiv.firstChild.nodeType === 3) {
+      // Nếu là text node
+      firstText = tempDiv.firstChild.textContent.trim();
+      title = firstText;
+      tempDiv.removeChild(tempDiv.firstChild);
+      content = tempDiv.innerHTML.trim();
+    } else {
+      // Nếu không có <p>, lấy toàn bộ text đầu tiên
+      const match = htmlContent.match(/^(.+?)<br\s*\/?>([\\s\\S]*)/i);
+      if (match) {
+        title = match[1].trim();
+        content = match[2].trim();
+      }
+    }
+
     document.getElementById('editNoticeTitle').value = title;
-    document.getElementById('editNoticeContent').value = content;
+    // Destroy CKEditor instance nếu đã tồn tại
+    if (window.CKEDITOR && CKEDITOR.instances.editNoticeContent) {
+      CKEDITOR.instances.editNoticeContent.destroy(true);
+    }
+    // Khởi tạo lại CKEditor cho textarea
+    CKEDITOR.replace('editNoticeContent');
+    CKEDITOR.instances.editNoticeContent.on('instanceReady', function() {
+      CKEDITOR.instances.editNoticeContent.setData(content);
+    });
     document.getElementById('editNoticeModal').style.display = 'flex';
     document.getElementById('editNoticeModal').style.alignItems = 'center';
     document.getElementById('editNoticeModal').style.justifyContent = 'center';
@@ -949,12 +1060,31 @@ var userRole = ViewBag.UserRole as string;
   function submitEditNotice(e) {
     e.preventDefault();
     const title = document.getElementById('editNoticeTitle').value;
-    const content = document.getElementById('editNoticeContent').value;
-    if (currentEditNoticeCard) {
-      currentEditNoticeCard.querySelector('.notice-author').innerText = title;
-      currentEditNoticeCard.querySelector('.notice-body').innerText = content;
+    const content = CKEDITOR.instances.editNoticeContent.getData();
+    const id = currentEditNoticeCard?.getAttribute('data-id');
+    if (!id) {
+      alert('Không xác định được thông báo để sửa!');
+      return;
     }
-    closeEditNoticeModal();
+    fetch('/User/ThongBao/EditNotification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          IdThongBao: id,
+          TieuDe: title,
+          NoiDung: content
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          closeEditNoticeModal();
+        } else {
+          alert('❌ ' + data.message);
+        }
+      });
   }
 
   function deleteNotice(btn) {
@@ -1020,6 +1150,119 @@ var userRole = ViewBag.UserRole as string;
       currentDeleteStudentRow = null;
     }
     closeConfirmDeleteStudentModal();
+  }
+
+  function loadNotifications(idLopHocPhan, page = 1) {
+    fetch(`/User/ThongBao/GetNotifications?idLopHocPhan=${idLopHocPhan}&page=${page}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          renderNotifications(data.data);
+        } else {
+          document.getElementById('tab-notices').innerHTML = `<div style="padding:20px;color:red;">${data.message}</div>`;
+        }
+      })
+      .catch(err => {
+        document.getElementById('tab-notices').innerHTML = `<div style="padding:20px;color:red;">Lỗi khi tải thông báo</div>`;
+      });
+  }
+
+  function renderNotifications(notifications) {
+    const userRole = '@userRole';
+    const isNotStudent = !userRole || userRole.toLowerCase() !== 'sinhvien';
+    const container = document.getElementById('tab-notices');
+    if (!notifications || notifications.length === 0) {
+      container.innerHTML = `<div style="padding:20px;text-align:center;color:#888;">Chưa có thông báo nào</div>`;
+      return;
+    }
+    container.innerHTML = notifications.map(tb => `
+      <div class="notice-card" data-id="${tb.idThongBao}">
+        <div class="notice-header">
+          <img src="${tb.avatar ? tb.avatar : '/images/avatar.jpg'}" class="notice-avatar" />
+          <div class="notice-info">
+            <div class="notice-author">${tb.tenGiangVien || ''}</div>
+            <div class="notice-time">${tb.ngayTao || ''}</div>
+          </div>
+          <button class="notice-menu" onclick="toggleNoticeMenu(this)"><i class="fas fa-ellipsis-v"></i></button>
+          ${isNotStudent ? `
+          <div class="notice-menu-popup" style="display:none; position:absolute; right:24px; top:48px; background:#fff; box-shadow:0 2px 8px rgba(44,62,80,0.12); border-radius:8px; min-width:160px; z-index:10;">
+            <button onclick="addNotice()" class="notice-menu-item">Thêm thông báo</button>
+            <button onclick="editNotice(this)" class="notice-menu-item">Sửa thông báo</button>
+            <button onclick="deleteNotice(this)" class="notice-menu-item" style="color:#e74c3c;">Xóa thông báo</button>
+          </div>
+          ` : ''}
+        </div>
+        <div class="notice-body">
+          <div style="white-space:normal;word-break:break-word;overflow-wrap:break-word;">${tb.noiDung || ''}</div>
+        </div>
+        <div class="notice-comment">
+          <img src="${tb.avatar ? tb.avatar : '/images/avatar.jpg'}" alt="Avatar" class="comment-avatar">
+          <input type="text" placeholder="Thêm nhận xét trong lớp học...">
+          <button class="comment-send"><i class="fas fa-paper-plane"></i></button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  let notificationConnection = null;
+
+  function connectNotificationHub() {
+    notificationConnection = new signalR.HubConnectionBuilder()
+      .withUrl("/notificationHub")
+      .build();
+    notificationConnection.on("NewNotification", function(notification) {
+      loadNotifications(currentLopHocPhanId);
+    });
+    notificationConnection.on("UpdateNotification", function(notification) {
+      loadNotifications(currentLopHocPhanId);
+    });
+    notificationConnection.start().then(function() {
+      notificationConnection.invoke("JoinClass", currentLopHocPhanId.toString());
+    });
+  }
+
+  // Khởi tạo CKEditor khi DOM loaded
+  window.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('noticeContent')) {
+      CKEDITOR.replace('noticeContent');
+    }
+    if (document.getElementById('editNoticeContent')) {
+      CKEDITOR.replace('editNoticeContent');
+    }
+  });
+
+  // Hàm thêm bình luận
+  function addComment() {
+    const commentText = document.getElementById('commentText');
+    const commentsList = document.getElementById('commentsList');
+
+    if (!commentText.value.trim()) {
+      alert('Vui lòng nhập nội dung bình luận');
+      return;
+    }
+
+    // Tạo comment mới
+    const newComment = document.createElement('div');
+    newComment.className = 'comment';
+    newComment.innerHTML = `
+      <img src="/images/avatar.jpg" alt="User Avatar" class="comment-avatar">
+      <div class="comment-content">
+        <div class="comment-header">
+          <h4>Bạn</h4>
+          <span class="comment-time">Vừa xong</span>
+        </div>
+        <p>${commentText.value}</p>
+      </div>
+    `;
+
+    // Thêm vào đầu danh sách
+    commentsList.insertBefore(newComment, commentsList.firstChild);
+
+    // Reset form
+    commentText.value = '';
+
+    // TODO: Gửi comment lên server để lưu vào database
+    console.log('Comment added:', commentText.value);
   }
 </script>
 
