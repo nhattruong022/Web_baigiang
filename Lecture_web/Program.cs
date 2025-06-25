@@ -1,4 +1,6 @@
-﻿using Lecture_web;
+
+using Lecture_web;
+using Lecture_web.Hubs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using elFinder.Net;
@@ -16,6 +18,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     });
     
 builder.Services.AddScoped<Lecture_web.Service.EmailService>();
+
+
+
 
 
 var app = builder.Build();
@@ -36,6 +41,9 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Map SignalR Hub
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.MapControllerRoute(
     name: "areas",

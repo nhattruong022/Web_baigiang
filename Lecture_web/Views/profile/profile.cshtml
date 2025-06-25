@@ -107,15 +107,30 @@
         <form class="modal-form" id="changePasswordForm">
           <div class="form-group">
             <label>Mật khẩu hiện tại</label>
-            <input type="password" name="oldPassword" required>
+            <div class="password-input-wrapper">
+              <input type="text" name="oldPassword" id="oldPassword" required>
+              <button type="button" class="password-toggle" onclick="togglePassword('oldPassword')">
+                <i class="fas fa-eye-slash" id="oldPassword-icon"></i>
+              </button>
+            </div>
           </div>
           <div class="form-group">
             <label>Mật khẩu mới</label>
-            <input type="password" name="newPassword" required>
+            <div class="password-input-wrapper">
+              <input type="text" name="newPassword" id="newPassword" required>
+              <button type="button" class="password-toggle" onclick="togglePassword('newPassword')">
+                <i class="fas fa-eye-slash" id="newPassword-icon"></i>
+              </button>
+            </div>
           </div>
           <div class="form-group">
             <label>Xác nhận mật khẩu mới</label>
-            <input type="password" name="confirmPassword" required>
+            <div class="password-input-wrapper">
+              <input type="text" name="confirmPassword" id="confirmPassword" required>
+              <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+                <i class="fas fa-eye-slash" id="confirmPassword-icon"></i>
+              </button>
+            </div>
             <div id="changePasswordMsg" style="margin-top:6px;"></div>
           </div>
           <div class="form-actions">
@@ -147,6 +162,40 @@
         </form>
       </div>
     </div>
+
+    <style>
+      .password-input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+
+      .password-input-wrapper input {
+        flex: 1;
+        padding-right: 45px;
+      }
+
+      .password-toggle {
+        position: absolute;
+        right: 10px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #666;
+        font-size: 16px;
+        padding: 5px;
+        z-index: 1;
+        transition: color 0.3s ease;
+      }
+
+      .password-toggle:hover {
+        color: #3498db;
+      }
+
+      .password-toggle:focus {
+        outline: none;
+      }
+    </style>
 
     <script>
       // Modal functions
@@ -182,6 +231,22 @@
 
       function toggleUserMenu() {
         document.querySelector('.user-dropdown').classList.toggle('active');
+      }
+
+      // Function để toggle hiển thị password
+      function togglePassword(fieldId) {
+        const passwordField = document.getElementById(fieldId);
+        const icon = document.getElementById(fieldId + '-icon');
+
+        if (passwordField.type === 'text') {
+          passwordField.type = 'password';
+          icon.classList.remove('fa-eye-slash');
+          icon.classList.add('fa-eye');
+        } else {
+          passwordField.type = 'text';
+          icon.classList.remove('fa-eye');
+          icon.classList.add('fa-eye-slash');
+        }
       }
 
       // Close dropdown when clicking outside

@@ -20,6 +20,7 @@ namespace Lecture_web.Areas.User.Controllers
             _context = context;
         }
         [HttpGet]
+        [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
         public async Task<IActionResult> Index(string search, int page = 1)
         {
             const int pageSize = 4;
@@ -81,6 +82,10 @@ namespace Lecture_web.Areas.User.Controllers
             var vmItems = list.Select(x =>
             {
                 var gv = gvinfo.First(u => u.IdTaiKhoan == x.GiangVienId);
+                
+                // Debug log để kiểm tra avatar path
+                System.Diagnostics.Debug.WriteLine($"GiangVien ID: {gv.IdTaiKhoan}, Name: {gv.HoTen}, Avatar: {gv.AnhDaiDien}");
+                
                 return new LopHocViewModel
                 {
                     IdLopHocPhan = x.IdLopHocPhan,
