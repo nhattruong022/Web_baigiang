@@ -1,8 +1,9 @@
+
 using Lecture_web;
 using Lecture_web.Hubs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
-
+using elFinder.Net;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -18,8 +19,19 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     
 builder.Services.AddScoped<Lecture_web.Service.EmailService>();
 
+
 // Add SignalR
 builder.Services.AddSignalR();
+
+
+//builder.Services.AddElFinderAspN(options =>
+//{
+//    var uploadsRoot = Path.Combine(builder.Environment.WebRootPath, "uploads");
+//    Directory.CreateDirectory(uploadsRoot);
+//    options.RootPath = uploadsRoot;
+//    options.Url = "/uploads";
+//    options.Drivers = new[] { new FileSystemDriver() };
+//});
 
 var app = builder.Build();
 
@@ -35,6 +47,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
 
 app.UseAuthentication();
 app.UseAuthorization();
