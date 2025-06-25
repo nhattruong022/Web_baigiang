@@ -20,18 +20,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddScoped<Lecture_web.Service.EmailService>();
 
 
-// Add SignalR
-builder.Services.AddSignalR();
 
 
-//builder.Services.AddElFinderAspN(options =>
-//{
-//    var uploadsRoot = Path.Combine(builder.Environment.WebRootPath, "uploads");
-//    Directory.CreateDirectory(uploadsRoot);
-//    options.RootPath = uploadsRoot;
-//    options.Url = "/uploads";
-//    options.Drivers = new[] { new FileSystemDriver() };
-//});
 
 var app = builder.Build();
 

@@ -10,21 +10,21 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
 
     <style>
          .truncate {
-            max-width: 200px; /* Điều chỉnh chiều rộng phù hợp */
+            max-width: 200px; 
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         } 
 
 
-        /* Chỉ nhắm tới vùng checkbox trong modal edit */
+
         #lectureClassCheckboxes .form-check {
             display: flex;
             align-items: center;
             margin-bottom: .5rem;
         }
 
-        /* Ép kích thước mặc định cho checkbox */
+
         #lectureClassCheckboxes .form-check-input {
             width: 1.2rem;
             height: 1.2rem;
@@ -342,7 +342,7 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
                 <label>Lớp học phần <span class="required">*</span></label>
                 <div id="createLopHocPhanCheckboxes"
                      style="max-height:200px;overflow-y:auto;border:1px solid #ddd;padding:0.5rem;">
-                    <!-- JS sẽ render checkbox ở bước sau -->
+                    <!-- Nơi render option lớp học phần -->
                 </div>
                 <span asp-validation-for="selectedlophocphanids" class="text-danger"></span>
             </div>
@@ -394,7 +394,7 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
                 </select> *@
                 <div id="lectureClassCheckboxes" class=""
                      style="max-height:200px; overflow-y:auto; border:1px solid #ddd; padding:0.5rem;">
-                    <!-- JS render checkbox ở đây -->
+                    <!-- Nơi render option lớp học phần -->
                 </div>
       </div>
       <div class="form-actions">
@@ -404,21 +404,7 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
     </form>
   </div>
 </div>
-<!-- Modal xác nhận xóa nội dung -->
-@* <div class="modal" id="confirmdeletecontentmodal">
-  <div class="modal-content">
-    <div class="modal-header" style="justify-content:center;">
-      <h2 style="font-size:1.1rem; margin:0 auto;">xác nhận xóa</h2>
-    </div>
-    <div class="modal-form" style="padding:20px;">
-      <p>bạn có chắc chắn muốn xóa bài giảng này?</p>
-      <div class="modal-actions">
-        <button class="btn-secondary" onclick="closeconfirmdeletecontent()">hủy</button>
-        <button class="btn-danger" onclick="confirmdeletecontent()">xóa</button>
-      </div>
-    </div>
-  </div>
-</div> *@
+
 
 
 
@@ -438,18 +424,6 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
                 $('#editIdBaiGiang').val(data.idBaiGiang);
                 $('#editLectureTitle').val(data.td);
                 $('#editLectureDesc').val(data.mt);
-                // $('#editLectureClass').val(data.lopHocPhan);
-
-                // var $sel = $('#editLecturecl')
-                //     .empty();
-                // $.each(data.class, function (_, lp) {
-                //     var option = $('<option>')
-                //         .val(lp.id)
-                //         .text(lp.ten);
-                //     if (data.selected.includes(lp.Id)) {
-                //         option.prop('selected', true);
-                //     }
-                //     $sel.append(option);
 
                 var $cbContainer = $('#lectureClassCheckboxes').empty();
                 data.class.forEach(function (lp) {
@@ -659,11 +633,10 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
         $('#searchForm').on('submit', function (e) {
             e.preventDefault();
 
-            // Lấy giá trị search và page
+
             const search = $(this).find('input[name="search"]').val().trim();
             const page = $(this).find('input[name="page"]').val() || '1';
 
-            // Xây URL
             const baseUrl = '@Url.Action("Index", "QuanLyBaiGiang", new { area = "User" })';
             const params = new URLSearchParams();
             if (search.length) params.set('search', search);
