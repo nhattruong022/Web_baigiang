@@ -109,7 +109,7 @@ namespace Lecture_web.Areas.User.Controllers
         [HttpGet]
         public async Task<IActionResult> GetClass(int? id)
         {
-            // load lists of HocPhan and BaiGiang for dropdowns
+ 
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
             var listBG = await _context.BaiGiang
                 .Where(b => b.IdTaiKhoan == userId)
@@ -159,7 +159,7 @@ namespace Lecture_web.Areas.User.Controllers
                 return BadRequest(new { errors });
             }
 
-            // Kiểm tra học phần tồn tại
+
             var hocPhan = await _context.HocPhan
                 .FirstOrDefaultAsync(h => h.IdHocPhan == lhp.HocPhanId);
             if (hocPhan == null)
@@ -174,7 +174,6 @@ namespace Lecture_web.Areas.User.Controllers
                 return BadRequest(new { errors });
             }
 
-            // Kiểm tra trùng HọcPhan–TênLop
             lhp.TenLop = StringHelper.NormalizeString(lhp.TenLop);
             bool exists = await _context.LopHocPhan
                 .AnyAsync(c => c.IdHocPhan == lhp.HocPhanId && c.TenLop.Replace(" ","") == lhp.TenLop.Replace(" ",""));
@@ -191,7 +190,7 @@ namespace Lecture_web.Areas.User.Controllers
                 return BadRequest(new { errors });
             }
 
-            // Tạo mới
+    
             var lop = new LopHocPhanModels
             {
                 TenLop = lhp.TenLop,
@@ -213,12 +212,12 @@ namespace Lecture_web.Areas.User.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditClass(EditClassViewModel lhp)
         {
-            // 1) Chuẩn hóa tên
+       
            lhp.TenLop = StringHelper.NormalizeString(lhp.TenLop);
 
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-            // 2) Kiểm tra ModelState
+       
             if (!ModelState.IsValid)
             {
                 var errors = ModelState

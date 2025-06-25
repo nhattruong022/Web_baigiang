@@ -17,14 +17,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     
 builder.Services.AddScoped<Lecture_web.Service.EmailService>();
 
-//builder.Services.AddElFinderAspN(options =>
-//{
-//    var uploadsRoot = Path.Combine(builder.Environment.WebRootPath, "uploads");
-//    Directory.CreateDirectory(uploadsRoot);
-//    options.RootPath = uploadsRoot;
-//    options.Url = "/uploads";
-//    options.Drivers = new[] { new FileSystemDriver() };
-//});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
