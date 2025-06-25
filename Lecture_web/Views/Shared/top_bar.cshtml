@@ -15,19 +15,30 @@ if (currentUser != null)
 {
 userName = currentUser.HoTen ?? currentUser.TenDangNhap ?? "User";
 
-// Xử lý đường dẫn avatar
-if (!string.IsNullOrEmpty(currentUser.AnhDaiDien))
+// Xử lý đường dẫn avatar - kiểm tra kỹ hơn
+if (!string.IsNullOrEmpty(currentUser.AnhDaiDien) &&
+!string.IsNullOrWhiteSpace(currentUser.AnhDaiDien) &&
+currentUser.AnhDaiDien.Trim() != "")
 {
+string cleanPath = currentUser.AnhDaiDien.Trim();
+
 // Nếu đường dẫn đã bắt đầu bằng / thì dùng trực tiếp
-if (currentUser.AnhDaiDien.StartsWith("/"))
+if (cleanPath.StartsWith("/"))
 {
-avatar = currentUser.AnhDaiDien;
+avatar = cleanPath;
 }
 // Nếu không thì thêm /images/ phía trước
 else
 {
-avatar = "/images/" + currentUser.AnhDaiDien;
+avatar = "/images/" + cleanPath;
 }
+
+System.Diagnostics.Debug.WriteLine($"User {userName} has avatar: {avatar}");
+}
+else
+{
+avatar = "/images/avatar.jpg";
+System.Diagnostics.Debug.WriteLine($"User {userName} has NO avatar, using default");
 }
 }
 }
@@ -47,6 +58,12 @@ if (!string.IsNullOrEmpty(ViewBag.Avatar as string))
 {
 avatar = (string)ViewBag.Avatar;
 }
+
+// Final check - đảm bảo avatar không bị null/empty
+if (string.IsNullOrEmpty(avatar) || string.IsNullOrWhiteSpace(avatar))
+{
+avatar = "/images/avatar.jpg";
+}
 }
 <header class="top-bar">
 
@@ -56,7 +73,7 @@ avatar = (string)ViewBag.Avatar;
       <span class="notification-badge">5</span>
     </div>
     <div class="user-profile" onclick="toggleUserMenu()">
-      <img src="@avatar?v=@DateTime.Now.Ticks" alt="Avatar @userName" class="avatar" id="topBarAvatar" onerror="this.src='/images/avatar.jpg?v=' + new Date().getTime()">
+      <img src="@avatar?v=@DateTime.Now.Ticks" alt="Avatar @userName" class="avatar" id="topBarAvatar" onerror="handleAvatarError(this)" style="border-radius: 50%; object-fit: cover;">
       <span class="user-name" id="topBarUserName">@userName</span>
       <i class="fas fa-chevron-down"></i>
       <div class="user-dropdown">
@@ -79,12 +96,34 @@ avatar = (string)ViewBag.Avatar;
 </header>
 
 <script>
+  // Function xử lý lỗi avatar
+  function handleAvatarError(img) {
+    console.log('Avatar error, falling back to default');
+    img.src = '/images/avatar.jpg?v=' + new Date().getTime();
+    img.onerror = null; // Prevent infinite loop
+  }
+
   // Ưu tiên lấy avatar mới nhất từ localStorage khi load trang
   document.addEventListener('DOMContentLoaded', function() {
+    var topBarAvatar = document.getElementById('topBarAvatar');
+
+    // Kiểm tra localStorage trước
     var updatedUrl = localStorage.getItem('updatedAvatarUrl');
-    if (updatedUrl) {
-      var topBarAvatar = document.getElementById('topBarAvatar');
-      if (topBarAvatar) topBarAvatar.src = updatedUrl + '?t=' + new Date().getTime();
+    if (updatedUrl && topBarAvatar) {
+      topBarAvatar.src = updatedUrl + '?t=' + new Date().getTime();
+    }
+
+    // Kiểm tra nếu avatar hiện tại có valid không
+    if (topBarAvatar && topBarAvatar.src) {
+      var img = new Image();
+      img.onload = function() {
+        console.log('Avatar loaded successfully');
+      };
+      img.onerror = function() {
+        console.log('Avatar failed to load, using default');
+        handleAvatarError(topBarAvatar);
+      };
+      img.src = topBarAvatar.src;
     }
   });
 </script>
