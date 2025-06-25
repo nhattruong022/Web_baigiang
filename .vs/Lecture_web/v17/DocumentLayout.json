@@ -3,21 +3,61 @@
   "WorkspaceRootPath": "D:\\DATN\\DoAnWBG\\Web_baigiang\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/WebBG/True/SqlTable/dbo.BaiGiang.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/WebBG/True/SqlTable/dbo.Chuong.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/WebBG/True/SqlTable/dbo.Bai.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\areas\\user\\views\\quanlybai\\editbai.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\areas\\user\\views\\quanlybai\\editbai.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\areas\\user\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\areas\\user\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\areas\\user\\views\\quanlybaigiang\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\areas\\user\\views\\quanlybaigiang\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\areas\\user\\controllers\\quanlybaicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\areas\\user\\controllers\\quanlybaicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\models\\viewmodels\\editbaiviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\models\\viewmodels\\editbaiviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\areas\\user\\views\\quanlychuong\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\areas\\user\\views\\quanlychuong\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\areas\\user\\controllers\\quanlychuongcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\areas\\user\\controllers\\quanlychuongcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/WebBG/True/SqlTable/dbo.Chuong.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/WebBG/True/SqlTable/dbo.BaiGiang.sql||{0058A1F7-65F3-4DB9-B3D0-CA7E64DD73CD}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\views\\shared\\components\\baigianglistmenu\\default.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\views\\shared\\components\\baigianglistmenu\\default.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\views\\shared\\navbar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\views\\shared\\navbar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\areas\\user\\viewcomponent\\baigianglistmenuviewcomponent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\areas\\user\\viewcomponent\\baigianglistmenuviewcomponent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\models\\viewmodels\\baiviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -47,44 +87,16 @@
       "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\views\\shared\\components\\khoalistmenu\\default.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\views\\shared\\components\\baigianglistmenu\\default.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\views\\shared\\components\\baigianglistmenu\\default.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\areas\\user\\viewcomponent\\khoalistmenuviewcomponent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\areas\\user\\viewcomponent\\khoalistmenuviewcomponent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\areas\\user\\viewcomponent\\baigianglistmenuviewcomponent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\areas\\user\\viewcomponent\\baigianglistmenuviewcomponent.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\areas\\user\\views\\lophoc\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\areas\\user\\views\\lophoc\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\areas\\user\\views\\shared\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\areas\\user\\views\\shared\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\areas\\user\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\areas\\user\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\views\\_viewstart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\views\\_viewstart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\views\\shared\\navbar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\views\\shared\\navbar.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\models\\hocphanmodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -146,10 +158,6 @@
       "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\areas\\user\\views\\chitiethocphan\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\areas\\user\\views\\quanlybaigiang\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\areas\\user\\views\\quanlybaigiang\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\areas\\admin\\controllers\\quanlynguoidungcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\areas\\admin\\controllers\\quanlynguoidungcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -164,10 +172,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\areas\\admin\\views\\quanlynguoidung\\_edituserpartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\areas\\admin\\views\\quanlynguoidung\\_edituserpartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\areas\\user\\controllers\\quanlybaicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|solutionrelative:lecture_web\\areas\\user\\controllers\\quanlybaicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{6CCD0BA0-9F48-4704-B999-6D4AD8EC8B77}|Lecture_web\\Lecture_web.csproj|d:\\datn\\doanwbg\\web_baigiang\\lecture_web\\wwwroot\\css\\style.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
@@ -267,6 +271,10 @@
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Migrations\\20250620133707_InitialCreate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Lecture_web\\Migrations\\20250620133707_InitialCreate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Views\\Shared\\_ViewImports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Lecture_web\\Areas\\User\\Views\\Shared\\_ViewImports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     }
   ],
   "DocumentGroupContainers": [
@@ -326,31 +334,57 @@
               "$type": "Document",
               "DocumentIndex": 3,
               "Title": "Index.cshtml",
-              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Views\\QuanLyChuong\\Index.cshtml",
-              "RelativeDocumentMoniker": "Lecture_web\\Areas\\User\\Views\\QuanLyChuong\\Index.cshtml",
-              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Views\\QuanLyChuong\\Index.cshtml",
-              "RelativeToolTip": "Lecture_web\\Areas\\User\\Views\\QuanLyChuong\\Index.cshtml",
-              "ViewState": "AQIAABIBAAAAAAAAAAAAABoBAAA+AAAA",
+              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Views\\QuanLyBaiGiang\\Index.cshtml",
+              "RelativeDocumentMoniker": "Lecture_web\\Areas\\User\\Views\\QuanLyBaiGiang\\Index.cshtml",
+              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Views\\QuanLyBaiGiang\\Index.cshtml",
+              "RelativeToolTip": "Lecture_web\\Areas\\User\\Views\\QuanLyBaiGiang\\Index.cshtml",
+              "ViewState": "AQIAAIoCAAAAAAAAAAApwMMAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-15T14:08:03.675Z",
+              "WhenOpened": "2025-06-15T05:52:12.761Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "QuanLyChuongController.cs",
-              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Controllers\\QuanLyChuongController.cs",
-              "RelativeDocumentMoniker": "Lecture_web\\Areas\\User\\Controllers\\QuanLyChuongController.cs",
-              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Controllers\\QuanLyChuongController.cs",
-              "RelativeToolTip": "Lecture_web\\Areas\\User\\Controllers\\QuanLyChuongController.cs",
-              "ViewState": "AQIAAGUAAAAAAAAAAAAAwB0AAAAnAAAA",
+              "DocumentIndex": 5,
+              "Title": "EditBaiViewModel.cs",
+              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\ViewModels\\EditBaiViewModel.cs",
+              "RelativeDocumentMoniker": "Lecture_web\\Models\\ViewModels\\EditBaiViewModel.cs",
+              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\ViewModels\\EditBaiViewModel.cs",
+              "RelativeToolTip": "Lecture_web\\Models\\ViewModels\\EditBaiViewModel.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABIAAAArAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-15T14:09:08.316Z",
+              "WhenOpened": "2025-06-24T08:41:43.491Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "EditBai.cshtml",
+              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Views\\QuanLyBai\\EditBai.cshtml",
+              "RelativeDocumentMoniker": "Lecture_web\\Areas\\User\\Views\\QuanLyBai\\EditBai.cshtml",
+              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Views\\QuanLyBai\\EditBai.cshtml",
+              "RelativeToolTip": "Lecture_web\\Areas\\User\\Views\\QuanLyBai\\EditBai.cshtml",
+              "ViewState": "AQIAAD0AAAAAAAAAAAAswFQAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-06-24T07:21:10.104Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "Lecture_web\\Areas\\User\\Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "Lecture_web\\Areas\\User\\Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AQIAABUAAAAAAAAAAAAAAB4AAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-06-15T12:32:16.452Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
               "Title": "dbo.Bai [Data]",
               "DocumentMoniker": "ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/WebBG/True/SqlTable/dbo.Bai.sql",
               "ToolTip": "dbo.Bai [Data]",
@@ -360,195 +394,32 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "dbo.Chuong [Data]",
-              "DocumentMoniker": "ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/WebBG/True/SqlTable/dbo.Chuong.sql",
-              "ToolTip": "dbo.Chuong [Data]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
-              "WhenOpened": "2025-06-17T07:57:17.778Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "dbo.BaiGiang [Data]",
-              "DocumentMoniker": "ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/WebBG/True/SqlTable/dbo.BaiGiang.sql",
-              "ToolTip": "dbo.BaiGiang [Data]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
-              "WhenOpened": "2025-06-17T07:57:07.149Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 8,
-              "Title": "LopHocController.cs",
-              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Controllers\\LopHocController.cs",
-              "RelativeDocumentMoniker": "Lecture_web\\Areas\\User\\Controllers\\LopHocController.cs",
-              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Controllers\\LopHocController.cs",
-              "RelativeToolTip": "Lecture_web\\Areas\\User\\Controllers\\LopHocController.cs",
-              "ViewState": "AQIAACgAAAAAAAAAAAAMwGkAAAAAAAAA",
+              "Title": "QuanLyChuongController.cs",
+              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Controllers\\QuanLyChuongController.cs",
+              "RelativeDocumentMoniker": "Lecture_web\\Areas\\User\\Controllers\\QuanLyChuongController.cs",
+              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Controllers\\QuanLyChuongController.cs",
+              "RelativeToolTip": "Lecture_web\\Areas\\User\\Controllers\\QuanLyChuongController.cs",
+              "ViewState": "AQIAAFQAAAAAAAAAAAAYwB0AAAAnAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-15T14:10:04.096Z"
+              "WhenOpened": "2025-06-15T14:09:08.316Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "BaiViewModel.cs",
-              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\ViewModels\\BaiViewModel.cs",
-              "RelativeDocumentMoniker": "Lecture_web\\Models\\ViewModels\\BaiViewModel.cs",
-              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\ViewModels\\BaiViewModel.cs",
-              "RelativeToolTip": "Lecture_web\\Models\\ViewModels\\BaiViewModel.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAwAAAAAAAAA",
+              "DocumentIndex": 4,
+              "Title": "QuanLyBaiController.cs",
+              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Controllers\\QuanLyBaiController.cs",
+              "RelativeDocumentMoniker": "Lecture_web\\Areas\\User\\Controllers\\QuanLyBaiController.cs",
+              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Controllers\\QuanLyBaiController.cs",
+              "RelativeToolTip": "Lecture_web\\Areas\\User\\Controllers\\QuanLyBaiController.cs",
+              "ViewState": "AQIAAEYAAAAAAAAAAAAgwGIAAAACAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-23T04:21:21.932Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "ListChuongViewModel.cs",
-              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\ViewModels\\ListChuongViewModel.cs",
-              "RelativeDocumentMoniker": "Lecture_web\\Models\\ViewModels\\ListChuongViewModel.cs",
-              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\ViewModels\\ListChuongViewModel.cs",
-              "RelativeToolTip": "Lecture_web\\Models\\ViewModels\\ListChuongViewModel.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAAAgAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-15T14:26:36.492Z",
+              "WhenOpened": "2025-06-15T14:10:06.117Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 7,
-              "Title": "SearchChuongViewModel.cs",
-              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\ViewModels\\SearchChuongViewModel.cs",
-              "RelativeDocumentMoniker": "Lecture_web\\Models\\ViewModels\\SearchChuongViewModel.cs",
-              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\ViewModels\\SearchChuongViewModel.cs",
-              "RelativeToolTip": "Lecture_web\\Models\\ViewModels\\SearchChuongViewModel.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAwAAAAvAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-15T15:22:57.982Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "dbo.TaiKhoan [Data]",
-              "DocumentMoniker": "ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/WebBG/True/SqlTable/dbo.TaiKhoan.sql",
-              "ToolTip": "dbo.TaiKhoan [Data]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
-              "WhenOpened": "2025-06-17T13:38:12.547Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "QuanLyBaiGiangController.cs",
-              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Controllers\\QuanLyBaiGiangController.cs",
-              "RelativeDocumentMoniker": "Lecture_web\\Areas\\User\\Controllers\\QuanLyBaiGiangController.cs",
-              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Controllers\\QuanLyBaiGiangController.cs",
-              "RelativeToolTip": "Lecture_web\\Areas\\User\\Controllers\\QuanLyBaiGiangController.cs",
-              "ViewState": "AQIAABEAAAAAAAAAAAAAwB8AAAAvAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-15T05:51:53.787Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "KhoaListMenuViewComponent.cs",
-              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\ViewComponent\\KhoaListMenuViewComponent.cs",
-              "RelativeDocumentMoniker": "Lecture_web\\Areas\\User\\ViewComponent\\KhoaListMenuViewComponent.cs",
-              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\ViewComponent\\KhoaListMenuViewComponent.cs",
-              "RelativeToolTip": "Lecture_web\\Areas\\User\\ViewComponent\\KhoaListMenuViewComponent.cs",
-              "ViewState": "AQIAAAgAAAAAAAAAAAAAwBEAAAAOAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-22T07:51:23.797Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "Default.cshtml",
-              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Views\\Shared\\Components\\KhoaListMenu\\Default.cshtml",
-              "RelativeDocumentMoniker": "Lecture_web\\Views\\Shared\\Components\\KhoaListMenu\\Default.cshtml",
-              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Views\\Shared\\Components\\KhoaListMenu\\Default.cshtml",
-              "RelativeToolTip": "Lecture_web\\Views\\Shared\\Components\\KhoaListMenu\\Default.cshtml",
-              "ViewState": "AQIAAA0AAAAAAAAAAAAcwC4AAAAFAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-22T07:57:40.202Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "BaiGiangListMenuViewComponent.cs",
-              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\ViewComponent\\BaiGiangListMenuViewComponent.cs",
-              "RelativeDocumentMoniker": "Lecture_web\\Areas\\User\\ViewComponent\\BaiGiangListMenuViewComponent.cs",
-              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\ViewComponent\\BaiGiangListMenuViewComponent.cs",
-              "RelativeToolTip": "Lecture_web\\Areas\\User\\ViewComponent\\BaiGiangListMenuViewComponent.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAwAAAAFAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-22T09:45:27.576Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "Default.cshtml",
-              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Views\\Shared\\Components\\BaiGiangListMenu\\Default.cshtml",
-              "RelativeDocumentMoniker": "Lecture_web\\Views\\Shared\\Components\\BaiGiangListMenu\\Default.cshtml",
-              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Views\\Shared\\Components\\BaiGiangListMenu\\Default.cshtml",
-              "RelativeToolTip": "Lecture_web\\Views\\Shared\\Components\\BaiGiangListMenu\\Default.cshtml",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAABcAAAAFAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-22T09:38:35.218Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "Index.cshtml",
-              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Views\\LopHoc\\Index.cshtml",
-              "RelativeDocumentMoniker": "Lecture_web\\Areas\\User\\Views\\LopHoc\\Index.cshtml",
-              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Views\\LopHoc\\Index.cshtml",
-              "RelativeToolTip": "Lecture_web\\Areas\\User\\Views\\LopHoc\\Index.cshtml",
-              "ViewState": "AQIAAKoAAAAAAAAAAAAMwLgAAAAiAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-18T10:36:25.002Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 19,
-              "Title": "_ViewStart.cshtml",
-              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Views\\_ViewStart.cshtml",
-              "RelativeDocumentMoniker": "Lecture_web\\Views\\_ViewStart.cshtml",
-              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Views\\_ViewStart.cshtml",
-              "RelativeToolTip": "Lecture_web\\Views\\_ViewStart.cshtml",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAMAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-22T11:01:41.192Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 20,
-              "Title": "_Layout.cshtml",
-              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Views\\Shared\\_Layout.cshtml",
-              "RelativeDocumentMoniker": "Lecture_web\\Views\\Shared\\_Layout.cshtml",
-              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Views\\Shared\\_Layout.cshtml",
-              "RelativeToolTip": "Lecture_web\\Views\\Shared\\_Layout.cshtml",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-22T11:01:33.836Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
-              "Title": "_ViewImports.cshtml",
-              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Views\\Shared\\_ViewImports.cshtml",
-              "RelativeDocumentMoniker": "Lecture_web\\Areas\\User\\Views\\Shared\\_ViewImports.cshtml",
-              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Views\\Shared\\_ViewImports.cshtml",
-              "RelativeToolTip": "Lecture_web\\Areas\\User\\Views\\Shared\\_ViewImports.cshtml",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-22T11:02:36.518Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 18,
               "Title": "_ViewImports.cshtml",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Views\\_ViewImports.cshtml",
               "RelativeDocumentMoniker": "Lecture_web\\Views\\_ViewImports.cshtml",
@@ -560,31 +431,214 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 6,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Views\\QuanLyChuong\\Index.cshtml",
+              "RelativeDocumentMoniker": "Lecture_web\\Areas\\User\\Views\\QuanLyChuong\\Index.cshtml",
+              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Views\\QuanLyChuong\\Index.cshtml",
+              "RelativeToolTip": "Lecture_web\\Areas\\User\\Views\\QuanLyChuong\\Index.cshtml",
+              "ViewState": "AQIAAJoCAAAAAAAAAAAewLECAAArAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-06-15T14:08:03.675Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "dbo.BaiGiang [Data]",
+              "DocumentMoniker": "ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/WebBG/True/SqlTable/dbo.BaiGiang.sql",
+              "ToolTip": "dbo.BaiGiang [Data]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2025-06-17T07:57:07.149Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Default.cshtml",
+              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Views\\Shared\\Components\\BaiGiangListMenu\\Default.cshtml",
+              "RelativeDocumentMoniker": "Lecture_web\\Views\\Shared\\Components\\BaiGiangListMenu\\Default.cshtml",
+              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Views\\Shared\\Components\\BaiGiangListMenu\\Default.cshtml",
+              "RelativeToolTip": "Lecture_web\\Views\\Shared\\Components\\BaiGiangListMenu\\Default.cshtml",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABcAAAAFAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-06-22T09:38:35.218Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "dbo.Chuong [Data]",
+              "DocumentMoniker": "ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/WebBG/True/SqlTable/dbo.Chuong.sql",
+              "ToolTip": "dbo.Chuong [Data]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2025-06-17T07:57:17.778Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
               "Title": "navbar.cshtml",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Views\\Shared\\navbar.cshtml",
               "RelativeDocumentMoniker": "Lecture_web\\Views\\Shared\\navbar.cshtml",
               "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Views\\Shared\\navbar.cshtml",
               "RelativeToolTip": "Lecture_web\\Views\\Shared\\navbar.cshtml",
-              "ViewState": "AQIAAAcAAAAAAAAAAAAcwHYAAAAMAAAA",
+              "ViewState": "AQIAAAoAAAAAAAAAAAAcwBsAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-06-22T04:52:48.668Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 13,
+              "Title": "BaiGiangListMenuViewComponent.cs",
+              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\ViewComponent\\BaiGiangListMenuViewComponent.cs",
+              "RelativeDocumentMoniker": "Lecture_web\\Areas\\User\\ViewComponent\\BaiGiangListMenuViewComponent.cs",
+              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\ViewComponent\\BaiGiangListMenuViewComponent.cs",
+              "RelativeToolTip": "Lecture_web\\Areas\\User\\ViewComponent\\BaiGiangListMenuViewComponent.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAwAAAAFAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-22T09:45:27.576Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "LopHocController.cs",
+              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Controllers\\LopHocController.cs",
+              "RelativeDocumentMoniker": "Lecture_web\\Areas\\User\\Controllers\\LopHocController.cs",
+              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Controllers\\LopHocController.cs",
+              "RelativeToolTip": "Lecture_web\\Areas\\User\\Controllers\\LopHocController.cs",
+              "ViewState": "AQIAACgAAAAAAAAAAAAMwGkAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-15T14:10:04.096Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
               "Title": "_Layout.cshtml",
-              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Views\\Shared\\_Layout.cshtml",
-              "RelativeDocumentMoniker": "Lecture_web\\Areas\\User\\Views\\Shared\\_Layout.cshtml",
-              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Views\\Shared\\_Layout.cshtml",
-              "RelativeToolTip": "Lecture_web\\Areas\\User\\Views\\Shared\\_Layout.cshtml",
-              "ViewState": "AQIAAAMAAAAAAAAAAAAAABcAAAAfAAAA",
+              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "Lecture_web\\Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "Lecture_web\\Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-15T12:32:16.452Z"
+              "WhenOpened": "2025-06-22T11:01:33.836Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "BaiViewModel.cs",
+              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\ViewModels\\BaiViewModel.cs",
+              "RelativeDocumentMoniker": "Lecture_web\\Models\\ViewModels\\BaiViewModel.cs",
+              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\ViewModels\\BaiViewModel.cs",
+              "RelativeToolTip": "Lecture_web\\Models\\ViewModels\\BaiViewModel.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAwAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-23T04:21:21.932Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "ListChuongViewModel.cs",
+              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\ViewModels\\ListChuongViewModel.cs",
+              "RelativeDocumentMoniker": "Lecture_web\\Models\\ViewModels\\ListChuongViewModel.cs",
+              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\ViewModels\\ListChuongViewModel.cs",
+              "RelativeToolTip": "Lecture_web\\Models\\ViewModels\\ListChuongViewModel.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAAAgAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-15T14:26:36.492Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "SearchChuongViewModel.cs",
+              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\ViewModels\\SearchChuongViewModel.cs",
+              "RelativeDocumentMoniker": "Lecture_web\\Models\\ViewModels\\SearchChuongViewModel.cs",
+              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\ViewModels\\SearchChuongViewModel.cs",
+              "RelativeToolTip": "Lecture_web\\Models\\ViewModels\\SearchChuongViewModel.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAwAAAAvAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-15T15:22:57.982Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "dbo.TaiKhoan [Data]",
+              "DocumentMoniker": "ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/WebBG/True/SqlTable/dbo.TaiKhoan.sql",
+              "ToolTip": "dbo.TaiKhoan [Data]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000826|",
+              "WhenOpened": "2025-06-17T13:38:12.547Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "QuanLyBaiGiangController.cs",
+              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Controllers\\QuanLyBaiGiangController.cs",
+              "RelativeDocumentMoniker": "Lecture_web\\Areas\\User\\Controllers\\QuanLyBaiGiangController.cs",
+              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Controllers\\QuanLyBaiGiangController.cs",
+              "RelativeToolTip": "Lecture_web\\Areas\\User\\Controllers\\QuanLyBaiGiangController.cs",
+              "ViewState": "AQIAABEAAAAAAAAAAAAAwB8AAAAvAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-15T05:51:53.787Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 22,
+              "Title": "KhoaListMenuViewComponent.cs",
+              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\ViewComponent\\KhoaListMenuViewComponent.cs",
+              "RelativeDocumentMoniker": "Lecture_web\\Areas\\User\\ViewComponent\\KhoaListMenuViewComponent.cs",
+              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\ViewComponent\\KhoaListMenuViewComponent.cs",
+              "RelativeToolTip": "Lecture_web\\Areas\\User\\ViewComponent\\KhoaListMenuViewComponent.cs",
+              "ViewState": "AQIAAAgAAAAAAAAAAAAAwBEAAAAOAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-22T07:51:23.797Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "Default.cshtml",
+              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Views\\Shared\\Components\\KhoaListMenu\\Default.cshtml",
+              "RelativeDocumentMoniker": "Lecture_web\\Views\\Shared\\Components\\KhoaListMenu\\Default.cshtml",
+              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Views\\Shared\\Components\\KhoaListMenu\\Default.cshtml",
+              "RelativeToolTip": "Lecture_web\\Views\\Shared\\Components\\KhoaListMenu\\Default.cshtml",
+              "ViewState": "AQIAAA0AAAAAAAAAAAAcwC4AAAAFAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-06-22T07:57:40.202Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Views\\LopHoc\\Index.cshtml",
+              "RelativeDocumentMoniker": "Lecture_web\\Areas\\User\\Views\\LopHoc\\Index.cshtml",
+              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Views\\LopHoc\\Index.cshtml",
+              "RelativeToolTip": "Lecture_web\\Areas\\User\\Views\\LopHoc\\Index.cshtml",
+              "ViewState": "AQIAAKoAAAAAAAAAAAAMwLgAAAAiAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-06-18T10:36:25.002Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "_ViewStart.cshtml",
+              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Views\\_ViewStart.cshtml",
+              "RelativeDocumentMoniker": "Lecture_web\\Views\\_ViewStart.cshtml",
+              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Views\\_ViewStart.cshtml",
+              "RelativeToolTip": "Lecture_web\\Views\\_ViewStart.cshtml",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAMAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-06-22T11:01:41.192Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 69,
+              "Title": "_ViewImports.cshtml",
+              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Views\\Shared\\_ViewImports.cshtml",
+              "RelativeDocumentMoniker": "Lecture_web\\Areas\\User\\Views\\Shared\\_ViewImports.cshtml",
+              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Views\\Shared\\_ViewImports.cshtml",
+              "RelativeToolTip": "Lecture_web\\Areas\\User\\Views\\Shared\\_ViewImports.cshtml",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-06-22T11:02:36.518Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
               "Title": "HocPhanModels.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\HocPhanModels.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Models\\HocPhanModels.cs",
@@ -596,7 +650,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 26,
               "Title": "BoMonModels.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\BoMonModels.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Models\\BoMonModels.cs",
@@ -608,7 +662,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 28,
               "Title": "KhoaModels.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\KhoaModels.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Models\\KhoaModels.cs",
@@ -620,7 +674,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 27,
               "Title": "LopHocPhanModels.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\LopHocPhanModels.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Models\\LopHocPhanModels.cs",
@@ -632,7 +686,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
+              "DocumentIndex": 32,
               "Title": "LopHocViewModel.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\ViewModels\\LopHocViewModel.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Models\\ViewModels\\LopHocViewModel.cs",
@@ -644,7 +698,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 29,
               "Title": "top_bar.cshtml",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Views\\Shared\\top_bar.cshtml",
               "RelativeDocumentMoniker": "Lecture_web\\Views\\Shared\\top_bar.cshtml",
@@ -656,7 +710,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 30,
               "Title": "QuanLyKhoaController.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\Admin\\Controllers\\QuanLyKhoaController.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Areas\\Admin\\Controllers\\QuanLyKhoaController.cs",
@@ -668,7 +722,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 31,
               "Title": "dbo.LopHocPhan [Data]",
               "DocumentMoniker": "ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/WebBG/True/SqlTable/dbo.LopHocPhan.sql",
               "ToolTip": "dbo.LopHocPhan [Data]",
@@ -677,7 +731,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 33,
+              "DocumentIndex": 36,
               "Title": "EditChuongViewModel.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\ViewModels\\EditChuongViewModel.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Models\\ViewModels\\EditChuongViewModel.cs",
@@ -689,7 +743,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 32,
+              "DocumentIndex": 35,
               "Title": "BaiGiangViewModel.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\ViewModels\\BaiGiangViewModel.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Models\\ViewModels\\BaiGiangViewModel.cs",
@@ -701,7 +755,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 30,
+              "DocumentIndex": 33,
               "Title": "AddClassViewModel.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\ViewModels\\AddClassViewModel.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Models\\ViewModels\\AddClassViewModel.cs",
@@ -713,7 +767,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 31,
+              "DocumentIndex": 34,
               "Title": "AddBaiGiangViewModel.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\ViewModels\\AddBaiGiangViewModel.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Models\\ViewModels\\AddBaiGiangViewModel.cs",
@@ -725,7 +779,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 34,
+              "DocumentIndex": 37,
               "Title": "LuuBaiGiangViewModel.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\ViewModels\\LuuBaiGiangViewModel.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Models\\ViewModels\\LuuBaiGiangViewModel.cs",
@@ -737,7 +791,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 35,
+              "DocumentIndex": 38,
               "Title": "SearchBaiGiangViewModel.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\ViewModels\\SearchBaiGiangViewModel.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Models\\ViewModels\\SearchBaiGiangViewModel.cs",
@@ -749,7 +803,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 36,
+              "DocumentIndex": 39,
               "Title": "Index.cshtml",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Views\\ChiTietHocPhan\\Index.cshtml",
               "RelativeDocumentMoniker": "Lecture_web\\Areas\\User\\Views\\ChiTietHocPhan\\Index.cshtml",
@@ -761,19 +815,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 37,
-              "Title": "Index.cshtml",
-              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Views\\QuanLyBaiGiang\\Index.cshtml",
-              "RelativeDocumentMoniker": "Lecture_web\\Areas\\User\\Views\\QuanLyBaiGiang\\Index.cshtml",
-              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Views\\QuanLyBaiGiang\\Index.cshtml",
-              "RelativeToolTip": "Lecture_web\\Areas\\User\\Views\\QuanLyBaiGiang\\Index.cshtml",
-              "ViewState": "AQIAAIoCAAAAAAAAAAApwMMAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-15T05:52:12.761Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 38,
+              "DocumentIndex": 40,
               "Title": "QuanLyNguoiDungController.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\Admin\\Controllers\\QuanLyNguoiDungController.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Areas\\Admin\\Controllers\\QuanLyNguoiDungController.cs",
@@ -785,7 +827,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 39,
+              "DocumentIndex": 41,
               "Title": "Index.cshtml",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\Admin\\Views\\QuanLyNguoiDung\\Index.cshtml",
               "RelativeDocumentMoniker": "Lecture_web\\Areas\\Admin\\Views\\QuanLyNguoiDung\\Index.cshtml",
@@ -797,7 +839,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 41,
+              "DocumentIndex": 43,
               "Title": "_EditUserPartial.cshtml",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\Admin\\Views\\QuanLyNguoiDung\\_EditUserPartial.cshtml",
               "RelativeDocumentMoniker": "Lecture_web\\Areas\\Admin\\Views\\QuanLyNguoiDung\\_EditUserPartial.cshtml",
@@ -809,7 +851,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 40,
+              "DocumentIndex": 42,
               "Title": "_AddUserPartial.cshtml",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\Admin\\Views\\QuanLyNguoiDung\\_AddUserPartial.cshtml",
               "RelativeDocumentMoniker": "Lecture_web\\Areas\\Admin\\Views\\QuanLyNguoiDung\\_AddUserPartial.cshtml",
@@ -821,19 +863,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 42,
-              "Title": "QuanLyBaiController.cs",
-              "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Controllers\\QuanLyBaiController.cs",
-              "RelativeDocumentMoniker": "Lecture_web\\Areas\\User\\Controllers\\QuanLyBaiController.cs",
-              "ToolTip": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Controllers\\QuanLyBaiController.cs",
-              "RelativeToolTip": "Lecture_web\\Areas\\User\\Controllers\\QuanLyBaiController.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-15T14:10:06.117Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 46,
+              "DocumentIndex": 47,
               "Title": "20250620133346_InitialCreate.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Migrations\\20250620133346_InitialCreate.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Migrations\\20250620133346_InitialCreate.cs",
@@ -845,7 +875,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 43,
+              "DocumentIndex": 44,
               "Title": "style.css",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\wwwroot\\css\\style.css",
               "RelativeDocumentMoniker": "Lecture_web\\wwwroot\\css\\style.css",
@@ -857,7 +887,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 44,
+              "DocumentIndex": 45,
               "Title": "teacher.css",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\wwwroot\\css\\teacher.css",
               "RelativeDocumentMoniker": "Lecture_web\\wwwroot\\css\\teacher.css",
@@ -869,7 +899,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 67,
+              "DocumentIndex": 68,
               "Title": "20250620133707_InitialCreate.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Migrations\\20250620133707_InitialCreate.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Migrations\\20250620133707_InitialCreate.cs",
@@ -881,7 +911,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 45,
+              "DocumentIndex": 46,
               "Title": "LopHocPhan_SinhVienModels.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\LopHocPhan_SinhVienModels.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Models\\LopHocPhan_SinhVienModels.cs",
@@ -893,7 +923,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 47,
+              "DocumentIndex": 48,
               "Title": "dbo.LopHocPhan_SinhVien [Data]",
               "DocumentMoniker": "ViewDataWindow_MSSQL__/_localdb__MSSQLLocalDB/WebBG/True/SqlTable/dbo.LopHocPhan_SinhVien.sql",
               "ToolTip": "dbo.LopHocPhan_SinhVien [Data]",
@@ -902,7 +932,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 48,
+              "DocumentIndex": 49,
               "Title": "BaiModels.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\BaiModels.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Models\\BaiModels.cs",
@@ -914,7 +944,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 49,
+              "DocumentIndex": 50,
               "Title": "Index.cshtml",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\Admin\\Views\\QuanLyHocPhan\\Index.cshtml",
               "RelativeDocumentMoniker": "Lecture_web\\Areas\\Admin\\Views\\QuanLyHocPhan\\Index.cshtml",
@@ -926,7 +956,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 50,
+              "DocumentIndex": 51,
               "Title": "ChiTietHocPhanController.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\User\\Controllers\\ChiTietHocPhanController.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Areas\\User\\Controllers\\ChiTietHocPhanController.cs",
@@ -938,7 +968,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 51,
+              "DocumentIndex": 52,
               "Title": "Index.cshtml",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Areas\\Admin\\Views\\QuanLyKhoa\\Index.cshtml",
               "RelativeDocumentMoniker": "Lecture_web\\Areas\\Admin\\Views\\QuanLyKhoa\\Index.cshtml",
@@ -950,7 +980,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 53,
+              "DocumentIndex": 54,
               "Title": "chuong-management.css",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\wwwroot\\css\\chuong-management.css",
               "RelativeDocumentMoniker": "Lecture_web\\wwwroot\\css\\chuong-management.css",
@@ -962,7 +992,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 52,
+              "DocumentIndex": 53,
               "Title": "baigiang-management.css",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\wwwroot\\css\\baigiang-management.css",
               "RelativeDocumentMoniker": "Lecture_web\\wwwroot\\css\\baigiang-management.css",
@@ -974,7 +1004,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 54,
+              "DocumentIndex": 55,
               "Title": "ChuongModels.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\ChuongModels.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Models\\ChuongModels.cs",
@@ -986,7 +1016,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 55,
+              "DocumentIndex": 56,
               "Title": "StringHelper.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Service\\StringHelper.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Service\\StringHelper.cs",
@@ -998,7 +1028,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 58,
+              "DocumentIndex": 59,
               "Title": "20250617045349_initialCreate.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Migrations\\20250617045349_initialCreate.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Migrations\\20250617045349_initialCreate.cs",
@@ -1010,7 +1040,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 56,
+              "DocumentIndex": 57,
               "Title": "20250617045755_InitialCreate.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Migrations\\20250617045755_InitialCreate.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Migrations\\20250617045755_InitialCreate.cs",
@@ -1022,7 +1052,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 59,
+              "DocumentIndex": 60,
               "Title": "20250617035755_InitialCreate.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Migrations\\20250617035755_InitialCreate.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Migrations\\20250617035755_InitialCreate.cs",
@@ -1034,7 +1064,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 60,
+              "DocumentIndex": 61,
               "Title": "20250617032659_InitialCreate.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Migrations\\20250617032659_InitialCreate.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Migrations\\20250617032659_InitialCreate.cs",
@@ -1046,7 +1076,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 57,
+              "DocumentIndex": 58,
               "Title": "TaiKhoanModels.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\TaiKhoanModels.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Models\\TaiKhoanModels.cs",
@@ -1058,7 +1088,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 61,
+              "DocumentIndex": 62,
               "Title": "20250617032205_InitialCreate.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Migrations\\20250617032205_InitialCreate.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Migrations\\20250617032205_InitialCreate.cs",
@@ -1070,7 +1100,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 62,
+              "DocumentIndex": 63,
               "Title": "ApplicationDbContext.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\DbContext\\ApplicationDbContext.cs",
               "RelativeDocumentMoniker": "Lecture_web\\DbContext\\ApplicationDbContext.cs",
@@ -1082,7 +1112,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 63,
+              "DocumentIndex": 64,
               "Title": "20250617031501_InitialCreate.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Migrations\\20250617031501_InitialCreate.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Migrations\\20250617031501_InitialCreate.cs",
@@ -1094,7 +1124,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 64,
+              "DocumentIndex": 65,
               "Title": "script.js",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\wwwroot\\js\\script.js",
               "RelativeDocumentMoniker": "Lecture_web\\wwwroot\\js\\script.js",
@@ -1106,7 +1136,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 65,
+              "DocumentIndex": 66,
               "Title": "site.js",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\wwwroot\\js\\site.js",
               "RelativeDocumentMoniker": "Lecture_web\\wwwroot\\js\\site.js",
@@ -1118,7 +1148,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 66,
+              "DocumentIndex": 67,
               "Title": "BaiGiangModels.cs",
               "DocumentMoniker": "D:\\DATN\\DoAnWBG\\Web_baigiang\\Lecture_web\\Models\\BaiGiangModels.cs",
               "RelativeDocumentMoniker": "Lecture_web\\Models\\BaiGiangModels.cs",

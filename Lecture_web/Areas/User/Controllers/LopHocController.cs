@@ -45,7 +45,7 @@ namespace Lecture_web.Areas.User.Controllers
                     TenHP = lp.HocPhan.TenHocPhan,
                     lp.NgayTao,
                     lp.NgayCapNhat,
-                    // Chỉ đếm sinh viên thực sự (VaiTro = "Sinhvien")
+ 
                     SoSV = lp.LopHocPhan_SinhViens.Count(sv => 
                         sv.TaiKhoan != null && sv.TaiKhoan.VaiTro == "Sinhvien"),
                     GiangVienId = lp.IdTaiKhoan,

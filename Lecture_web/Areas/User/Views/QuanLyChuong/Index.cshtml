@@ -118,6 +118,10 @@
             transition: none !important;
         }
 
+        .sidebar .nav-links 
+        {
+            padding-left: 0rem;
+        }
 
     </style>
      
@@ -257,11 +261,12 @@
                                             <td>@b.NgayTao</td>
                                             <td>@b.NgayCapNhat</td>
                                             <td class="assignment-actions-btns">
-                                                <a asp-area="User" asp-controller ="QuanLyBai" asp-action = "EditBai" asp-route-idbai="@b.IdBai" asp-route-idchuong="@b.IdChuong"
-                                                class="btn-secondary edit-lesson-btn"
-                                                title="Chỉnh sửa">
+                                                <button type="button"
+                                                        class="btn-secondary btn-edit-bai"
+                                                        data-idbai="@b.IdBai"
+                                                        data-idchuong="@b.IdChuong">
                                                     <i class="fas fa-edit"></i>
-                                                </a>
+                                                </button>
                                                 <button type="button"
                                                 class="btn-danger delete-lesson-btn"
                                                 data-lesson="IdBai"
@@ -434,21 +439,7 @@
 </div>
 
 
-  <!-- Modal xác nhận xóa chương -->
-@*   <div class="modal" id="confirmDeleteChapterModal">
-    <div class="modal-content" id="confirmDeleteModalContent">
-      <div class="modal-header" style="justify-content:center;">
-        <h2 style="font-size:1.1rem; margin:0 auto;">Xác nhận xóa</h2>
-      </div>
-      <div class="modal-form" style="padding:20px;">
-        <p>Bạn có chắc chắn muốn xóa chương này?</p>
-        <div class="modal-actions">
-          <button class="btn-secondary" onclick="closeConfirmDeleteChapter()">Hủy</button>
-          <button class="btn-danger" onclick="confirmDeleteChapter()">Xóa</button>
-        </div>
-      </div>
-    </div>
-  </div> *@
+
 
 
 
@@ -692,6 +683,17 @@
         $(function() {
       console.log('AntiForgeryToken =', $('input[name="__RequestVerificationToken"]').val());
     });
+
+        $(function () {
+            $('.btn-edit-bai').click(function () {
+                var idbai = $(this).data('idbai');
+                var idchuong = $(this).data('idchuong');
+                var url = '@Url.Action("EditBai", "QuanLyBai", new { area = "User" })'
+                    + '?idbai=' + idbai
+                    + '&idchuong=' + idchuong;
+                window.location.href = url;
+            });
+        });
 </script>
 }
 
