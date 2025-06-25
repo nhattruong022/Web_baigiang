@@ -106,7 +106,89 @@ namespace Lecture_web.Areas.User.Controllers
                     .OrderBy(c => c.NgayTao)
                     .ToListAsync();
 
-                // DEBUG: Kiểm tra raw data trong LopHocPhan_SinhVien trước
+                // DEBUG: Kiểm tra dữ liệu chương và bài
+                Console.WriteLine($"=== CHUONG & BAI DEBUG ===");
+                Console.WriteLine($"lopHocPhan.IdLopHocPhan: {lopHocPhan.IdLopHocPhan}");
+                Console.WriteLine($"lopHocPhan.TenLop: {lopHocPhan.TenLop}");
+                Console.WriteLine($"lopHocPhan.IdBaiGiang: {lopHocPhan.IdBaiGiang}");
+                Console.WriteLine($"Query: SELECT * FROM Chuong WHERE IdBaiGiang = {lopHocPhan.IdBaiGiang}");
+                Console.WriteLine($"Found {chuongs.Count} chuongs for IdBaiGiang={lopHocPhan.IdBaiGiang}");
+                
+                // Kiểm tra tất cả Chuong trong database có IdBaiGiang gì
+                var allChuongsInDb = await _context.Chuong.Select(c => new { c.IdChuong, c.TenChuong, c.IdBaiGiang }).ToListAsync();
+                Console.WriteLine($"=== ALL CHUONGS IN DATABASE ===");
+                foreach (var c in allChuongsInDb)
+                {
+                    Console.WriteLine($"  DB Chuong: ID={c.IdChuong}, TenChuong='{c.TenChuong}', IdBaiGiang={c.IdBaiGiang}");
+                }
+                
+                foreach (var chuong in chuongs)
+                {
+                    Console.WriteLine($"  Chuong: ID={chuong.IdChuong}, TenChuong='{chuong.TenChuong}', Bais={chuong.Bais.Count}");
+                    foreach (var bai in chuong.Bais.Take(3))
+                    {
+                        Console.WriteLine($"    Bai: ID={bai.IdBai}, TieuDe='{bai.TieuDeBai}'");
+                    }
+                }
+
+                // Nếu không có dữ liệu thực, tạo dữ liệu demo
+                if (!chuongs.Any())
+                {
+                    Console.WriteLine($"No chuongs found, creating demo data...");
+                    var demoChuongs = new[]
+                    {
+                        new
+                        {
+                            IdChuong = 1,
+                            TenChuong = "Chương 1: Cơ bản về C",
+                            NgayTao = DateTime.Now,
+                            IdBaiGiang = (int)lopHocPhan.IdBaiGiang,
+                            Bais = new[]
+                            {
+                                new
+                                {
+                                    IdBai = 1,
+                                    TieuDeBai = "Hướng dẫn cài đặt môi trường C",
+                                    NoiDungText = "Bài hướng dẫn chi tiết cách cài GCC, thiết lập IDE...",
+                                    NgayTao = DateTime.Now,
+                                    IdChuong = 1
+                                },
+                                new
+                                {
+                                    IdBai = 2,
+                                    TieuDeBai = "Cú pháp cơ bản của C",
+                                    NoiDungText = "Học về biến, kiểu dữ liệu, toán tử trong C...",
+                                    NgayTao = DateTime.Now.AddDays(1),
+                                    IdChuong = 1
+                                }
+                            }.ToList()
+                        },
+                        new
+                        {
+                            IdChuong = 2,
+                            TenChuong = "Chương 2: Kiến trúc OSI",
+                            NgayTao = DateTime.Now.AddDays(7),
+                            IdBaiGiang = (int)lopHocPhan.IdBaiGiang,
+                            Bais = new[]
+                            {
+                                new
+                                {
+                                    IdBai = 3,
+                                    TieuDeBai = "7 lớp của mô hình OSI",
+                                    NoiDungText = "Giới thiệu 7 lớp: Physical, Data Link, Network...",
+                                    NgayTao = DateTime.Now.AddDays(8),
+                                    IdChuong = 2
+                                }
+                            }.ToList()
+                        }
+                    }.ToList();
+                    
+                    // Gán lại cho chuongs
+                    chuongs = demoChuongs;
+                    Console.WriteLine($"Created {chuongs.Count} demo chuongs");
+                }
+
+                // DEBUG: Kiểm tra raw data trước
                 var rawStudentRecords = await _context.LopHocPhan_SinhVien
                     .Where(lhp_sv => lhp_sv.IdLopHocPhan == targetLopHocPhanId)
                     .ToListAsync();
@@ -143,6 +225,23 @@ namespace Lecture_web.Areas.User.Controllers
                 ViewBag.IdBaiGiang = lopHocPhan.IdBaiGiang;
                 ViewBag.StudentsInClass = studentsInClass;
                 ViewBag.Chuongs = chuongs; // Truyền dữ liệu chương và bài sang view
+                
+                // DEBUG: In ra JSON sẽ được gửi sang View
+                Console.WriteLine($"=== ViewBag.Chuongs JSON ===");
+                try 
+                {
+                    var jsonString = System.Text.Json.JsonSerializer.Serialize(chuongs, new System.Text.Json.JsonSerializerOptions 
+                    { 
+                        PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
+                        WriteIndented = true 
+                    });
+                    Console.WriteLine(jsonString);
+                }
+                catch (Exception jsonEx)
+                {
+                    Console.WriteLine($"JSON Serialize Error: {jsonEx.Message}");
+                }
+                Console.WriteLine($"=== END ViewBag.Chuongs JSON ===");
                 
                 // Debug log để kiểm tra sinh viên
                 Console.WriteLine($"=== STUDENT DEBUG FOR CLASS {targetLopHocPhanId} ===");

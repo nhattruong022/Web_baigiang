@@ -24,45 +24,12 @@ var userRole = ViewBag.UserRole as string;
     <!-- Sidebar chương & bài -->
     <aside class="sidebar-chapters" style="border-radius: 0; min-height: 100%; height: 100%; box-shadow: none; margin: 0; width: 260px;">
       <h2>Chương & Bài</h2>
-      <ul class="chapter-list">
-        @{
-        var chuongs = ViewBag.Chuongs as List<dynamic>;
-          }
-          @if (chuongs != null && chuongs.Any())
-          {
-          @for (int chapterIdx = 0; chapterIdx
-
-          < chuongs.Count; chapterIdx++) { var chuong=chuongs[chapterIdx]; <li class="chapter @(chapterIdx == 0 ? " open" : "" )">
-            <button class="chapter-title @(chapterIdx == 0 ? " active" : "" )" onclick="toggleChapter(this)">
-              @chuong.TenChuong
-              <i class="fas fa-chevron-down" style="margin-left:auto"></i>
-            </button>
-            <ul class="lesson-list">
-              @if (chuong.Bais != null)
-              {
-              @for (int lessonIdx = 0; lessonIdx
-
-              < ((List<dynamic>)chuong.Bais).Count; lessonIdx++)
-                {
-                var bai = ((List<dynamic>)chuong.Bais)[lessonIdx];
-                  <li>
-                    <button class="lesson-btn @(chapterIdx == 0 && lessonIdx == 0 ? " active" : "" )" onclick="showLesson(@chapterIdx, @lessonIdx)">
-                      @bai.TieuDeBai
-                    </button>
-                  </li>
-                  }
-                  }
-            </ul>
-            </li>
-            }
-            }
-            else
-            {
-            <li style="padding: 20px; text-align: center; color: #666;">
-              <i class="fas fa-book" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
-              Chưa có chương nào được tạo
-            </li>
-            }
+      <ul class="chapter-list" id="chaptersList">
+        <!-- Sẽ được render bởi JavaScript từ ViewBag.Chuongs -->
+        <li style="padding: 20px; text-align: center; color: #666;">
+          <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
+          Đang tải chương và bài...
+        </li>
       </ul>
     </aside>
     <div style="flex:1;display:flex;flex-direction:column;min-height: 600px;">
@@ -451,24 +418,86 @@ var userRole = ViewBag.UserRole as string;
 
   console.log('DEBUG: currentLopHocPhanId =', currentLopHocPhanId);
 
-  // Dữ liệu lessons đơn giản để test
-  const lessons = [
-    [{
-      id: 1,
-      title: 'Bài học từ database',
-      meta: 'Dữ liệu từ chương và bài trong CSDL',
-      video: '',
-      materials: [{
-        icon: 'fa-file-pdf',
-        name: 'Tài liệu bài học',
-        link: '#',
-        size: '1.2 MB'
-      }],
-      desc: 'Hiển thị nội dung bài học từ cơ sở dữ liệu. Sidebar sẽ hiển thị dữ liệu thực từ ViewBag.Chuongs.'
-    }]
-  ];
+  // Dữ liệu lessons từ ViewBag.Chuongs
+  const chuongsData = @Html.Raw(Json.Serialize(ViewBag.Chuongs ?? new List < object > ()));
 
-  console.log('DEBUG: lessons data =', lessons);
+  console.log('DEBUG: chuongsData =', chuongsData);
+  console.log('DEBUG: chuongsData type =', typeof chuongsData);
+  console.log('DEBUG: chuongsData length =', chuongsData ? chuongsData.length : 'null');
+
+  // Debug từng chương
+  if (chuongsData && chuongsData.length > 0) {
+    chuongsData.forEach((chuong, idx) => {
+      console.log(`DEBUG: Chuong ${idx}:`, chuong);
+      console.log(`DEBUG: Chuong ${idx} - tenChuong:`, chuong.tenChuong || chuong.TenChuong);
+      console.log(`DEBUG: Chuong ${idx} - bais:`, chuong.bais || chuong.Bais);
+      const baisList = chuong.bais || chuong.Bais;
+      if (baisList && baisList.length > 0) {
+        baisList.forEach((bai, baiIdx) => {
+          console.log(`DEBUG: Bai ${baiIdx}:`, bai);
+          console.log(`DEBUG: Bai ${baiIdx} - tieuDeBai:`, bai.tieuDeBai || bai.TieuDeBai);
+        });
+      }
+    });
+  } else {
+    console.log('DEBUG: No chuongsData found or empty array');
+  }
+
+  // Function để render sidebar từ dữ liệu
+  function renderChaptersList() {
+    const chaptersList = document.getElementById('chaptersList');
+
+    if (!chuongsData || chuongsData.length === 0) {
+      chaptersList.innerHTML = `
+        <li style="padding: 20px; text-align: center; color: #666;">
+          <i class="fas fa-book" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
+          Chưa có chương nào được tạo
+        </li>
+      `;
+      return;
+    }
+
+    let html = '';
+    chuongsData.forEach((chuong, chapterIdx) => {
+      const tenChuong = chuong.tenChuong || chuong.TenChuong || `Chương ${chapterIdx + 1}`;
+      const baisList = chuong.bais || chuong.Bais || [];
+
+      html += `
+        <li class="chapter ${chapterIdx === 0 ? 'open' : ''}">
+          <button class="chapter-title ${chapterIdx === 0 ? 'active' : ''}" onclick="toggleChapter(this)">
+            ${tenChuong}
+            <i class="fas fa-chevron-down" style="margin-left:auto"></i>
+          </button>
+          <ul class="lesson-list">
+      `;
+
+      if (baisList && baisList.length > 0) {
+        baisList.forEach((bai, lessonIdx) => {
+          const tieuDeBai = bai.tieuDeBai || bai.TieuDeBai || `Bài ${lessonIdx + 1}`;
+          const lessonNumber = lessonIdx + 1;
+          html += `
+            <li>
+              <button class="lesson-btn ${chapterIdx === 0 && lessonIdx === 0 ? 'active' : ''}" onclick="showLesson(${chapterIdx}, ${lessonIdx})">
+                <span class="lesson-number">${lessonNumber}</span>
+                <span class="lesson-title">${tieuDeBai}</span>
+              </button>
+            </li>
+          `;
+        });
+      } else {
+        html += `
+          <li style="padding: 10px; text-align: center; color: #888; font-style: italic;">
+            Chưa có bài học nào
+          </li>
+        `;
+      }
+
+      html += '</ul></li>';
+    });
+
+    chaptersList.innerHTML = html;
+    console.log('DEBUG: Rendered chapters list with', chuongsData.length, 'chapters');
+  }
 
   // Hiển thị bài đầu tiên mặc định
   window.onload = function() {
@@ -476,8 +505,12 @@ var userRole = ViewBag.UserRole as string;
     currentLopHocPhanId = @(ViewBag.IdLopHocPhan ?? 1);
     console.log('DEBUG: currentLopHocPhanId updated to =', currentLopHocPhanId);
 
+    // Render sidebar trước
+    renderChaptersList();
+
     // Chỉ hiển thị bài đầu tiên nếu có dữ liệu
-    if (lessons.length > 0 && lessons[0].length > 0) {
+    const firstChapterBais = chuongsData && chuongsData.length > 0 ? (chuongsData[0].bais || chuongsData[0].Bais) : null;
+    if (chuongsData && chuongsData.length > 0 && firstChapterBais && firstChapterBais.length > 0) {
       showLesson(0, 0);
     } else {
       // Hiển thị thông báo khi không có bài học
@@ -568,10 +601,12 @@ var userRole = ViewBag.UserRole as string;
   }
 
   function showLesson(chapterIdx, lessonIdx) {
-    // Kiểm tra dữ liệu hợp lệ
-    if (!lessons || lessons.length === 0 ||
-      !lessons[chapterIdx] || lessons[chapterIdx].length === 0 ||
-      !lessons[chapterIdx][lessonIdx]) {
+    // Kiểm tra dữ liệu hợp lệ từ chuongsData - hỗ trợ cả PascalCase và camelCase
+    const chuong = chuongsData && chuongsData[chapterIdx] ? chuongsData[chapterIdx] : null;
+    const baisList = chuong ? (chuong.bais || chuong.Bais) : null;
+    const bai = baisList && baisList[lessonIdx] ? baisList[lessonIdx] : null;
+
+    if (!chuong || !baisList || baisList.length === 0 || !bai) {
       document.getElementById('tab-lessons').innerHTML = `
         <div style="padding: 40px; text-align: center; color: #666;">
           <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 16px; display: block; color: #ffa500;"></i>
@@ -592,32 +627,41 @@ var userRole = ViewBag.UserRole as string;
       }
     }
 
-    const lesson = lessons[chapterIdx][lessonIdx];
+    console.log('DEBUG showLesson - chuong:', chuong);
+    console.log('DEBUG showLesson - bai:', bai);
+
+    // Lấy properties hỗ trợ cả PascalCase và camelCase
+    const tenChuong = chuong.tenChuong || chuong.TenChuong || 'Chương';
+    const tieuDeBai = bai.tieuDeBai || bai.TieuDeBai || 'Tiêu đề bài học';
+    const noiDungText = bai.noiDungText || bai.NoiDungText || '';
+    const ngayTao = (bai.ngayTao || bai.NgayTao) ? new Date(bai.ngayTao || bai.NgayTao).toLocaleDateString('vi-VN') : 'Chưa cập nhật';
+
     document.getElementById('tab-lessons').innerHTML = `
         <div class="lesson-header">
-            <h1>${lesson.title}</h1>
-            <div class="lesson-meta">${lesson.meta}</div>
+            <h1>${tieuDeBai}</h1>
+            <div class="lesson-meta">Chương: ${tenChuong} | Ngày tạo: ${ngayTao}</div>
         </div>
         <div class="lesson-body">
-            ${lesson.video ? `<div class="lesson-video"><video controls><source src="${lesson.video}" type="video/mp4">Trình duyệt không hỗ trợ video.</video></div>` : ''}
             <div class="lesson-materials">
                 <h4>Tài liệu bài giảng</h4>
                 <ul>
-                    ${lesson.materials.map(m => `<li><i class="fas ${m.icon}"></i> <a href="${m.link}">${m.name}</a> <span class="file-size">${m.size}</span></li>`).join('')}
+                    <li><i class="fas fa-file-text"></i> <a href="#" onclick="alert('Chức năng đang phát triển')">Nội dung bài học</a> <span class="file-size">Text</span></li>
                 </ul>
             </div>
             <div class="lesson-desc">
-                <h4>Mô tả</h4>
-                <p>${lesson.desc}</p>
+                <h4>Nội dung bài học</h4>
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid #007bff;">
+                    ${noiDungText ? noiDungText.replace(/\n/g, '<br>') : 'Chưa có nội dung cho bài học này.'}
+                </div>
             </div>
         </div>
         <div class="comments-section">
             <h2>Bình luận</h2>
-            <form class="comment-form" onsubmit="event.preventDefault();">
-                <textarea placeholder="Viết bình luận của bạn..."></textarea>
+            <form class="comment-form" onsubmit="event.preventDefault(); addComment();">
+                <textarea id="commentText" placeholder="Viết bình luận của bạn..." required></textarea>
                 <button type="submit">Gửi</button>
             </form>
-            <div class="comments-list">
+            <div class="comments-list" id="commentsList">
                 <div class="comment">
                     <img src="/images/avatar.jpg" alt="User Avatar" class="comment-avatar">
                     <div class="comment-content">
@@ -1186,6 +1230,40 @@ var userRole = ViewBag.UserRole as string;
       CKEDITOR.replace('editNoticeContent');
     }
   });
+
+  // Hàm thêm bình luận
+  function addComment() {
+    const commentText = document.getElementById('commentText');
+    const commentsList = document.getElementById('commentsList');
+
+    if (!commentText.value.trim()) {
+      alert('Vui lòng nhập nội dung bình luận');
+      return;
+    }
+
+    // Tạo comment mới
+    const newComment = document.createElement('div');
+    newComment.className = 'comment';
+    newComment.innerHTML = `
+      <img src="/images/avatar.jpg" alt="User Avatar" class="comment-avatar">
+      <div class="comment-content">
+        <div class="comment-header">
+          <h4>Bạn</h4>
+          <span class="comment-time">Vừa xong</span>
+        </div>
+        <p>${commentText.value}</p>
+      </div>
+    `;
+
+    // Thêm vào đầu danh sách
+    commentsList.insertBefore(newComment, commentsList.firstChild);
+
+    // Reset form
+    commentText.value = '';
+
+    // TODO: Gửi comment lên server để lưu vào database
+    console.log('Comment added:', commentText.value);
+  }
 </script>
 
 @* Handle TempData messages *@
