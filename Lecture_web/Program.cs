@@ -25,6 +25,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 // Add custom services
 builder.Services.AddScoped<Lecture_web.Service.EmailService>();
 
+
 // Add SignalR (MUST be before Build())
 builder.Services.AddSignalR();
 
@@ -37,6 +38,7 @@ builder.Services.AddSignalR();
 //    options.Url = "/uploads";
 //    options.Drivers = new[] { new FileSystemDriver() };
 //});
+
 
 var app = builder.Build();
 
