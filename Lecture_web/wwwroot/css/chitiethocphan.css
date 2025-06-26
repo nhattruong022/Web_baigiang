@@ -1107,17 +1107,18 @@ html {
 .notice-menu-popup {
   display: none;
   position: absolute;
-  right: 100%;
-  top: 0;
+  right: 0;
+  top: 100%;
   left: auto;
-  transform: translateX(-8px);
+  transform: translateY(4px);
   background: #fff;
-  box-shadow: 0 2px 8px rgba(44,62,80,0.12);
+  box-shadow: 0 4px 16px rgba(44,62,80,0.15);
   border-radius: 8px;
   min-width: 160px;
-  z-index: 10;
+  z-index: 1001;
   flex-direction: column;
   padding: 8px 0;
+  border: 1px solid #e5e7eb;
 }
 .notice-menu-item {
   background: none;
@@ -1250,13 +1251,34 @@ html {
 }
 
 /* Notice cards styling */
+#tab-notices {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  padding: 24px !important;
+  max-width: 100% !important;
+  overflow: visible !important;
+  position: relative !important;
+}
+
 .notice-card {
   background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  margin-bottom: 16px;
-  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  margin-bottom: 20px;
+  padding: 24px;
   position: relative;
+  width: 100%;
+  max-width: 700px;
+  min-width: 280px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: visible;
+  z-index: auto;
+}
+
+.notice-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
 }
 
 .notice-header {
@@ -1264,6 +1286,8 @@ html {
   align-items: center;
   margin-bottom: 12px;
   position: relative;
+  overflow: visible;
+  z-index: 1;
 }
 
 .notice-avatar {
@@ -1295,15 +1319,120 @@ html {
   border: none;
   color: #7f8c8d;
   cursor: pointer;
-  padding: 8px;
-  border-radius: 4px;
-  font-size: 1.1rem;
-  transition: background 0.2s;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 1.2rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  min-height: 40px;
+  position: relative;
+  z-index: 1000;
+  flex-shrink: 0;
 }
 
 .notice-menu:hover {
   background: #f8f9fa;
   color: #2c3e50;
+  transform: scale(1.1);
+}
+
+.notice-menu i {
+  font-size: 1rem !important;
+  line-height: 1 !important;
+  display: block !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+/* Fallback cho icon menu nếu FontAwesome không load */
+.notice-menu::after {
+  content: "⋮";
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: inherit;
+  display: none;
+  line-height: 1;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.notice-menu i.fas.fa-ellipsis-v {
+  position: relative;
+  z-index: 2;
+  color: inherit !important;
+}
+
+/* Hiển thị fallback nếu FontAwesome icon bị ẩn */
+.notice-menu:not(:has(i.fas.fa-ellipsis-v))::after,
+.notice-menu i.fas.fa-ellipsis-v:not([style*="display: inline-block"]) ~ ::after {
+  display: block;
+}
+
+/* Force hiển thị FontAwesome icon */
+.notice-menu i.fas.fa-ellipsis-v[style*="display: inline-block"] {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* FORCE OVERRIDE: Đảm bảo icon menu không bị che */
+.notice-card,
+.notice-header,
+.notice-info,
+#tab-notices,
+.main-lesson-content {
+  overflow: visible !important;
+  clip: unset !important;
+  clip-path: none !important;
+}
+
+.notice-menu {
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  position: relative !important;
+}
+
+.notice-menu-popup {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: visibility 0s linear 0.1s, opacity 0.1s linear !important;
+}
+
+.notice-menu-popup[style*="display: flex"] {
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transition-delay: 0s !important;
+}
+
+/* Đảm bảo icon hiển thị trên mobile */
+@media (max-width: 768px) {
+  .notice-menu {
+    min-width: 36px !important;
+    min-height: 36px !important;
+    padding: 6px 8px !important;
+    z-index: 1000 !important;
+  }
+  
+  .notice-menu::after {
+    font-size: 1.2rem !important;
+  }
+  
+  .notice-menu i.fas.fa-ellipsis-v {
+    font-size: 0.9rem !important;
+  }
+  
+  .notice-menu-popup {
+    right: -8px !important;
+    min-width: 140px !important;
+  }
 }
 
 .notice-body {
@@ -1413,4 +1542,74 @@ html {
   overflow-y: auto !important;
   z-index: 100001 !important;
   position: relative !important;
+}
+
+/* Responsive styling cho tab thông báo */
+@media (max-width: 768px) {
+  #tab-notices {
+    padding: 16px !important;
+  }
+  
+  .notice-card {
+    padding: 16px !important;
+    margin-bottom: 16px !important;
+    max-width: 100% !important;
+    min-width: auto !important;
+    border-radius: 8px !important;
+  }
+  
+  .notice-header {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+  
+  .notice-avatar {
+    width: 40px !important;
+    height: 40px !important;
+    margin-right: 8px !important;
+  }
+  
+  .notice-author {
+    font-size: 0.9rem !important;
+  }
+  
+  .notice-time {
+    font-size: 0.8rem !important;
+  }
+  
+  .notice-body {
+    font-size: 0.9rem !important;
+    margin-bottom: 12px !important;
+  }
+  
+  .comment-avatar {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  
+  .notice-comment input {
+    font-size: 0.85rem !important;
+    padding: 6px 10px !important;
+  }
+  
+  .comment-send {
+    width: 32px !important;
+    height: 32px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .notice-card {
+    padding: 12px !important;
+    margin-bottom: 12px !important;
+  }
+  
+  .notice-header {
+    margin-bottom: 8px !important;
+  }
+  
+  .notice-body {
+    font-size: 0.85rem !important;
+    line-height: 1.5 !important;
+  }
 }

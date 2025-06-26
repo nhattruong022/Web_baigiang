@@ -1,6 +1,9 @@
 @{
 ViewData["Title"] = "Chi tiết học phần";
 var userRole = ViewBag.UserRole as string;
+var currentUser = ViewBag.CurrentUser as Lecture_web.Models.TaiKhoanModels;
+var currentUserAvatar = currentUser?.AnhDaiDien ?? "/images/avatar.jpg";
+var currentUserName = currentUser?.HoTen ?? "Người dùng";
 <link rel="stylesheet" href="~/css/chitiethocphan.css" />
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -266,10 +269,12 @@ var userRole = ViewBag.UserRole as string;
               <div class="notice-author">ND Duy</div>
               <div class="notice-time">3 thg 6</div>
             </div>
-            <button class="notice-menu" onclick="toggleNoticeMenu(this)"><i class="fas fa-ellipsis-v"></i></button>
+            <button class="notice-menu" onclick="toggleNoticeMenu(this)" title="Tùy chọn">
+              <i class="fas fa-ellipsis-v" style="display: inline-block;"></i>
+            </button>
             @if (userRole == null || userRole.ToLower() != "sinhvien")
             {
-            <div class="notice-menu-popup" style="display:none; position:absolute; right:24px; top:48px; background:#fff; box-shadow:0 2px 8px rgba(44,62,80,0.12); border-radius:8px; min-width:160px; z-index:10;">
+            <div class="notice-menu-popup" style="display:none;">
               <button onclick="addNotice()" class="notice-menu-item">Thêm thông báo</button>
               <button onclick="editNotice(this)" class="notice-menu-item">Sửa thông báo</button>
               <button onclick="deleteNotice(this)" class="notice-menu-item" style="color:#e74c3c;">Xóa thông báo</button>
@@ -285,7 +290,7 @@ var userRole = ViewBag.UserRole as string;
             </div>
           </div>
           <div class="notice-comment">
-            <img src="/images/avatar.jpg" alt="Avatar" class="comment-avatar">
+            <img src="@currentUserAvatar" alt="Avatar" class="comment-avatar">
             <input type="text" placeholder="Thêm nhận xét trong lớp học...">
             <button class="comment-send"><i class="fas fa-paper-plane"></i></button>
           </div>
@@ -297,7 +302,9 @@ var userRole = ViewBag.UserRole as string;
               <div class="notice-author">Nguyễn Văn B</div>
               <div class="notice-time">1 thg 6</div>
             </div>
-            <button class="notice-menu"><i class="fas fa-ellipsis-v"></i></button>
+            <button class="notice-menu" onclick="toggleNoticeMenu(this)" title="Tùy chọn">
+              <i class="fas fa-ellipsis-v" style="display: inline-block !important;"></i>
+            </button>
           </div>
           <div class="notice-body">
             <div style="white-space:normal;word-break:break-word;overflow-wrap:break-word;">
@@ -306,7 +313,7 @@ var userRole = ViewBag.UserRole as string;
             </div>
           </div>
           <div class="notice-comment">
-            <img src="/images/avatar.jpg" alt="Avatar" class="comment-avatar">
+            <img src="@currentUserAvatar" alt="Avatar" class="comment-avatar">
             <input type="text" placeholder="Thêm nhận xét trong lớp học...">
             <button class="comment-send"><i class="fas fa-paper-plane"></i></button>
           </div>
@@ -318,7 +325,9 @@ var userRole = ViewBag.UserRole as string;
               <div class="notice-author">Admin</div>
               <div class="notice-time">28 thg 5</div>
             </div>
-            <button class="notice-menu"><i class="fas fa-ellipsis-v"></i></button>
+            <button class="notice-menu" onclick="toggleNoticeMenu(this)" title="Tùy chọn">
+              <i class="fas fa-ellipsis-v" style="display: inline-block !important;"></i>
+            </button>
           </div>
           <div class="notice-body">
             <div style="white-space:normal;word-break:break-word;overflow-wrap:break-word;">
@@ -327,7 +336,7 @@ var userRole = ViewBag.UserRole as string;
             </div>
           </div>
           <div class="notice-comment">
-            <img src="/images/avatar.jpg" alt="Avatar" class="comment-avatar">
+            <img src="@currentUserAvatar" alt="Avatar" class="comment-avatar">
             <input type="text" placeholder="Thêm nhận xét trong lớp học...">
             <button class="comment-send"><i class="fas fa-paper-plane"></i></button>
           </div>
@@ -656,7 +665,7 @@ var userRole = ViewBag.UserRole as string;
             </form>
             <div class="comments-list" id="commentsList">
                 <div class="comment">
-                    <img src="/images/avatar.jpg" alt="User Avatar" class="comment-avatar">
+                    <img src="@currentUserAvatar" alt="User Avatar" class="comment-avatar">
                     <div class="comment-content">
                         <div class="comment-header">
                             <h4>Nguyễn Văn A</h4>
@@ -1152,16 +1161,30 @@ var userRole = ViewBag.UserRole as string;
   }
 
   function loadNotifications(idLopHocPhan, page = 1) {
+    console.log('Loading notifications for class:', idLopHocPhan);
     fetch(`/User/ThongBao/GetNotifications?idLopHocPhan=${idLopHocPhan}&page=${page}`)
       .then(res => res.json())
       .then(data => {
+        console.log('Notifications API response:', data);
         if (data.success) {
+          console.log('Notifications data:', data.data);
+          if (data.data && data.data.length > 0) {
+            data.data.forEach((notification, index) => {
+              console.log(`Notification ${index}:`, {
+                id: notification.idThongBao,
+                author: notification.tenGiangVien,
+                avatar: notification.avatar,
+                content: notification.noiDung
+              });
+            });
+          }
           renderNotifications(data.data);
         } else {
           document.getElementById('tab-notices').innerHTML = `<div style="padding:20px;color:red;">${data.message}</div>`;
         }
       })
       .catch(err => {
+        console.error('Error loading notifications:', err);
         document.getElementById('tab-notices').innerHTML = `<div style="padding:20px;color:red;">Lỗi khi tải thông báo</div>`;
       });
   }
@@ -1169,6 +1192,7 @@ var userRole = ViewBag.UserRole as string;
   function renderNotifications(notifications) {
     const userRole = '@userRole';
     const isNotStudent = !userRole || userRole.toLowerCase() !== 'sinhvien';
+    const currentUserAvatar = '@currentUserAvatar';
     const container = document.getElementById('tab-notices');
     if (!notifications || notifications.length === 0) {
       container.innerHTML = `<div style="padding:20px;text-align:center;color:#888;">Chưa có thông báo nào</div>`;
@@ -1177,12 +1201,14 @@ var userRole = ViewBag.UserRole as string;
     container.innerHTML = notifications.map(tb => `
       <div class="notice-card" data-id="${tb.idThongBao}">
         <div class="notice-header">
-          <img src="${tb.avatar ? tb.avatar : '/images/avatar.jpg'}" class="notice-avatar" />
+          <img src="${tb.avatar && tb.avatar.trim() !== '' ? tb.avatar : '/images/avatar.jpg'}" alt="Avatar của ${tb.tenGiangVien || 'Người tạo'}" class="notice-avatar" />
           <div class="notice-info">
-            <div class="notice-author">${tb.tenGiangVien || ''}</div>
+            <div class="notice-author">${tb.tenGiangVien || 'Không xác định'}</div>
             <div class="notice-time">${tb.ngayTao || ''}</div>
           </div>
-          <button class="notice-menu" onclick="toggleNoticeMenu(this)"><i class="fas fa-ellipsis-v"></i></button>
+          <button class="notice-menu" onclick="toggleNoticeMenu(this)" title="Tùy chọn">
+            <i class="fas fa-ellipsis-v" style="display: inline-block !important;"></i>
+          </button>
           ${isNotStudent ? `
           <div class="notice-menu-popup" style="display:none; position:absolute; right:24px; top:48px; background:#fff; box-shadow:0 2px 8px rgba(44,62,80,0.12); border-radius:8px; min-width:160px; z-index:10;">
             <button onclick="addNotice()" class="notice-menu-item">Thêm thông báo</button>
@@ -1195,7 +1221,7 @@ var userRole = ViewBag.UserRole as string;
           <div style="white-space:normal;word-break:break-word;overflow-wrap:break-word;">${tb.noiDung || ''}</div>
         </div>
         <div class="notice-comment">
-          <img src="${tb.avatar ? tb.avatar : '/images/avatar.jpg'}" alt="Avatar" class="comment-avatar">
+          <img src="${currentUserAvatar}" alt="Avatar của bạn" class="comment-avatar">
           <input type="text" placeholder="Thêm nhận xét trong lớp học...">
           <button class="comment-send"><i class="fas fa-paper-plane"></i></button>
         </div>
