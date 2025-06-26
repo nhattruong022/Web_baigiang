@@ -13,7 +13,7 @@
           </div>
           <div class="profile-info">
             <div class="profile-avatar">
-              <img src="@(!string.IsNullOrEmpty(Model.AnhDaiDien) ? Url.Content(Model.AnhDaiDien) : " /images/default-avatar.png")" alt="Profile Avatar">
+              <img src="@(!string.IsNullOrEmpty(Model.AnhDaiDien) ? Model.AnhDaiDien : " /images/avatar.jpg")?v=@DateTime.Now.Ticks" alt="Profile Avatar" onerror="handleProfileAvatarError(this)">
               <button class="btn-secondary" onclick="openChangeAvatarModal()">
                 <i class="fas fa-camera"></i>
                 Đổi ảnh
@@ -198,6 +198,33 @@
     </style>
 
     <script>
+      // Function xử lý lỗi avatar profile
+      function handleProfileAvatarError(img) {
+        console.log('Profile avatar error, falling back to default');
+        img.src = '/images/avatar.jpg?v=' + new Date().getTime();
+        img.onerror = null; // Prevent infinite loop
+      }
+
+      // Đồng bộ avatar khi trang load
+      document.addEventListener('DOMContentLoaded', function() {
+        // Kiểm tra localStorage để lấy avatar mới nhất
+        var updatedUrl = localStorage.getItem('updatedAvatarUrl');
+        if (updatedUrl) {
+          var profileAvatar = document.querySelector('.profile-avatar img');
+          if (profileAvatar) {
+            profileAvatar.src = updatedUrl + '?t=' + new Date().getTime();
+          }
+        }
+
+        // Lắng nghe sự kiện cập nhật avatar
+        window.addEventListener('avatarUpdated', function(event) {
+          var profileAvatar = document.querySelector('.profile-avatar img');
+          if (profileAvatar && event.detail.newAvatarUrl) {
+            profileAvatar.src = event.detail.newAvatarUrl + '?t=' + new Date().getTime();
+          }
+        });
+      });
+
       // Modal functions
       function openEditProfileModal() {
         document.getElementById('editProfileModal').classList.add('active');
@@ -284,6 +311,13 @@
         changeAvatarForm.addEventListener('submit', function(e) {
           e.preventDefault();
           const formData = new FormData(changeAvatarForm);
+
+          // Hiển thị loading
+          const submitBtn = changeAvatarForm.querySelector('button[type="submit"]');
+          const originalText = submitBtn.textContent;
+          submitBtn.textContent = 'Đang tải...';
+          submitBtn.disabled = true;
+
           fetch('/profile/UploadAvatar', {
               method: 'POST',
               body: formData
@@ -291,14 +325,54 @@
             .then(res => res.json())
             .then(data => {
               if (data.success) {
-                document.querySelector('.profile-avatar img').src = data.url + '?t=' + new Date().getTime();
+                const newAvatarUrl = data.url;
+                const timestamp = new Date().getTime();
+
+                // Cập nhật avatar trong profile
+                const profileAvatar = document.querySelector('.profile-avatar img');
+                if (profileAvatar) {
+                  profileAvatar.src = newAvatarUrl + '?t=' + timestamp;
+                }
+
+                // Cập nhật avatar trong top bar
                 var topBarAvatar = document.getElementById('topBarAvatar');
-                if (topBarAvatar) topBarAvatar.src = data.url + '?t=' + new Date().getTime();
+                if (topBarAvatar) {
+                  topBarAvatar.src = newAvatarUrl + '?t=' + timestamp;
+                }
+
+                // Lưu vào localStorage để sync giữa các tab
+                localStorage.setItem('updatedAvatarUrl', newAvatarUrl);
+
+                // Dispatch event để notify các component khác
+                window.dispatchEvent(new CustomEvent('avatarUpdated', {
+                  detail: {
+                    newAvatarUrl: newAvatarUrl
+                  }
+                }));
+
                 closeChangeAvatarModal();
-                localStorage.setItem('updatedAvatarUrl', data.url);
+
+                // Hiển thị thông báo thành công
+                alert(data.message || 'Cập nhật ảnh đại diện thành công!');
+
+                // Force reload trang để đảm bảo đồng bộ hoàn toàn
+                setTimeout(function() {
+                  window.location.reload();
+                }, 1000);
+
+                console.log('Avatar updated successfully:', newAvatarUrl);
               } else {
-                alert(data.message || 'Có lỗi xảy ra!');
+                alert(data.message || 'Có lỗi xảy ra khi tải ảnh!');
               }
+            })
+            .catch(error => {
+              console.error('Error uploading avatar:', error);
+              alert('Có lỗi xảy ra khi tải ảnh!');
+            })
+            .finally(() => {
+              // Reset button
+              submitBtn.textContent = originalText;
+              submitBtn.disabled = false;
             });
         });
       }

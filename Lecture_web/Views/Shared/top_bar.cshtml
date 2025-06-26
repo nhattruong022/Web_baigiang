@@ -126,4 +126,23 @@ avatar = "/images/avatar.jpg";
       img.src = topBarAvatar.src;
     }
   });
+
+  // Lắng nghe sự kiện cập nhật avatar từ profile
+  window.addEventListener('avatarUpdated', function(event) {
+    var topBarAvatar = document.getElementById('topBarAvatar');
+    if (topBarAvatar && event.detail.newAvatarUrl) {
+      topBarAvatar.src = event.detail.newAvatarUrl + '?t=' + new Date().getTime();
+      console.log('Top bar avatar updated via event:', event.detail.newAvatarUrl);
+    }
+  });
+
+  // Lắng nghe storage events để sync giữa các tab
+  window.addEventListener('storage', function(event) {
+    if (event.key === 'updatedAvatarUrl') {
+      var topBarAvatar = document.getElementById('topBarAvatar');
+      if (topBarAvatar && event.newValue) {
+        topBarAvatar.src = event.newValue + '?t=' + new Date().getTime();
+      }
+    }
+  });
 </script>

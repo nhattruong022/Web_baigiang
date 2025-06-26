@@ -27,7 +27,23 @@ namespace Lecture_web.Controllers
             var user = _context.TaiKhoan.FirstOrDefault(u => u.TenDangNhap == username);
             if (user == null)
                 return RedirectToAction("Login", "Account");
-            ViewBag.Avatar = !string.IsNullOrEmpty(user.AnhDaiDien) ? user.AnhDaiDien : "/images/default-avatar.png";
+            
+            // Đảm bảo đường dẫn avatar đúng format
+            string avatarPath = "/images/avatar.jpg"; // Default
+            if (!string.IsNullOrEmpty(user.AnhDaiDien) && !string.IsNullOrWhiteSpace(user.AnhDaiDien))
+            {
+                string cleanPath = user.AnhDaiDien.Trim();
+                if (cleanPath.StartsWith("/"))
+                {
+                    avatarPath = cleanPath;
+                }
+                else
+                {
+                    avatarPath = "/images/" + cleanPath;
+                }
+            }
+            
+            ViewBag.Avatar = avatarPath;
             ViewBag.UserName = user.HoTen ?? user.TenDangNhap;
             return View(user);
         }
@@ -90,7 +106,14 @@ namespace Lecture_web.Controllers
             _context.TaiKhoan.Update(user);
             await _context.SaveChangesAsync();
             
-            return Json(new { success = true, url = user.AnhDaiDien });
+            // Log để debug
+            System.Diagnostics.Debug.WriteLine($"Avatar updated for user {user.TenDangNhap}: {user.AnhDaiDien}");
+            
+            return Json(new { 
+                success = true, 
+                url = user.AnhDaiDien,
+                message = "Cập nhật ảnh đại diện thành công!"
+            });
         }
 
         [HttpPost]

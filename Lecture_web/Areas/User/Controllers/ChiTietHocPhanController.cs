@@ -28,12 +28,21 @@ namespace Lecture_web.Areas.User.Controllers
         public async Task<IActionResult> Index(int? idLopHocPhan)
         {
             var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            
+            // Lấy thông tin user hiện tại
+            var currentUser = await _context.TaiKhoan
+                .FirstOrDefaultAsync(tk => tk.IdTaiKhoan == currentUserId);
+            
             ViewBag.UserRole = userRole;
+            ViewBag.CurrentUser = currentUser;
+            ViewBag.CurrentUserId = currentUserId;
 
             // DEBUG: Log ID được truyền vào
             Console.WriteLine($"=== CHITIET HOCPHAN DEBUG ===");
             Console.WriteLine($"Received idLopHocPhan parameter: {idLopHocPhan}");
             Console.WriteLine($"User role: {userRole}");
+            Console.WriteLine($"Current user: {currentUser?.HoTen}, Avatar: {currentUser?.AnhDaiDien}");
 
             try
             {
