@@ -25,10 +25,12 @@ namespace Lecture_web.Areas.User.Controllers
             _emailService = emailService;
         }
 
-        public async Task<IActionResult> Index(int? idLopHocPhan)
+        public async Task<IActionResult> Index(int? idLopHocPhan, int page = 1)
         {
             var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
             var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+            
+            const int pageSize = 5; // Số sinh viên mỗi trang (giảm để test phân trang)
             
             // Lấy thông tin user hiện tại
             var currentUser = await _context.TaiKhoan
@@ -87,6 +89,13 @@ namespace Lecture_web.Areas.User.Controllers
                     ViewBag.StudentsInClass = new List<object>();
                     ViewBag.Chuongs = new List<object>();
                     ViewBag.AllLopHocPhan = allLopHocPhan;
+                    
+                    // Thông tin phân trang mặc định
+                    ViewBag.CurrentPage = 1;
+                    ViewBag.TotalPages = 1;
+                    ViewBag.TotalStudents = 0;
+                    ViewBag.PageSize = pageSize;
+                    ViewBag.ChangePageFunc = "changeStudentPage";
                     return View();
                 }
 
@@ -208,7 +217,20 @@ namespace Lecture_web.Areas.User.Controllers
                     Console.WriteLine($"  Record: IdLopHocPhan={record.IdLopHocPhan}, IdTaiKhoan={record.IdTaiKhoan}");
                 }
 
-                // Lấy danh sách sinh viên trong lớp (chỉ lấy những user có vai trò Sinhvien)
+                // Lấy tổng số sinh viên trong lớp để tính phân trang
+                var totalStudents = await _context.LopHocPhan_SinhVien
+                    .Where(lhp_sv => lhp_sv.IdLopHocPhan == targetLopHocPhanId)
+                    .Join(_context.TaiKhoan,
+                          lhp_sv => lhp_sv.IdTaiKhoan,
+                          tk => tk.IdTaiKhoan,
+                          (lhp_sv, tk) => tk)
+                    .Where(tk => tk.VaiTro == "Sinhvien")
+                    .CountAsync();
+
+                var totalPages = (int)Math.Ceiling((double)totalStudents / pageSize);
+                var currentPage = Math.Max(1, Math.Min(page, totalPages));
+
+                // Lấy danh sách sinh viên trong lớp với phân trang (chỉ lấy những user có vai trò Sinhvien)
                 var studentsInClass = await _context.LopHocPhan_SinhVien
                     .Where(lhp_sv => lhp_sv.IdLopHocPhan == targetLopHocPhanId)
                     .Join(_context.TaiKhoan,
@@ -227,6 +249,8 @@ namespace Lecture_web.Areas.User.Controllers
                           })
                     .Where(tk => tk.VaiTro == "Sinhvien") // Chỉ lấy sinh viên
                     .OrderBy(tk => tk.HoTen)
+                    .Skip((currentPage - 1) * pageSize)
+                    .Take(pageSize)
                     .ToListAsync();
 
                 ViewBag.IdLopHocPhan = targetLopHocPhanId;
@@ -234,6 +258,13 @@ namespace Lecture_web.Areas.User.Controllers
                 ViewBag.IdBaiGiang = lopHocPhan.IdBaiGiang;
                 ViewBag.StudentsInClass = studentsInClass;
                 ViewBag.Chuongs = chuongs; // Truyền dữ liệu chương và bài sang view
+                
+                // Thông tin phân trang cho sinh viên
+                ViewBag.CurrentPage = currentPage;
+                ViewBag.TotalPages = totalPages;
+                ViewBag.TotalStudents = totalStudents;
+                ViewBag.PageSize = pageSize;
+                ViewBag.ChangePageFunc = "changeStudentPage";
                 
                 // DEBUG: In ra JSON sẽ được gửi sang View
                 Console.WriteLine($"=== ViewBag.Chuongs JSON ===");
@@ -294,6 +325,13 @@ namespace Lecture_web.Areas.User.Controllers
                 ViewBag.StudentsInClass = new List<object>();
                 ViewBag.Chuongs = new List<object>();
                 ViewBag.AllLopHocPhan = new List<object>();
+                
+                // Thông tin phân trang mặc định cho trường hợp lỗi
+                ViewBag.CurrentPage = 1;
+                ViewBag.TotalPages = 1;
+                ViewBag.TotalStudents = 0;
+                ViewBag.PageSize = pageSize;
+                ViewBag.ChangePageFunc = "changeStudentPage";
                 return View();
             }
         }
@@ -787,10 +825,25 @@ namespace Lecture_web.Areas.User.Controllers
 
         // API để reload danh sách sinh viên
         [HttpGet]
-        public async Task<IActionResult> GetStudentsList(int idLopHocPhan)
+        public async Task<IActionResult> GetStudentsList(int idLopHocPhan, int page = 1)
         {
             try
             {
+                const int pageSize = 1; // Số sinh viên mỗi trang (giảm để test phân trang)
+                
+                // Lấy tổng số sinh viên
+                var totalStudents = await _context.LopHocPhan_SinhVien
+                    .Where(lhp_sv => lhp_sv.IdLopHocPhan == idLopHocPhan)
+                    .Join(_context.TaiKhoan,
+                          lhp_sv => lhp_sv.IdTaiKhoan,
+                          tk => tk.IdTaiKhoan,
+                          (lhp_sv, tk) => tk)
+                    .Where(tk => tk.VaiTro == "Sinhvien")
+                    .CountAsync();
+
+                var totalPages = (int)Math.Ceiling((double)totalStudents / pageSize);
+                var currentPage = Math.Max(1, Math.Min(page, totalPages));
+
                 var studentsInClass = await _context.LopHocPhan_SinhVien
                     .Where(lhp_sv => lhp_sv.IdLopHocPhan == idLopHocPhan)
                     .Join(_context.TaiKhoan,
@@ -808,9 +861,21 @@ namespace Lecture_web.Areas.User.Controllers
                               tk.VaiTro
                           })
                     .Where(x => x.VaiTro == "Sinhvien") // Chỉ lấy sinh viên
+                    .OrderBy(x => x.HoTen)
+                    .Skip((currentPage - 1) * pageSize)
+                    .Take(pageSize)
                     .ToListAsync();
 
-                return Json(new { success = true, data = studentsInClass });
+                return Json(new { 
+                    success = true, 
+                    data = studentsInClass,
+                    pagination = new {
+                        currentPage = currentPage,
+                        totalPages = totalPages,
+                        totalStudents = totalStudents,
+                        pageSize = pageSize
+                    }
+                });
             }
             catch (Exception ex)
             {

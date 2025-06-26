@@ -57,7 +57,9 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
             }
           </div>
           <div style="display:flex; align-items:center; gap:12px;">
-            <!-- Để trống hoặc có thể thêm các control khác -->
+            <div id="studentsInfo" style="font-size: 0.9rem; color: #666;">
+              <!-- Thông tin số lượng sinh viên sẽ được cập nhật bởi JavaScript -->
+            </div>
           </div>
         </div>
         <div class="student-table">
@@ -142,12 +144,8 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
           </table>
         </div>
         <!-- Phân trang -->
-        <div class="pagination">
-          <button>&lt;</button>
-          <button class="active">1</button>
-          <button>2</button>
-          <button>3</button>
-          <button>&gt;</button>
+        <div id="studentsPagination">
+          @Html.Partial("_PaginationPartial")
         </div>
 
         <!-- Popup Mời học viên -->
@@ -434,8 +432,12 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
 <script>
   let selectedStudentsForInvite = []; // Thay đổi từ single student thành array
   let currentLopHocPhanId = @(ViewBag.IdLopHocPhan ?? 1);
+  let currentStudentPage = @(ViewBag.CurrentPage ?? 1);
+  let totalStudentPages = @(ViewBag.TotalPages ?? 1);
+  let totalStudents = @(ViewBag.TotalStudents ?? 0);
 
   console.log('DEBUG: currentLopHocPhanId =', currentLopHocPhanId);
+  console.log('DEBUG: Pagination info - current page:', currentStudentPage, 'total pages:', totalStudentPages, 'total students:', totalStudents);
 
   // Dữ liệu lessons từ ViewBag.Chuongs
   const chuongsData = @Html.Raw(Json.Serialize(ViewBag.Chuongs ?? new List < object > ()));
@@ -542,6 +544,12 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
       `;
     }
 
+    // Khởi tạo pagination HTML
+    updatePaginationHtml();
+
+    // Khởi tạo thông tin sinh viên
+    updateStudentsInfo();
+
     // Auto-refresh students list every 30 seconds if on students tab
     setInterval(() => {
       const studentsTab = document.getElementById('tab-students');
@@ -552,14 +560,15 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
   };
 
   // Function để refresh danh sách sinh viên
-  function refreshStudentsList() {
-    console.log('Refreshing students list for class:', currentLopHocPhanId);
+  function refreshStudentsList(page = currentStudentPage) {
+    console.log('Refreshing students list for class:', currentLopHocPhanId, 'page:', page);
 
-    fetch(`/User/ChiTietHocPhan/GetStudentsList?idLopHocPhan=${currentLopHocPhanId}`)
+    fetch(`/User/ChiTietHocPhan/GetStudentsList?idLopHocPhan=${currentLopHocPhanId}&page=${page}`)
       .then(response => response.json())
       .then(data => {
         if (data.success) {
           updateStudentsTable(data.data);
+          updatePagination(data.pagination);
         } else {
           console.error('Failed to refresh students list:', data.message);
         }
@@ -569,18 +578,104 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
       });
   }
 
+  // Function để xử lý chuyển trang sinh viên
+  function changeStudentPage(page) {
+    console.log('Changing to page:', page);
+
+    if (page < 1 || page > totalStudentPages) {
+      console.log('Invalid page number:', page);
+      return;
+    }
+
+    currentStudentPage = page;
+    refreshStudentsList(page);
+  }
+
+  // Function để cập nhật thông tin phân trang
+  function updatePagination(paginationData) {
+    if (paginationData) {
+      currentStudentPage = paginationData.currentPage;
+      totalStudentPages = paginationData.totalPages;
+      totalStudents = paginationData.totalStudents;
+
+      console.log('Updated pagination info:', paginationData);
+
+      // Cập nhật pagination HTML
+      updatePaginationHtml();
+
+      // Cập nhật thông tin sinh viên
+      updateStudentsInfo();
+    }
+  }
+
+  // Function để cập nhật thông tin số lượng sinh viên
+  function updateStudentsInfo() {
+    const infoElement = document.getElementById('studentsInfo');
+    if (infoElement && totalStudents > 0) {
+      const startIndex = (currentStudentPage - 1) * @(ViewBag.PageSize ?? 1) + 1;
+      const endIndex = Math.min(currentStudentPage * @(ViewBag.PageSize ?? 1), totalStudents);
+      infoElement.innerHTML = `Hiển thị ${startIndex}-${endIndex} trong tổng số ${totalStudents} sinh viên`;
+    } else if (infoElement) {
+      infoElement.innerHTML = '';
+    }
+  }
+
+  // Function để cập nhật HTML phân trang
+  function updatePaginationHtml() {
+    const paginationContainer = document.getElementById('studentsPagination');
+
+    // Ẩn pagination nếu không có sinh viên hoặc có lỗi
+    if (totalStudentPages <= 0) {
+      paginationContainer.style.display = 'none';
+      return;
+    }
+
+    paginationContainer.style.display = 'block';
+
+    let paginationHtml = '<div class="pagination">';
+
+    // Previous button
+    if (currentStudentPage > 1) {
+      paginationHtml += `<button class="btn-page" onclick="changeStudentPage(${currentStudentPage - 1})"><i class="fas fa-chevron-left"></i></button>`;
+    } else {
+      paginationHtml += `<button class="btn-page" disabled><i class="fas fa-chevron-left"></i></button>`;
+    }
+
+    // Page numbers
+    for (let i = 1; i <= totalStudentPages; i++) {
+      const activeClass = i === currentStudentPage ? ' active' : '';
+      paginationHtml += `<button class="btn-page${activeClass}" onclick="changeStudentPage(${i})">${i}</button>`;
+    }
+
+    // Next button
+    if (currentStudentPage < totalStudentPages) {
+      paginationHtml += `<button class="btn-page" onclick="changeStudentPage(${currentStudentPage + 1})"><i class="fas fa-chevron-right"></i></button>`;
+    } else {
+      paginationHtml += `<button class="btn-page" disabled><i class="fas fa-chevron-right"></i></button>`;
+    }
+
+    paginationHtml += '</div>';
+
+    paginationContainer.innerHTML = paginationHtml;
+  }
+
   // Function để update students table với data mới
   function updateStudentsTable(students) {
     const tableBody = document.getElementById('studentsTableBody');
     const userRole = '@userRole';
 
     if (!students || students.length === 0) {
+      let emptyMessage = 'Chưa có sinh viên nào trong lớp học này';
+      if (totalStudents > 0) {
+        emptyMessage = `Không có sinh viên nào trong trang ${currentStudentPage}`;
+      }
+
       tableBody.innerHTML = `
         <tr>
           <td colspan="${userRole !== "Sinhvien" ? "8" : "7"}" style="text-align: center; padding: 20px; color: #666;">
             <i class="fas fa-users" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
-            Chưa có sinh viên nào trong lớp học này
-            ${userRole !== "Sinhvien" ? `
+            ${emptyMessage}
+            ${userRole !== "Sinhvien" && totalStudents === 0 ? `
               <div style="margin-top: 12px;">
                 <button onclick="openInviteStudentModal()" style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">
                   <i class="fas fa-plus"></i> Mời sinh viên tham gia
@@ -1697,11 +1792,11 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
 
     if (searchTerm) {
       if (visibleCount === 0) {
-        resultInfo.innerHTML = `<i class="fas fa-search"></i> Không tìm thấy sinh viên nào với từ khóa "<strong>${searchTerm}</strong>"`;
+        resultInfo.innerHTML = `<i class="fas fa-search"></i> Không tìm thấy sinh viên nào với từ khóa "<strong>${searchTerm}</strong>" trong trang ${currentStudentPage}`;
         resultInfo.style.borderLeftColor = '#dc3545';
         resultInfo.style.color = '#dc3545';
       } else {
-        resultInfo.innerHTML = `<i class="fas fa-search"></i> Tìm thấy <strong>${visibleCount}</strong> sinh viên với từ khóa "<strong>${searchTerm}</strong>" (trong tổng số ${totalCount} sinh viên)`;
+        resultInfo.innerHTML = `<i class="fas fa-search"></i> Tìm thấy <strong>${visibleCount}</strong> sinh viên với từ khóa "<strong>${searchTerm}</strong>" trong trang ${currentStudentPage} (tổng số ${totalStudents} sinh viên)`;
         resultInfo.style.borderLeftColor = '#28a745';
         resultInfo.style.color = '#28a745';
       }
