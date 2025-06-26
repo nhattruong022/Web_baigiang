@@ -20,7 +20,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     <div class="course-tabs">
       <button class="course-tab-btn active" onclick="showTab('lessons', this)"><i class="fas fa-book"></i> Bài giảng</button>
       <button class="course-tab-btn" onclick="showTab('students', this)"><i class="fas fa-users"></i> Danh sách sinh viên</button>
-      <button class="course-tab-btn" onclick="showTab('notices', this)"><i class="fas fa-bell"></i> Thông báo</button>
+      <!-- <button class="course-tab-btn" onclick="showTab('notices', this)"><i class="fas fa-bell"></i> Thông báo</button> -->
     </div>
   </div>
   <div class="main-box" style="background: #fff; border-radius: 18px; box-shadow: 0 4px 24px rgba(52,152,219,0.10), 0 1.5px 8px rgba(0,0,0,0.08); border: 1.5px solid #bfc9d1; overflow: visible; margin: 16px 24px 0 24px; display: flex; flex-direction: row; min-height: 650px;">
@@ -261,6 +261,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         </div>
         }
       </section>
+      <!-- COMMENTED OUT - NOTICE TAB SECTION
       <section class="main-lesson-content course-tab-content" id="tab-notices" style="display:none;">
         <div class="notice-card">
           <div class="notice-header">
@@ -342,7 +343,8 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
           </div>
         </div>
       </section>
-      <!-- Popup Thêm thông báo -->
+      END COMMENTED OUT - NOTICE TAB SECTION -->
+      <!-- COMMENTED OUT - ADD NOTICE MODAL
       @if (userRole == null || userRole.ToLower() != "sinhvien")
       {
       <div class="modal" id="addNoticeModal" style="display:none; position:fixed; z-index:1001; left:0; top:0; width:100vw; height:100vh; background:rgba(44,62,80,0.18); justify-content:center; align-items:center;">
@@ -368,7 +370,8 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         </div>
       </div>
       }
-      <!-- Popup Sửa thông báo -->
+      END COMMENTED OUT - ADD NOTICE MODAL -->
+      <!-- COMMENTED OUT - EDIT NOTICE MODAL
       @if (userRole == null || userRole.ToLower() != "sinhvien")
       {
       <div class="modal" id="editNoticeModal" style="display:none; position:fixed; z-index:1001; left:0; top:0; width:100vw; height:100vh; background:rgba(44,62,80,0.18); justify-content:center; align-items:center;">
@@ -394,7 +397,8 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         </div>
       </div>
       }
-      <!-- Modal xác nhận xóa thông báo -->
+      END COMMENTED OUT - EDIT NOTICE MODAL -->
+      <!-- COMMENTED OUT - DELETE NOTICE MODAL
       @if (userRole == null || userRole.ToLower() != "sinhvien")
       {
       <div class="modal" id="confirmDeleteNoticeModal" style="display:none; position:fixed; z-index:1002; left:0; top:0; width:100vw; height:100vh; background:rgba(44,62,80,0.18); justify-content:center; align-items:center;">
@@ -407,6 +411,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         </div>
       </div>
       }
+      END COMMENTED OUT - DELETE NOTICE MODAL -->
     </div>
   </div>
 </div>
@@ -532,8 +537,6 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         refreshStudentsList();
       }
     }, 30000);
-
-    connectNotificationHub();
   };
 
   // Function để refresh danh sách sinh viên
@@ -700,9 +703,10 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     } else {
       sidebar.style.display = 'none';
     }
-    if (tab === 'notices') {
-      loadNotifications(currentLopHocPhanId);
-    }
+    // COMMENTED OUT - NOTICES TAB LOGIC
+    // if (tab === 'notices') {
+    //   loadNotifications(currentLopHocPhanId);
+    // }
   }
 
   // Popup mời học viên
@@ -945,6 +949,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
       });
   }
 
+  /* COMMENTED OUT - NOTICE FUNCTIONS
   function toggleNoticeMenu(btn) {
     // Đóng tất cả menu khác
     document.querySelectorAll('.notice-menu-popup').forEach(p => p.style.display = 'none');
@@ -1006,7 +1011,9 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         }
       });
   }
+  END COMMENTED OUT - NOTICE FUNCTIONS */
 
+  /* COMMENTED OUT - EDIT AND DELETE NOTICE FUNCTIONS
   let currentEditNoticeCard = null;
   let currentDeleteNoticeCard = null;
 
@@ -1114,6 +1121,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     }
     closeConfirmDeleteNoticeModal();
   }
+  END COMMENTED OUT - EDIT AND DELETE NOTICE FUNCTIONS */
 
   function openEditStudentModal(btn) {
     const row = btn.closest('tr');
@@ -1160,6 +1168,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     closeConfirmDeleteStudentModal();
   }
 
+  /* COMMENTED OUT - LOAD AND RENDER NOTIFICATIONS FUNCTIONS
   function loadNotifications(idLopHocPhan, page = 1) {
     console.log('Loading notifications for class:', idLopHocPhan);
     fetch(`/User/ThongBao/GetNotifications?idLopHocPhan=${idLopHocPhan}&page=${page}`)
@@ -1228,7 +1237,9 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
       </div>
     `).join('');
   }
+  END COMMENTED OUT - LOAD AND RENDER NOTIFICATIONS FUNCTIONS */
 
+  /* COMMENTED OUT - NOTIFICATION HUB
   let notificationConnection = null;
 
   function connectNotificationHub() {
@@ -1245,15 +1256,18 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
       notificationConnection.invoke("JoinClass", currentLopHocPhanId.toString());
     });
   }
+  END COMMENTED OUT - NOTIFICATION HUB */
 
   // Khởi tạo CKEditor khi DOM loaded
   window.addEventListener('DOMContentLoaded', function() {
+    /* COMMENTED OUT - CKEDITOR FOR NOTICES
     if (document.getElementById('noticeContent')) {
       CKEDITOR.replace('noticeContent');
     }
     if (document.getElementById('editNoticeContent')) {
       CKEDITOR.replace('editNoticeContent');
     }
+    END COMMENTED OUT - CKEDITOR FOR NOTICES */
   });
 
   // Hàm thêm bình luận
