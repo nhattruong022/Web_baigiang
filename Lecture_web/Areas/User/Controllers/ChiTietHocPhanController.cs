@@ -298,36 +298,233 @@ namespace Lecture_web.Areas.User.Controllers
             }
         }
 
-        // API để tìm kiếm sinh viên theo email
+        // API để tìm kiếm sinh viên theo nhiều tiêu chí
         [HttpGet]
-        public async Task<IActionResult> SearchStudents(string email)
+        public async Task<IActionResult> SearchStudents(string searchTerm, string searchType = "all")
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(email))
+                Console.WriteLine($"=== SEARCH STUDENTS DEBUG ===");
+                Console.WriteLine($"SearchTerm: '{searchTerm}'");
+                Console.WriteLine($"SearchType: '{searchType}'");
+                
+                if (string.IsNullOrWhiteSpace(searchTerm))
                 {
-                    return Json(new { success = false, message = "Email không được để trống" });
+                    Console.WriteLine($"SearchTerm is null or whitespace");
+                    return Json(new { success = false, message = "Từ khóa tìm kiếm không được để trống" });
                 }
 
-                var students = await _context.TaiKhoan
-                    .Where(tk => tk.Email.Contains(email) && 
-                                tk.VaiTro == "Sinhvien" && 
-                                tk.TrangThai == "HoatDong")
+                var query = _context.TaiKhoan
+                    .Where(tk => tk.VaiTro == "Sinhvien" && tk.TrangThai == "HoatDong");
+
+                Console.WriteLine($"Base query: SELECT * FROM TaiKhoan WHERE VaiTro = 'Sinhvien' AND TrangThai = 'HoatDong'");
+
+                // Tìm kiếm theo loại
+                switch (searchType.ToLower())
+                {
+                    case "email":
+                        query = query.Where(tk => tk.Email.Contains(searchTerm));
+                        Console.WriteLine($"Added email filter: Email LIKE '%{searchTerm}%'");
+                        break;
+                    case "name":
+                        query = query.Where(tk => tk.HoTen.Contains(searchTerm));
+                        Console.WriteLine($"Added name filter: HoTen LIKE '%{searchTerm}%'");
+                        break;
+                    case "username":
+                        query = query.Where(tk => tk.TenDangNhap.Contains(searchTerm));
+                        Console.WriteLine($"Added username filter: TenDangNhap LIKE '%{searchTerm}%'");
+                        break;
+                    case "phone":
+                        query = query.Where(tk => tk.SoDienThoai.Contains(searchTerm));
+                        Console.WriteLine($"Added phone filter: SoDienThoai LIKE '%{searchTerm}%'");
+                        break;
+                    default: // "all"
+                        query = query.Where(tk => tk.Email.Contains(searchTerm) || 
+                                                 tk.HoTen.Contains(searchTerm) ||
+                                                 tk.TenDangNhap.Contains(searchTerm) ||
+                                                 (tk.SoDienThoai != null && tk.SoDienThoai.Contains(searchTerm)));
+                        Console.WriteLine($"Added 'all' filter: searching in Email, HoTen, TenDangNhap, SoDienThoai");
+                        break;
+                }
+
+                // First, let's check total students in database
+                var totalStudents = await _context.TaiKhoan
+                    .Where(tk => tk.VaiTro == "Sinhvien")
+                    .CountAsync();
+                Console.WriteLine($"Total students in database: {totalStudents}");
+
+                var activeStudents = await _context.TaiKhoan
+                    .Where(tk => tk.VaiTro == "Sinhvien" && tk.TrangThai == "HoatDong")
+                    .CountAsync();
+                Console.WriteLine($"Active students in database: {activeStudents}");
+
+                // Log some sample data
+                var sampleStudents = await _context.TaiKhoan
+                    .Where(tk => tk.VaiTro == "Sinhvien" && tk.TrangThai == "HoatDong")
+                    .Take(5)
+                    .Select(tk => new { tk.TenDangNhap, tk.HoTen, tk.Email })
+                    .ToListAsync();
+                
+                Console.WriteLine($"Sample students:");
+                foreach (var s in sampleStudents)
+                {
+                    Console.WriteLine($"  - Username: {s.TenDangNhap}, Name: {s.HoTen}, Email: {s.Email}");
+                }
+
+                var students = await query
                     .Select(tk => new 
                     {
                         tk.IdTaiKhoan,
+                        tk.TenDangNhap,
                         tk.Email,
                         tk.HoTen,
-                        tk.AnhDaiDien
+                        tk.SoDienThoai,
+                        tk.AnhDaiDien,
+                        tk.TrangThai
                     })
-                    .Take(10)
+                    .OrderBy(tk => tk.HoTen)
+                    .Take(20)
                     .ToListAsync();
+
+                Console.WriteLine($"Found {students.Count} students matching search criteria");
+                foreach (var s in students.Take(3))
+                {
+                    Console.WriteLine($"  - Result: ID={s.IdTaiKhoan}, Username={s.TenDangNhap}, Name={s.HoTen}, Email={s.Email}");
+                }
 
                 return Json(new { success = true, data = students });
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"ERROR in SearchStudents: {ex.Message}");
+                Console.WriteLine($"StackTrace: {ex.StackTrace}");
                 return Json(new { success = false, message = $"Lỗi tìm kiếm: {ex.Message}" });
+            }
+        }
+
+        // API để lấy thông tin sinh viên theo ID
+        [HttpGet]
+        public async Task<IActionResult> GetStudentInfo(int idTaiKhoan)
+        {
+            try
+            {
+                var student = await _context.TaiKhoan
+                    .Where(tk => tk.IdTaiKhoan == idTaiKhoan && tk.VaiTro == "Sinhvien")
+                    .Select(tk => new
+                    {
+                        tk.IdTaiKhoan,
+                        tk.TenDangNhap,
+                        tk.Email,
+                        tk.HoTen,
+                        tk.SoDienThoai,
+                        tk.AnhDaiDien,
+                        tk.TrangThai
+                    })
+                    .FirstOrDefaultAsync();
+
+                if (student == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy sinh viên" });
+                }
+
+                return Json(new { success = true, data = student });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Lỗi lấy thông tin sinh viên: {ex.Message}" });
+            }
+        }
+
+        // API để cập nhật thông tin sinh viên
+        [HttpPost]
+        [Authorize(Roles = "Giangvien")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateStudent(int idTaiKhoan, string hoTen, string email, string soDienThoai)
+        {
+            try
+            {
+                var student = await _context.TaiKhoan
+                    .FirstOrDefaultAsync(tk => tk.IdTaiKhoan == idTaiKhoan && tk.VaiTro == "Sinhvien");
+
+                if (student == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy sinh viên" });
+                }
+
+                // Kiểm tra email đã tồn tại chưa (trừ sinh viên hiện tại)
+                var existingUser = await _context.TaiKhoan
+                    .FirstOrDefaultAsync(tk => tk.Email == email && tk.IdTaiKhoan != idTaiKhoan);
+                
+                if (existingUser != null)
+                {
+                    return Json(new { success = false, message = "Email đã được sử dụng bởi tài khoản khác" });
+                }
+
+                // Cập nhật thông tin
+                student.HoTen = hoTen?.Trim();
+                student.Email = email?.Trim();
+                student.SoDienThoai = soDienThoai?.Trim();
+                student.NgayCapNhat = DateTime.Now;
+
+                await _context.SaveChangesAsync();
+
+                return Json(new { 
+                    success = true, 
+                    message = "Cập nhật thông tin sinh viên thành công",
+                    data = new {
+                        student.IdTaiKhoan,
+                        student.TenDangNhap,
+                        student.HoTen,
+                        student.Email,
+                        student.SoDienThoai,
+                        student.AnhDaiDien,
+                        student.TrangThai
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Lỗi cập nhật sinh viên: {ex.Message}" });
+            }
+        }
+
+        // API để xóa sinh viên khỏi lớp
+        [HttpPost]
+        [Authorize(Roles = "Giangvien")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveStudentFromClass(int idLopHocPhan, int idTaiKhoan)
+        {
+            try
+            {
+                // Kiểm tra xem sinh viên có trong lớp không
+                var membership = await _context.LopHocPhan_SinhVien
+                    .FirstOrDefaultAsync(lhp_sv => lhp_sv.IdLopHocPhan == idLopHocPhan && 
+                                                  lhp_sv.IdTaiKhoan == idTaiKhoan);
+
+                if (membership == null)
+                {
+                    return Json(new { success = false, message = "Sinh viên không có trong lớp này" });
+                }
+
+                // Lấy thông tin sinh viên để log
+                var student = await _context.TaiKhoan
+                    .FirstOrDefaultAsync(tk => tk.IdTaiKhoan == idTaiKhoan);
+
+                Console.WriteLine($"Removing student {student?.HoTen} (ID: {idTaiKhoan}) from class {idLopHocPhan}");
+
+                // Xóa khỏi lớp
+                _context.LopHocPhan_SinhVien.Remove(membership);
+                await _context.SaveChangesAsync();
+
+                return Json(new { 
+                    success = true, 
+                    message = $"Đã xóa sinh viên {student?.HoTen} khỏi lớp"
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error removing student from class: {ex.Message}");
+                return Json(new { success = false, message = $"Lỗi xóa sinh viên khỏi lớp: {ex.Message}" });
             }
         }
 
@@ -619,6 +816,31 @@ namespace Lecture_web.Areas.User.Controllers
             {
                 Console.WriteLine($"DEBUG GetStudentsList: Exception={ex.Message}");
                 return Json(new { success = false, message = $"Lỗi tải danh sách sinh viên: {ex.Message}" });
+            }
+        }
+
+        // TEST ACTION - để test API tìm kiếm
+        [HttpGet]
+        public async Task<IActionResult> TestSearch()
+        {
+            try
+            {
+                Console.WriteLine("=== TESTING SEARCH MANUALLY ===");
+                
+                // Test với "sv01"
+                var result = await SearchStudents("sv01", "all");
+                Console.WriteLine("Search result for 'sv01' completed");
+                
+                // Test với một phần họ tên
+                var result2 = await SearchStudents("Trương", "name");
+                Console.WriteLine("Search result for 'Trương' (name) completed");
+                
+                return Json(new { message = "Test completed, check console logs" });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in TestSearch: {ex.Message}");
+                return Json(new { error = ex.Message });
             }
         }
     }
