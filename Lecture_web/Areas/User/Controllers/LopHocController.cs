@@ -222,7 +222,7 @@ namespace Lecture_web.Areas.User.Controllers
 
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-       
+        
             if (!ModelState.IsValid)
             {
                 var errors = ModelState
@@ -286,7 +286,7 @@ namespace Lecture_web.Areas.User.Controllers
 
             lop.TenLop =lhp.TenLop;
             lop.MoTa =lhp.MoTa;
-            lop.IdHocPhan =lhp.HocPhanId;
+            lop.IdHocPhan =lhp.HocPhanId.Value;
             lop.IdBaiGiang =lhp.BaiGiangId;
             lop.NgayCapNhat = DateTime.Now;
 
