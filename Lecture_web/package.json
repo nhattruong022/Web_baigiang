@@ -1,0 +1,28 @@
+{
+    "name": "lecture_web",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "copy:ckeditor": "cpx \"node_modules/@ckeditor/ckeditor5-build-classic/build/ckeditor.js\" wwwroot/lib/ckeditor5 && cpx \"node_modules/@ckeditor/ckeditor5-build-classic/build/styles.css\" wwwroot/lib/ckeditor5",
+        "build": "npm run copy:ckeditor"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@ckeditor/ckeditor5-build-classic": "^44.3.0",
+        "@ckeditor/ckeditor5-heading": "^45.2.1",
+        "@ckeditor/ckeditor5-image": "^45.2.1",
+        "@ckeditor/ckeditor5-link": "^45.2.1",
+        "@ckeditor/ckeditor5-list": "^45.2.1",
+        "@ckeditor/ckeditor5-media-embed": "^45.2.1",
+        "@ckeditor/ckeditor5-source-editing": "^45.2.1",
+        "@ckeditor/ckeditor5-table": "^45.2.1",
+        "run": "^1.5.0"
+    },
+    "devDependencies": {
+        "cpx": "^1.5.0",
+        "eslint": "^9.29.0"
+    }
+}

@@ -427,7 +427,7 @@
         $('#classForm')[0].reset();
         $('#classId').val('');
         $('.modal-header h2').text('Thêm lớp học mới');
-        loadDropdowns(); // load dropdowns...
+        loadDropdowns();
         $('#classModal').addClass('open');
       });
 
@@ -448,31 +448,55 @@
         });
       });
 
-      function loadDropdowns(selected) {
-        $.getJSON('@Url.Action("GetClass", "LopHoc", new { area = "User" })')
-          .done(function(data) {
-            var $hp = $('#classHocPhan').empty(),
-              $bg = $('#classBaiGiang').empty();
+            function loadDropdowns(selected) {
+                $.getJSON('@Url.Action("GetClass", "LopHoc", new { area = "User" })')
+                    .done(function (data) {
+                        var $hp = $('#classHocPhan').empty(),
+                            $bg = $('#classBaiGiang').empty();
 
-            $hp.append('<option value="">-- Chọn học phần --</option>');
-            data.lhp.forEach(function(c) {
-              $hp.append(
-                '<option value="' + c.idHocPhan + '"' +
-                (selected && selected.hocPhanId == c.idHocPhan ? ' selected' : '') +
-                '>' + c.tenHocPhan + '</option>'
-              );
-            });
+                        $hp.append('<option value="">-- Chọn học phần --</option>');
+                        data.lhp.forEach(function (c) {
+                            const fullText = c.tenHocPhan;
+                            // Rút gọn hiển thị 30 ký tự
+                            const display = fullText.length > 60
+                                ? fullText.substring(0, 60) + '…'
+                                : fullText;
 
-            $bg.append('<option value="">-- Chọn bài giảng --</option>');
-            data.lbg.forEach(function(l) {
-              $bg.append(
-                '<option value="' + l.idBaiGiang + '"' +
-                (selected && selected.baiGiangId == l.idBaiGiang ? ' selected' : '') +
-                '>' + l.tieuDe + '</option>'
-              );
-            });
-          });
-      }
+                            const isSelected = selected && selected.hocPhanId == c.idHocPhan
+                                ? ' selected'
+                                : '';
+
+                            $hp.append(
+                                '<option value="' + c.idHocPhan + '"'
+                                + isSelected
+                                + ' title="' + fullText.replace(/"/g, '&quot;') + '">'
+                                + display +
+                                '</option>'
+                            );
+                        });
+
+                        $bg.append('<option value="">-- Chọn bài giảng --</option>');
+                        data.lbg.forEach(function (l) {
+                            const fullText = l.tieuDe;
+                            const display = fullText.length > 60
+                                ? fullText.substring(0, 60) + '…'
+                                : fullText;
+
+                            const isSelected = selected && selected.baiGiangId == l.idBaiGiang
+                                ? ' selected'
+                                : '';
+
+                            $bg.append(
+                                '<option value="' + l.idBaiGiang + '"'
+                                + isSelected
+                                + ' title="' + fullText.replace(/"/g, '&quot;') + '">'
+                                + display +
+                                '</option>'
+                            );
+                        });
+                    });
+            }
+
 
       window.closeModal = function(id) {
         $('#' + id).removeClass('open');

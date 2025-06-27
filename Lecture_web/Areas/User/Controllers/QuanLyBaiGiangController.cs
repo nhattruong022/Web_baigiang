@@ -274,5 +274,6 @@ namespace Lecture_web.Areas.User.Controllers
             return Ok(new { success = true });
         }
 
+
     }
 }
