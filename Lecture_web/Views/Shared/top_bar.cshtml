@@ -3,7 +3,7 @@
 @{
 
 var userName = "Guest";
-var avatar = "/images/avatar.jpg";
+string avatar = null;
 
 Console.WriteLine("=== TOP BAR DEBUG START ===");
 Console.WriteLine($"User authenticated: {User.Identity.IsAuthenticated}");
@@ -57,8 +57,7 @@ currentUser.HoTen :
 (currentUser.TenDangNhap ?? "User");
 
 // Xử lý avatar path
-if (!string.IsNullOrEmpty(currentUser.AnhDaiDien) &&
-!string.IsNullOrWhiteSpace(currentUser.AnhDaiDien))
+if (!string.IsNullOrEmpty(currentUser.AnhDaiDien) && !string.IsNullOrWhiteSpace(currentUser.AnhDaiDien))
 {
 string cleanPath = currentUser.AnhDaiDien.Trim();
 if (cleanPath.StartsWith("/"))
@@ -78,15 +77,14 @@ Console.WriteLine($"Final avatar path: {avatar}");
 }
 else
 {
-avatar = "/images/avatar.jpg";
-Console.WriteLine("No avatar in database, using default");
+avatar = null; // KHÔNG gán avatar mặc định
 }
 }
 else
 {
 Console.WriteLine($"ERROR: User with ID {userId} not found in database!");
 userName = $"User#{userId}";
-avatar = "/images/avatar.jpg";
+avatar = null;
 }
 Console.WriteLine($"======================");
 }
@@ -102,7 +100,7 @@ catch (Exception ex)
 Console.WriteLine($"ERROR in top bar: {ex.Message}");
 Console.WriteLine($"Stack trace: {ex.StackTrace}");
 userName = "Error";
-avatar = "/images/avatar.jpg";
+avatar = null;
 }
 }
 else
@@ -114,7 +112,7 @@ userName = "Guest";
 // Final validation
 if (string.IsNullOrEmpty(avatar) || string.IsNullOrWhiteSpace(avatar))
 {
-avatar = "/images/avatar.jpg";
+avatar = null;
 }
 
 if (string.IsNullOrEmpty(userName) || string.IsNullOrWhiteSpace(userName))
@@ -135,7 +133,10 @@ Console.WriteLine($"=== TOP BAR DEBUG END ===");
       <span class="notification-badge">5</span>
     </div>
     <div class="user-profile" onclick="toggleUserMenu()">
+      @if (!string.IsNullOrEmpty(avatar))
+      {
       <img src="@avatar?v=@DateTime.Now.Ticks&r=@Random.Shared.Next()" alt="Avatar @userName" class="avatar" id="topBarAvatar" onerror="handleAvatarError(this)" style="border-radius: 50%; object-fit: cover;">
+      }
       <span class="user-name" id="topBarUserName">@userName</span>
       <i class="fas fa-chevron-down"></i>
       <div class="user-dropdown">

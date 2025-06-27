@@ -9,6 +9,8 @@ using System;
 using System.Linq;
 using Lecture_web.Service;
 using Lecture_web.Models;
+using Microsoft.AspNetCore.SignalR;
+using Lecture_web.Hubs;
 
 namespace Lecture_web.Areas.User.Controllers
 {
@@ -18,11 +20,13 @@ namespace Lecture_web.Areas.User.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly EmailService _emailService;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
-        public ChiTietHocPhanController(ApplicationDbContext context, EmailService emailService)
+        public ChiTietHocPhanController(ApplicationDbContext context, EmailService emailService, IHubContext<NotificationHub> hubContext)
         {
             _context = context;
             _emailService = emailService;
+            _hubContext = hubContext;
         }
 
         public async Task<IActionResult> Index(int? idLopHocPhan, int page = 1)
@@ -906,6 +910,152 @@ namespace Lecture_web.Areas.User.Controllers
             {
                 Console.WriteLine($"Error in TestSearch: {ex.Message}");
                 return Json(new { error = ex.Message });
+            }
+        }
+
+        // API: Thêm bình luận hoặc reply
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> AddComment([FromBody] BinhLuanModels model)
+        {
+             try
+            {
+                var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                var userRole = User.FindFirstValue(ClaimTypes.Role);
+                model.IdTaiKhoan = userId;
+                model.NgayTao = DateTime.Now;
+
+                // Validate dữ liệu bắt buộc
+                if (string.IsNullOrWhiteSpace(model.NoiDung) || model.IdLopHocPhan == 0)
+                    return Json(new { success = false, message = "Thiếu dữ liệu bình luận hoặc lớp học phần." });
+
+                _context.BinhLuan.Add(model);
+                await _context.SaveChangesAsync();
+                // Broadcast qua SignalR
+                await _hubContext.Clients.Group($"Class_{model.IdLopHocPhan}").SendAsync("ReceiveComment", new {
+                    id = model.IdBinhLuan,
+                    noiDung = model.NoiDung,
+                    ngayTao = model.NgayTao,
+                    idTaiKhoan = model.IdTaiKhoan,
+                    idBinhLuanCha = model.IdBinhLuanCha,
+                    idBai = model.IdBai,
+                    idThongBao = model.IdThongBao,
+                    idLopHocPhan = model.IdLopHocPhan,
+                    hoTen = User.Identity.Name,
+                    role = userRole
+                });
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        // API: Sửa bình luận
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> EditComment([FromBody] BinhLuanModels model)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var userRole = User.FindFirstValue(ClaimTypes.Role);
+            var comment = await _context.BinhLuan.FindAsync(model.IdBinhLuan);
+            if (comment == null) return NotFound();
+            // Chỉ chủ bình luận được sửa
+            if (comment.IdTaiKhoan != userId) return Forbid();
+            comment.NoiDung = model.NoiDung;
+            comment.NgayTao = DateTime.Now;
+            await _context.SaveChangesAsync();
+            await _hubContext.Clients.Group($"Class_{comment.IdLopHocPhan}").SendAsync("UpdateComment", new {
+                id = comment.IdBinhLuan,
+                noiDung = comment.NoiDung,
+                ngayTao = comment.NgayTao
+            });
+            return Json(new { success = true });
+        }
+
+        // API: Xóa bình luận
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> DeleteComment([FromBody] int id)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var userRole = User.FindFirstValue(ClaimTypes.Role);
+            var comment = await _context.BinhLuan.FindAsync(id);
+            if (comment == null) return NotFound();
+            // Sinh viên chỉ xóa được bình luận của mình, giảng viên xóa được của mình và sinh viên
+            if (userRole == "Sinhvien" && comment.IdTaiKhoan != userId) return Forbid();
+            if (userRole == "Giangvien" && comment.IdTaiKhoan != userId)
+            {
+                var owner = await _context.TaiKhoan.FindAsync(comment.IdTaiKhoan);
+                if (owner == null || owner.VaiTro != "Sinhvien") return Forbid();
+            }
+            int classId = comment.IdLopHocPhan;
+            _context.BinhLuan.Remove(comment);
+            await _context.SaveChangesAsync();
+            await _hubContext.Clients.Group($"Class_{classId}").SendAsync("DeleteComment", id);
+            return Json(new { success = true });
+        }
+
+        // API: Lấy danh sách bình luận cho bài học
+        [HttpGet]
+        public async Task<IActionResult> GetComments(int idBai)
+        {
+            try
+            {
+                var comments = await _context.BinhLuan
+                    .Where(c => c.IdBai == idBai)
+                    .OrderBy(c => c.NgayTao)
+                    .Select(c => new {
+                        id = c.IdBinhLuan,
+                        noiDung = c.NoiDung,
+                        ngayTao = c.NgayTao,
+                        idTaiKhoan = c.IdTaiKhoan,
+                        idBinhLuanCha = c.IdBinhLuanCha,
+                        idBai = c.IdBai,
+                        idThongBao = c.IdThongBao,
+                        idLopHocPhan = c.IdLopHocPhan,
+                        hoTen = c.TaiKhoan != null ? c.TaiKhoan.HoTen : "Ẩn danh",
+                        avatar = c.TaiKhoan != null ? c.TaiKhoan.AnhDaiDien : "/images/avatar.jpg",
+                        role = c.TaiKhoan != null ? c.TaiKhoan.VaiTro : ""
+                    })
+                    .ToListAsync();
+                return Json(new { success = true, data = comments });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        // API: Lấy danh sách bình luận theo lớp học phần
+        [HttpGet]
+        public async Task<IActionResult> GetCommentsByClass(int idLopHocPhan)
+        {
+            try
+            {
+                var comments = await _context.BinhLuan
+                    .Where(c => c.IdLopHocPhan == idLopHocPhan)
+                    .OrderBy(c => c.NgayTao)
+                    .Select(c => new {
+                        id = c.IdBinhLuan,
+                        noiDung = c.NoiDung,
+                        ngayTao = c.NgayTao,
+                        idTaiKhoan = c.IdTaiKhoan,
+                        idBinhLuanCha = c.IdBinhLuanCha,
+                        idBai = c.IdBai,
+                        idThongBao = c.IdThongBao,
+                        idLopHocPhan = c.IdLopHocPhan,
+                        hoTen = c.TaiKhoan != null ? c.TaiKhoan.HoTen : "Ẩn danh",
+                        avatar = c.TaiKhoan != null ? c.TaiKhoan.AnhDaiDien : null,
+                        role = c.TaiKhoan != null ? c.TaiKhoan.VaiTro : ""
+                    })
+                    .ToListAsync();
+                return Json(new { success = true, data = comments });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
             }
         }
     }

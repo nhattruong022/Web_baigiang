@@ -132,8 +132,8 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
                     @if (userRole != "Sinhvien")
                     {
                     <div style="margin-top: 12px;">
-                      <button onclick="openInviteStudentModal()" class="invite-student-btn" style="padding: 8px 16px !important; font-size: 0.95rem !important; min-width: auto !important;">
-                        <i class="fas fa-plus" style="margin-right: 8px;"></i> Mời sinh viên tham gia
+                      <button onclick="openInviteStudentModal()" style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">
+                        <i class="fas fa-plus"></i> Mời sinh viên tham gia
                       </button>
                     </div>
                     }
@@ -343,6 +343,77 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     </div>
   </div>
 </div>
+
+<style>
+  .comments-section {
+    max-height: 420px;
+    overflow-y: auto;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 24px;
+  }
+
+  .comment {
+    background: #fff;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    padding: 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    position: relative;
+  }
+
+  .comment .comment-actions {
+    margin-top: 6px;
+  }
+
+  .comment .comment-actions button {
+    background: none;
+    border: none;
+    color: #007bff;
+    margin-right: 8px;
+    cursor: pointer;
+    font-size: 0.95em;
+  }
+
+  .comment .comment-actions button.delete {
+    color: #e74c3c;
+  }
+
+  .comment .replies {
+    margin-left: 32px;
+    margin-top: 8px;
+  }
+
+  .comment-form textarea {
+    width: 100%;
+    min-height: 60px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    padding: 8px;
+    margin-bottom: 8px;
+  }
+
+  .comment-form button {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    cursor: pointer;
+  }
+
+  .show-more-btn {
+    display: block;
+    margin: 0 auto;
+    background: #eee;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 16px;
+    color: #007bff;
+    cursor: pointer;
+  }
+</style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
@@ -627,9 +698,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         <td>${student.email || 'N/A'}</td>
         <td>${student.soDienThoai || 'Chưa cập nhật'}</td>
         <td>
-          <img style="width:52px; height:52px; border-radius:50%;" 
-               src="${student.anhDaiDien || '/images/avatar.jpg'}" 
-               class="student-avatar" />
+          ${student.anhDaiDien ? `<img style='width:52px; height:52px; border-radius:50%;' src='${student.anhDaiDien}' class='student-avatar' />` : ''}
         </td>
         <td><span class="status-badge ${student.trangThai === 'HoatDong' ? 'hoatdong' : ''}">${student.trangThai === 'HoatDong' ? 'Hoạt động' : (student.trangThai || 'Chưa cập nhật')}</span></td>
         ${userRole !== "Sinhvien" ? `
@@ -665,9 +734,9 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     }
 
     // Kiểm tra dữ liệu hợp lệ từ chuongsData - hỗ trợ cả PascalCase và camelCase
-    const chuong = chuongsData && chuongsData[chapterIdx] ? chuongsData[chapterIdx] : null;
-    const baisList = chuong ? (chuong.bais || chuong.Bais) : null;
-    const bai = baisList && baisList[lessonIdx] ? baisList[lessonIdx] : null;
+    let chuong = chuongsData && chuongsData[chapterIdx] ? chuongsData[chapterIdx] : null;
+    let baisList = chuong ? (chuong.bais || chuong.Bais) : null;
+    let bai = baisList && baisList[lessonIdx] ? baisList[lessonIdx] : null;
 
     if (!chuong || !baisList || baisList.length === 0 || !bai) {
       lessonsTab.innerHTML = `
@@ -738,6 +807,16 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
             </div>
         </div>
     `;
+    // Sau khi render bài học, load bình luận:
+    if (bai && bai.idBai || bai.IdBai) {
+      loadCommentsForLesson(bai.idBai || bai.IdBai);
+    }
+
+    // Lưu lại id bài hiện tại để dùng khi gửi bình luận
+    currentBaiId = bai && (bai.idBai || bai.IdBai) ? (bai.idBai || bai.IdBai) : null;
+    if (currentBaiId) {
+      loadCommentsForLesson(currentBaiId);
+    }
   }
 
   // Mở/đóng chương
@@ -749,12 +828,10 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
   }
 
   // Tab switching for course detail
-  function showTab(tab, btn) {
-    console.log('DEBUG: showTab called with tab =', tab);
-
+  window.showTab = function(tab, btn) {
     // Remove active class from all tab buttons
     document.querySelectorAll('.course-tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+    if (btn) btn.classList.add('active');
 
     // Hide all tab contents first
     document.querySelectorAll('.course-tab-content').forEach(c => {
@@ -765,9 +842,9 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     const targetTab = document.getElementById('tab-' + tab);
     if (targetTab) {
       targetTab.style.display = 'block';
-      console.log('DEBUG: Displayed tab-' + tab);
-    } else {
-      console.error('DEBUG: Tab not found: tab-' + tab);
+      if (tab === 'classcomments') {
+        loadCommentsForClass();
+      }
     }
 
     // Handle sidebar visibility
@@ -783,25 +860,21 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     // Load specific content for each tab
     switch (tab) {
       case 'lessons':
-        console.log('DEBUG: Loading lessons content');
-        // Lessons content is already loaded on page load
-        clearNotificationsContent(); // Clear notifications when switching away
+        clearNotificationsContent();
         break;
       case 'students':
-        console.log('DEBUG: Loading students content');
-        // Students content is already loaded, but we can refresh if needed
-        clearNotificationsContent(); // Clear notifications when switching away
+        clearNotificationsContent();
         break;
       case 'notices':
-        console.log('DEBUG: Loading notifications content');
-        // Load notifications ngay lập tức khi switch sang tab
         setTimeout(() => {
           loadNotifications(currentLopHocPhanId);
-        }, 50); // Delay nhỏ để đảm bảo DOM đã update
+        }, 50);
+        break;
+      case 'classcomments':
+        // No need to load comments here, as they are loaded separately
         break;
       default:
-        console.log('DEBUG: Unknown tab:', tab);
-        clearNotificationsContent(); // Clear notifications when switching away
+        clearNotificationsContent();
         break;
     }
   }
@@ -1624,15 +1697,8 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
       container.innerHTML = `
         <div style="padding: 40px; text-align: center; color: #666;">
           <i class="fas fa-bell" style="font-size: 48px; margin-bottom: 16px; display: block; color: #ddd;"></i>
-          <h3 style="margin-bottom: 8px; color: #666;">Chưa có thông báo nào</h3>
+          <h3 style="margin-bottom: 8px; color: #666;">Thông báo</h3>
           <p style="margin: 0;">Lớp học này chưa có thông báo nào được tạo.</p>
-          ${isNotStudent ? `
-            <div style="margin-top: 20px;">
-              <button onclick="addNotice()" style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer;">
-                <i class="fas fa-plus"></i> Thêm thông báo đầu tiên
-              </button>
-            </div>
-          ` : ''}
         </div>
       `;
       return;
@@ -1736,7 +1802,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         <div style="padding: 40px; text-align: center; color: #666;">
           <i class="fas fa-bell" style="font-size: 48px; margin-bottom: 16px; display: block; color: #ddd;"></i>
           <h3 style="margin-bottom: 8px; color: #666;">Thông báo</h3>
-          <p style="margin: 0;">Vui lòng chọn tab "Thông báo" để xem thông báo của lớp học.</p>
+          <p style="margin: 0;">Lớp học này chưa có thông báo nào được tạo.</p>
         </div>
       `;
       console.log('DEBUG: Cleared notifications content');
@@ -1755,36 +1821,22 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
 
   // Hàm thêm bình luận
   function addComment() {
-    const commentText = document.getElementById('commentText');
-    const commentsList = document.getElementById('commentsList');
-
-    if (!commentText.value.trim()) {
-      alert('Vui lòng nhập nội dung bình luận');
-      return;
-    }
-
-    // Tạo comment mới
-    const newComment = document.createElement('div');
-    newComment.className = 'comment';
-    newComment.innerHTML = `
-      <img src="/images/avatar.jpg" alt="User Avatar" class="comment-avatar">
-      <div class="comment-content">
-        <div class="comment-header">
-          <h4>Bạn</h4>
-          <span class="comment-time">Vừa xong</span>
-        </div>
-        <p>${commentText.value}</p>
-      </div>
-    `;
-
-    // Thêm vào đầu danh sách
-    commentsList.insertBefore(newComment, commentsList.firstChild);
-
-    // Reset form
-    commentText.value = '';
-
-    // TODO: Gửi comment lên server để lưu vào database
-    console.log('Comment added:', commentText.value);
+    const textarea = document.getElementById('commentText');
+    const noiDung = textarea.value.trim();
+    if (!noiDung || !currentBaiId) return;
+    fetch('/User/ChiTietHocPhan/AddComment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        NoiDung: noiDung,
+        IdLopHocPhan: currentLopHocPhanId,
+        IdBai: currentBaiId
+      })
+    }).then(res => res.json()).then(data => {
+      if (data.success) textarea.value = '';
+    });
   }
 
   // Function để tìm kiếm sinh viên trong danh sách hiện tại
@@ -1927,6 +1979,282 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
       searchInput.focus();
     }
   }
+
+  // --- Bình luận realtime ---
+  let commentConnection = new signalR.HubConnectionBuilder()
+    .withUrl("/notificationHub")
+    .build();
+
+  commentConnection.start().then(() => {
+    commentConnection.invoke("JoinClass", currentLopHocPhanId.toString());
+  });
+
+  commentConnection.on("ReceiveComment", function(comment) {
+    addCommentToUI(comment);
+  });
+  commentConnection.on("UpdateComment", function(comment) {
+    updateCommentInUI(comment);
+  });
+  commentConnection.on("DeleteComment", function(commentId) {
+    removeCommentFromUI(commentId);
+  });
+
+  // --- UI logic ---
+  let allComments = [];
+  let visibleCommentCount = 5;
+
+  function renderComments() {
+    const list = document.getElementById('commentsList');
+    if (!list) return;
+    list.innerHTML = renderCommentTree(allComments.filter(c => !c.idBinhLuanCha), 0);
+    if (allComments.length > visibleCommentCount) {
+      list.innerHTML += `<button class='show-more-btn' onclick='showMoreComments()'>Xem thêm bình luận</button>`;
+    }
+  }
+
+  function renderCommentTree(comments, level) {
+    let html = '';
+    for (const c of comments) {
+      html += `
+        <div class="comment" id="comment-${c.id}">
+          ${c.avatar ? `<img src="${c.avatar}" class="comment-avatar" />` : '<div class="comment-avatar comment-avatar-empty"></div>'}
+          <div class="comment-main">
+            <div class="comment-header">
+              <span class="comment-author">${c.hoTen || c.tenDangNhap || 'Ẩn danh'}</span>
+              <span class="comment-role">${c.role || ''}</span>
+              <span class="comment-time">${c.ngayTao ? new Date(c.ngayTao).toLocaleString('vi-VN') : ''}</span>
+              <span class="comment-actions">
+                <a title="Sửa" class="edit" onclick='editComment(${c.id})'><i class="fas fa-pen"></i></a>
+                <a title="Xóa" class="delete" onclick='confirmDeleteComment(${c.id})'><i class="fas fa-trash"></i></a>
+              </span>
+            </div>
+            <div class="comment-body">${c.noiDung}</div>
+            <div class="comment-replies">${renderCommentTree(allComments.filter(x => x.idBinhLuanCha === c.id), level+1)}</div>
+          </div>
+        </div>
+      `;
+    }
+    return html;
+  }
+
+  function renderCommentActions(c) {
+    let html = '';
+    if (c.idTaiKhoan === currentUserId) {
+      html += `<a title="Sửa" class="edit" onclick='editComment(${c.id})'><i class="fas fa-pen"></i></a>`;
+      html += `<a title="Xóa" class="delete" onclick='confirmDeleteComment(${c.id})'><i class="fas fa-trash"></i></a>`;
+    } else if (userRole === 'Giangvien' && c.role === 'Sinhvien') {
+      html += `<a title="Phản hồi" class="reply" onclick='replyComment(${c.id})'><i class="fas fa-reply"></i></a>`;
+      html += `<a title="Xóa" class="delete" onclick='confirmDeleteComment(${c.id})'><i class="fas fa-trash"></i></a>`;
+    }
+    return html;
+  }
+
+  function showMoreComments() {
+    visibleCommentCount += 5;
+    renderComments();
+  }
+
+  function addCommentToUI(comment) {
+    allComments.push(comment);
+    renderComments();
+  }
+
+  function updateCommentInUI(comment) {
+    const idx = allComments.findIndex(c => c.id === comment.id);
+    if (idx >= 0) {
+      allComments[idx].noiDung = comment.noiDung;
+      allComments[idx].ngayTao = comment.ngayTao;
+      renderComments();
+    }
+  }
+
+  function removeCommentFromUI(commentId) {
+    allComments = allComments.filter(c => c.id !== commentId && c.idBinhLuanCha !== commentId);
+    renderComments();
+  }
+  // --- Gửi bình luận ---
+  function addComment() {
+    const textarea = document.getElementById('commentText');
+    const noiDung = textarea.value.trim();
+    if (!noiDung || !currentBaiId) return;
+    fetch('/User/ChiTietHocPhan/AddComment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        NoiDung: noiDung,
+        IdLopHocPhan: currentLopHocPhanId,
+        IdBai: currentBaiId
+      })
+    }).then(res => res.json()).then(data => {
+      if (data.success) textarea.value = '';
+    });
+  }
+
+  function replyComment(parentId) {
+    const parentDiv = document.getElementById('comment-' + parentId);
+    if (!parentDiv || parentDiv.querySelector('.reply-form')) return;
+    const form = document.createElement('form');
+    form.className = 'reply-form';
+    form.innerHTML = `<textarea placeholder='Phản hồi...' required></textarea><button type='submit'>Gửi</button>`;
+    form.onsubmit = function(e) {
+      e.preventDefault();
+      const noiDung = form.querySelector('textarea').value.trim();
+      if (!noiDung) return;
+      fetch('/User/ChiTietHocPhan/AddComment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          NoiDung: noiDung,
+          IdLopHocPhan: currentLopHocPhanId,
+          IdBinhLuanCha: parentId
+        })
+      }).then(res => res.json()).then(data => {
+        if (data.success) form.remove();
+      });
+    };
+    parentDiv.querySelector('.replies').prepend(form);
+  }
+
+  function editComment(commentId) {
+    const commentDiv = document.getElementById('comment-' + commentId);
+    if (!commentDiv || commentDiv.querySelector('.edit-form')) return;
+    const cmt = allComments.find(c => c.id === commentId);
+    const form = document.createElement('form');
+    form.className = 'edit-form';
+    form.innerHTML = `<textarea required>${cmt.noiDung}</textarea>
+      <button type='submit'>Lưu</button>
+      <button type='button' class='cancel-edit' onclick='this.closest(".edit-form").remove()'>✖</button>`;
+    form.onsubmit = function(e) {
+      e.preventDefault();
+      const noiDung = form.querySelector('textarea').value.trim();
+      if (!noiDung) return;
+      fetch('/User/ChiTietHocPhan/EditComment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          IdBinhLuan: commentId,
+          NoiDung: noiDung
+        })
+      }).then(res => res.json()).then(data => {
+        if (data.success) form.remove();
+      });
+    };
+    commentDiv.querySelector('.comment-body').after(form);
+  }
+
+  function deleteComment(commentId) {
+    fetch('/User/ChiTietHocPhan/DeleteComment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(commentId)
+    });
+  }
+  // --- Lấy bình luận ban đầu khi load bài học ---
+  function loadCommentsForLesson(idBai) {
+    fetch(`/User/ChiTietHocPhan/GetComments?idBai=${idBai}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          allComments = data.data;
+          visibleCommentCount = 5;
+          renderComments();
+        }
+      });
+  }
+
+  let currentBaiId = null;
+
+  function loadCommentsForClass() {
+    fetch(`/User/ChiTietHocPhan/GetCommentsByClass?idLopHocPhan=${currentLopHocPhanId}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          allClassComments = data.data;
+          renderClassComments();
+        }
+      });
+  }
+
+  let allClassComments = [];
+
+  function renderClassComments() {
+    const list = document.getElementById('classCommentsList');
+    if (!list) return;
+    list.innerHTML = renderClassCommentTree(allClassComments.filter(c => !c.idBinhLuanCha), 0);
+  }
+
+  function renderClassCommentTree(comments, level) {
+    let html = '';
+    for (const c of comments) {
+      html += `
+        <div class='comment' id='class-comment-${c.id}'>
+          ${c.avatar ? `<img src='${c.avatar}' class='comment-avatar' style='width:36px;height:36px;border-radius:50%;'>` : ''}
+          <b>${c.hoTen || 'Ẩn danh'}</b>
+          <span style='color:#888;font-size:0.9em;'>${c.ngayTao ? new Date(c.ngayTao).toLocaleString('vi-VN') : ''}</span>
+          <span style='margin-left:auto;font-size:0.9em;color:#aaa;'>${c.role || ''}</span>
+        </div>
+        <div class='comment-body' style='margin:8px 0;'>${c.noiDung}</div>
+        <div class='replies'>${renderClassCommentTree(allClassComments.filter(x => x.idBinhLuanCha === c.id), level+1)}</div>
+      `;
+    }
+    return html;
+  }
+
+  function addClassComment() {
+    const textarea = document.getElementById('classCommentText');
+    const noiDung = textarea.value.trim();
+    if (!noiDung) return;
+    fetch('/User/ChiTietHocPhan/AddComment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        NoiDung: noiDung,
+        IdLopHocPhan: currentLopHocPhanId
+      })
+    }).then(res => res.json()).then(data => {
+      if (data.success) textarea.value = '';
+    });
+  }
+
+  // Realtime socket cho bình luận lớp
+  commentConnection.on("ReceiveComment", function(comment) {
+    if (comment.idLopHocPhan === currentLopHocPhanId) {
+      allClassComments.push(comment);
+      renderClassComments();
+    }
+  });
+
+  let currentUserId = @(ViewBag.CurrentUserId ?? 0);
+  let userRole = '@(ViewBag.UserRole ?? "")';
+
+  let commentToDelete = null;
+
+  function confirmDeleteComment(id) {
+    commentToDelete = id;
+    document.getElementById('confirmDeleteModal').style.display = 'flex';
+  }
+
+  function closeConfirmDeleteModal() {
+    document.getElementById('confirmDeleteModal').style.display = 'none';
+    commentToDelete = null;
+  }
+
+  function doDeleteComment() {
+    if (commentToDelete) {
+      deleteComment(commentToDelete);
+      closeConfirmDeleteModal();
+    }
+  }
 </script>
 
 @* Handle TempData messages *@
@@ -1970,3 +2298,13 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
   });
 </script>
 }
+
+<div id="confirmDeleteModal" class="modal" style="display:none;">
+  <div class="modal-content" style="padding:32px; background:#fff; border-radius:12px; text-align:center;">
+    <h3>Bạn có chắc chắn muốn xóa bình luận này?</h3>
+    <div style="margin-top:18px;">
+      <button onclick="closeConfirmDeleteModal()" class="btn-cancel">Hủy</button>
+      <button onclick="doDeleteComment()" class="btn-primary" style="background:#e74c3c;">Xóa</button>
+    </div>
+  </div>
+</div>

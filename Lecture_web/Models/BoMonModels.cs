@@ -9,6 +9,7 @@ namespace Lecture_web.Models
         [Key]
         public int? IdBoMon { get; set; }
         [Required]
+        [MaxLength(100, ErrorMessage = "Tên bộ môn tối đa 100 ký tự")]
         public string? TenBoMon { get; set; }
         [Required]
         public string? MoTa { get; set; }

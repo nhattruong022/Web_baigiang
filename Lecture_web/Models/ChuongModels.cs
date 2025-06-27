@@ -8,6 +8,7 @@ namespace Lecture_web.Models
     {
         [Key]
         public int IdChuong { get; set; }
+        [MaxLength(100, ErrorMessage = "Tên chương tối đa 100 ký tự")]
         public string TenChuong { get; set; }
         public DateTime NgayTao { get; set; }
         public DateTime NgayCapNhat { get; set; }

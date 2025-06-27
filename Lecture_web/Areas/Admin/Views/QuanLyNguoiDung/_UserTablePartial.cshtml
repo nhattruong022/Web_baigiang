@@ -15,15 +15,15 @@
         <img src="@user.AnhDaiDien" alt="User" style="width:52px; height:52px; border-radius:50%;">
         }
       </td>
-      <td><span class="status @((user.TrangThai != null && user.TrangThai.Trim() =="HoatDong") ? "active" : "inactive" )">@user.TrangThai</span></td>
+      <td><span class="status @((user.TrangThai != null && user.TrangThai.Trim() ==" HoatDong") ? "active" : "inactive" )">@user.TrangThai</span></td>
       <td>@(user.NgayTao.HasValue ? user.NgayTao.Value.ToString("dd/MM/yyyy") : "")</td>
       <td>
         <div class="actions">
           <button class="btn-icon" title="Chỉnh sửa" onclick="editUser(@user.IdTaiKhoan)">
             <i class="fas fa-edit"></i>
           </button>
-          <button class="btn-icon status-toggle-btn" title="Cập nhật trạng thái" onclick="confirmUpdateStatusUser(@user.IdTaiKhoan, '@((user.TrangThai != null && user.TrangThai.Trim() == "HoatDong") ? "KhongHoatDong" : "HoatDong" )')">
-            <i class="fas @((user.TrangThai != null && user.TrangThai.Trim() == "HoatDong") ? "fa-toggle-on status-on" : "fa-toggle-off status-off" )"></i>
+          <button class="btn-icon status-toggle-btn" title="Cập nhật trạng thái" onclick="confirmUpdateStatusUser(@user.IdTaiKhoan, '@((user.TrangThai != null && user.TrangThai.Trim() == " HoatDong") ? "KhongHoatDong" : "HoatDong" )')">
+            <i class="fas @((user.TrangThai != null && user.TrangThai.Trim() == " HoatDong") ? "fa-toggle-on status-on" : "fa-toggle-off status-off" )"></i>
           </button>
         </div>
       </td>
