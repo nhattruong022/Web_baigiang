@@ -155,13 +155,20 @@ body {
 .app-container {
     display: flex;
     min-height: 100vh;
+    position: relative;
 }
 
 .sidebar {
     width: 250px;
+    height: 100vh;
     background-color: #2c3e50;
     color: white;
     padding: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow-y: auto;
+    z-index: 100;
 }
 
 .logo {
@@ -229,6 +236,8 @@ body {
 .main-content {
     flex: 1;
     padding: 20px;
+    margin-left: 250px;
+    min-height: 100vh;
 }
 
 .top-bar {
@@ -370,7 +379,14 @@ body {
 
     .sidebar {
         width: 100%;
+        height: auto;
+        position: relative;
         padding: 15px;
+        z-index: auto;
+    }
+
+    .main-content {
+        margin-left: 0;
     }
 
     .nav-links {

@@ -1,6 +1,9 @@
 @{
 ViewData["Title"] = "Chi tiết học phần";
 var userRole = ViewBag.UserRole as string;
+var currentUser = ViewBag.CurrentUser as Lecture_web.Models.TaiKhoanModels;
+var currentUserAvatar = currentUser?.AnhDaiDien ?? "/images/avatar.jpg";
+var currentUserName = currentUser?.HoTen ?? "Người dùng";
 <link rel="stylesheet" href="~/css/chitiethocphan.css" />
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -17,12 +20,12 @@ var userRole = ViewBag.UserRole as string;
     <div class="course-tabs">
       <button class="course-tab-btn active" onclick="showTab('lessons', this)"><i class="fas fa-book"></i> Bài giảng</button>
       <button class="course-tab-btn" onclick="showTab('students', this)"><i class="fas fa-users"></i> Danh sách sinh viên</button>
-      <button class="course-tab-btn" onclick="showTab('notices', this)"><i class="fas fa-bell"></i> Thông báo</button>
+      <!-- <button class="course-tab-btn" onclick="showTab('notices', this)"><i class="fas fa-bell"></i> Thông báo</button> -->
     </div>
   </div>
-  <div class="main-box" style="background: #fff; border-radius: 18px; box-shadow: 0 4px 24px rgba(52,152,219,0.10), 0 1.5px 8px rgba(0,0,0,0.08); border: 1.5px solid #bfc9d1; overflow: hidden; margin: 16px 24px 0 24px; display: flex; flex-direction: row; min-height: 650px;">
+  <div class="main-box" style="background: #fff; border-radius: 18px; box-shadow: 0 4px 24px rgba(52,152,219,0.10), 0 1.5px 8px rgba(0,0,0,0.08); border: 1.5px solid #bfc9d1; overflow: visible; margin: 16px 24px 0 24px; display: flex; flex-direction: row; min-height: 650px;">
     <!-- Sidebar chương & bài -->
-    <aside class="sidebar-chapters" style="border-radius: 0; min-height: 100%; height: 100%; box-shadow: none; margin: 0; width: 260px;">
+    <aside class="sidebar-chapters">
       <h2>Chương & Bài</h2>
       <ul class="chapter-list" id="chaptersList">
         <!-- Sẽ được render bởi JavaScript từ ViewBag.Chuongs -->
@@ -40,28 +43,23 @@ var userRole = ViewBag.UserRole as string;
       <section class="main-lesson-content course-tab-content" id="tab-students" style="display:none;">
         <div class="management-header">
           <div class="search-filter">
-            <select>
-              <option>Tất cả vai trò</option>
-              <option>Sinh viên</option>
-              <option>Giảng viên</option>
-            </select>
-            <select>
-              <option>Tất cả trạng thái</option>
-              <option>Hoạt động</option>
-              <option>Không hoạt động</option>
-            </select>
-          </div>
-          <div style="display:flex; align-items:center; gap:12px;">
+
             <div class="search-box">
               <i class="fas fa-search"></i>
-              <input type="text" placeholder="Tìm kiếm sinh viên...">
+              <input type="text" id="studentSearchInput" placeholder="Tìm kiếm sinh viên theo tên, email, tên đăng nhập..." oninput="searchStudentsInList(this.value)" onkeyup="searchStudentsInList(this.value)">
             </div>
             @if (userRole != "Sinhvien")
             {
-            <button onclick="openInviteStudentModal()" style="background: #007bff; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center;" title="Mời sinh viên">
+            <button onclick="openInviteStudentModal()" class="invite-student-btn" title="Mời sinh viên">
               <i class="fas fa-plus"></i>
+              <span>Mời sinh viên</span>
             </button>
             }
+          </div>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div id="studentsInfo" style="font-size: 0.9rem; color: #666;">
+              <!-- Thông tin số lượng sinh viên sẽ được cập nhật bởi JavaScript -->
+            </div>
           </div>
         </div>
         <div class="student-table">
@@ -134,8 +132,8 @@ var userRole = ViewBag.UserRole as string;
                     @if (userRole != "Sinhvien")
                     {
                     <div style="margin-top: 12px;">
-                      <button onclick="openInviteStudentModal()" style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">
-                        <i class="fas fa-plus"></i> Mời sinh viên tham gia
+                      <button onclick="openInviteStudentModal()" class="invite-student-btn" style="padding: 8px 16px !important; font-size: 0.95rem !important; min-width: auto !important;">
+                        <i class="fas fa-plus" style="margin-right: 8px;"></i> Mời sinh viên tham gia
                       </button>
                     </div>
                     }
@@ -146,12 +144,8 @@ var userRole = ViewBag.UserRole as string;
           </table>
         </div>
         <!-- Phân trang -->
-        <div class="pagination">
-          <button>&lt;</button>
-          <button class="active">1</button>
-          <button>2</button>
-          <button>3</button>
-          <button>&gt;</button>
+        <div id="studentsPagination">
+          @Html.Partial("_PaginationPartial")
         </div>
 
         <!-- Popup Mời học viên -->
@@ -165,7 +159,19 @@ var userRole = ViewBag.UserRole as string;
             </div>
             <div class="modal-body" style="padding:20px 24px;">
               <div style="margin-bottom:16px;">
-                <input type="text" id="searchStudentEmail" placeholder="Tìm kiếm theo email..." style="width:100%; padding:12px 16px; border:1px solid #ddd; border-radius:8px; font-size:1rem; outline:none;" oninput="searchStudent(this.value)">
+                <div style="display:flex; gap:8px; margin-bottom:8px;">
+                  <select id="searchType" style="padding:12px; border:1px solid #ddd; border-radius:8px; background:white; min-width:140px;" onchange="updateSearchPlaceholder()">
+                    <option value="all">Tất cả</option>
+                    <option value="email">Email</option>
+                    <option value="name">Họ tên</option>
+                    <option value="username">Tên đăng nhập</option>
+                    <option value="phone">Số điện thoại</option>
+                  </select>
+                  <input type="text" id="searchStudentEmail" placeholder="Tìm kiếm sinh viên..." style="flex:1; padding:12px 16px; border:1px solid #ddd; border-radius:8px; font-size:1rem; outline:none;" oninput="searchStudentWithType(this.value)" onkeyup="searchStudentWithType(this.value)">
+                </div>
+                <div style="font-size:0.85rem; color:#666; margin-top:4px;">
+                  Nhập từ khóa để tìm kiếm sinh viên theo tiêu chí đã chọn
+                </div>
               </div>
 
               <!-- Hiển thị sinh viên đã chọn -->
@@ -245,7 +251,7 @@ var userRole = ViewBag.UserRole as string;
               </div>
               <div class="form-actions modal-actions">
                 <button type="button" onclick="closeEditStudentModal()" class="btn-cancel">Hủy</button>
-                <button type="submit" class="btn-primary">Lưu</button>
+                <button type="submit" class="btn-primary">Lưu thay đổi</button>
               </div>
             </form>
           </div>
@@ -265,6 +271,7 @@ var userRole = ViewBag.UserRole as string;
         </div>
         }
       </section>
+      <!-- COMMENTED OUT - NOTICE TAB SECTION
       <section class="main-lesson-content course-tab-content" id="tab-notices" style="display:none;">
         <div class="notice-card">
           <div class="notice-header">
@@ -273,10 +280,12 @@ var userRole = ViewBag.UserRole as string;
               <div class="notice-author">ND Duy</div>
               <div class="notice-time">3 thg 6</div>
             </div>
-            <button class="notice-menu" onclick="toggleNoticeMenu(this)"><i class="fas fa-ellipsis-v"></i></button>
+            <button class="notice-menu" onclick="toggleNoticeMenu(this)" title="Tùy chọn">
+              <i class="fas fa-ellipsis-v" style="display: inline-block;"></i>
+            </button>
             @if (userRole == null || userRole.ToLower() != "sinhvien")
             {
-            <div class="notice-menu-popup" style="display:none; position:absolute; right:24px; top:48px; background:#fff; box-shadow:0 2px 8px rgba(44,62,80,0.12); border-radius:8px; min-width:160px; z-index:10;">
+            <div class="notice-menu-popup" style="display:none;">
               <button onclick="addNotice()" class="notice-menu-item">Thêm thông báo</button>
               <button onclick="editNotice(this)" class="notice-menu-item">Sửa thông báo</button>
               <button onclick="deleteNotice(this)" class="notice-menu-item" style="color:#e74c3c;">Xóa thông báo</button>
@@ -292,7 +301,7 @@ var userRole = ViewBag.UserRole as string;
             </div>
           </div>
           <div class="notice-comment">
-            <img src="/images/avatar.jpg" alt="Avatar" class="comment-avatar">
+            <img src="@currentUserAvatar" alt="Avatar" class="comment-avatar">
             <input type="text" placeholder="Thêm nhận xét trong lớp học...">
             <button class="comment-send"><i class="fas fa-paper-plane"></i></button>
           </div>
@@ -304,7 +313,9 @@ var userRole = ViewBag.UserRole as string;
               <div class="notice-author">Nguyễn Văn B</div>
               <div class="notice-time">1 thg 6</div>
             </div>
-            <button class="notice-menu"><i class="fas fa-ellipsis-v"></i></button>
+            <button class="notice-menu" onclick="toggleNoticeMenu(this)" title="Tùy chọn">
+              <i class="fas fa-ellipsis-v" style="display: inline-block !important;"></i>
+            </button>
           </div>
           <div class="notice-body">
             <div style="white-space:normal;word-break:break-word;overflow-wrap:break-word;">
@@ -313,7 +324,7 @@ var userRole = ViewBag.UserRole as string;
             </div>
           </div>
           <div class="notice-comment">
-            <img src="/images/avatar.jpg" alt="Avatar" class="comment-avatar">
+            <img src="@currentUserAvatar" alt="Avatar" class="comment-avatar">
             <input type="text" placeholder="Thêm nhận xét trong lớp học...">
             <button class="comment-send"><i class="fas fa-paper-plane"></i></button>
           </div>
@@ -325,7 +336,9 @@ var userRole = ViewBag.UserRole as string;
               <div class="notice-author">Admin</div>
               <div class="notice-time">28 thg 5</div>
             </div>
-            <button class="notice-menu"><i class="fas fa-ellipsis-v"></i></button>
+            <button class="notice-menu" onclick="toggleNoticeMenu(this)" title="Tùy chọn">
+              <i class="fas fa-ellipsis-v" style="display: inline-block !important;"></i>
+            </button>
           </div>
           <div class="notice-body">
             <div style="white-space:normal;word-break:break-word;overflow-wrap:break-word;">
@@ -334,13 +347,14 @@ var userRole = ViewBag.UserRole as string;
             </div>
           </div>
           <div class="notice-comment">
-            <img src="/images/avatar.jpg" alt="Avatar" class="comment-avatar">
+            <img src="@currentUserAvatar" alt="Avatar" class="comment-avatar">
             <input type="text" placeholder="Thêm nhận xét trong lớp học...">
             <button class="comment-send"><i class="fas fa-paper-plane"></i></button>
           </div>
         </div>
       </section>
-      <!-- Popup Thêm thông báo -->
+      END COMMENTED OUT - NOTICE TAB SECTION -->
+      <!-- COMMENTED OUT - ADD NOTICE MODAL
       @if (userRole == null || userRole.ToLower() != "sinhvien")
       {
       <div class="modal" id="addNoticeModal" style="display:none; position:fixed; z-index:1001; left:0; top:0; width:100vw; height:100vh; background:rgba(44,62,80,0.18); justify-content:center; align-items:center;">
@@ -366,7 +380,8 @@ var userRole = ViewBag.UserRole as string;
         </div>
       </div>
       }
-      <!-- Popup Sửa thông báo -->
+      END COMMENTED OUT - ADD NOTICE MODAL -->
+      <!-- COMMENTED OUT - EDIT NOTICE MODAL
       @if (userRole == null || userRole.ToLower() != "sinhvien")
       {
       <div class="modal" id="editNoticeModal" style="display:none; position:fixed; z-index:1001; left:0; top:0; width:100vw; height:100vh; background:rgba(44,62,80,0.18); justify-content:center; align-items:center;">
@@ -392,7 +407,8 @@ var userRole = ViewBag.UserRole as string;
         </div>
       </div>
       }
-      <!-- Modal xác nhận xóa thông báo -->
+      END COMMENTED OUT - EDIT NOTICE MODAL -->
+      <!-- COMMENTED OUT - DELETE NOTICE MODAL
       @if (userRole == null || userRole.ToLower() != "sinhvien")
       {
       <div class="modal" id="confirmDeleteNoticeModal" style="display:none; position:fixed; z-index:1002; left:0; top:0; width:100vw; height:100vh; background:rgba(44,62,80,0.18); justify-content:center; align-items:center;">
@@ -405,6 +421,7 @@ var userRole = ViewBag.UserRole as string;
         </div>
       </div>
       }
+      END COMMENTED OUT - DELETE NOTICE MODAL -->
     </div>
   </div>
 </div>
@@ -415,8 +432,12 @@ var userRole = ViewBag.UserRole as string;
 <script>
   let selectedStudentsForInvite = []; // Thay đổi từ single student thành array
   let currentLopHocPhanId = @(ViewBag.IdLopHocPhan ?? 1);
+  let currentStudentPage = @(ViewBag.CurrentPage ?? 1);
+  let totalStudentPages = @(ViewBag.TotalPages ?? 1);
+  let totalStudents = @(ViewBag.TotalStudents ?? 0);
 
   console.log('DEBUG: currentLopHocPhanId =', currentLopHocPhanId);
+  console.log('DEBUG: Pagination info - current page:', currentStudentPage, 'total pages:', totalStudentPages, 'total students:', totalStudents);
 
   // Dữ liệu lessons từ ViewBag.Chuongs
   const chuongsData = @Html.Raw(Json.Serialize(ViewBag.Chuongs ?? new List < object > ()));
@@ -523,6 +544,12 @@ var userRole = ViewBag.UserRole as string;
       `;
     }
 
+    // Khởi tạo pagination HTML
+    updatePaginationHtml();
+
+    // Khởi tạo thông tin sinh viên
+    updateStudentsInfo();
+
     // Auto-refresh students list every 30 seconds if on students tab
     setInterval(() => {
       const studentsTab = document.getElementById('tab-students');
@@ -530,19 +557,18 @@ var userRole = ViewBag.UserRole as string;
         refreshStudentsList();
       }
     }, 30000);
-
-    connectNotificationHub();
   };
 
   // Function để refresh danh sách sinh viên
-  function refreshStudentsList() {
-    console.log('Refreshing students list for class:', currentLopHocPhanId);
+  function refreshStudentsList(page = currentStudentPage) {
+    console.log('Refreshing students list for class:', currentLopHocPhanId, 'page:', page);
 
-    fetch(`/User/ChiTietHocPhan/GetStudentsList?idLopHocPhan=${currentLopHocPhanId}`)
+    fetch(`/User/ChiTietHocPhan/GetStudentsList?idLopHocPhan=${currentLopHocPhanId}&page=${page}`)
       .then(response => response.json())
       .then(data => {
         if (data.success) {
           updateStudentsTable(data.data);
+          updatePagination(data.pagination);
         } else {
           console.error('Failed to refresh students list:', data.message);
         }
@@ -552,18 +578,104 @@ var userRole = ViewBag.UserRole as string;
       });
   }
 
+  // Function để xử lý chuyển trang sinh viên
+  function changeStudentPage(page) {
+    console.log('Changing to page:', page);
+
+    if (page < 1 || page > totalStudentPages) {
+      console.log('Invalid page number:', page);
+      return;
+    }
+
+    currentStudentPage = page;
+    refreshStudentsList(page);
+  }
+
+  // Function để cập nhật thông tin phân trang
+  function updatePagination(paginationData) {
+    if (paginationData) {
+      currentStudentPage = paginationData.currentPage;
+      totalStudentPages = paginationData.totalPages;
+      totalStudents = paginationData.totalStudents;
+
+      console.log('Updated pagination info:', paginationData);
+
+      // Cập nhật pagination HTML
+      updatePaginationHtml();
+
+      // Cập nhật thông tin sinh viên
+      updateStudentsInfo();
+    }
+  }
+
+  // Function để cập nhật thông tin số lượng sinh viên
+  function updateStudentsInfo() {
+    const infoElement = document.getElementById('studentsInfo');
+    if (infoElement && totalStudents > 0) {
+      const startIndex = (currentStudentPage - 1) * @(ViewBag.PageSize ?? 1) + 1;
+      const endIndex = Math.min(currentStudentPage * @(ViewBag.PageSize ?? 1), totalStudents);
+      infoElement.innerHTML = `Hiển thị ${startIndex}-${endIndex} trong tổng số ${totalStudents} sinh viên`;
+    } else if (infoElement) {
+      infoElement.innerHTML = '';
+    }
+  }
+
+  // Function để cập nhật HTML phân trang
+  function updatePaginationHtml() {
+    const paginationContainer = document.getElementById('studentsPagination');
+
+    // Ẩn pagination nếu không có sinh viên hoặc có lỗi
+    if (totalStudentPages <= 0) {
+      paginationContainer.style.display = 'none';
+      return;
+    }
+
+    paginationContainer.style.display = 'block';
+
+    let paginationHtml = '<div class="pagination">';
+
+    // Previous button
+    if (currentStudentPage > 1) {
+      paginationHtml += `<button class="btn-page" onclick="changeStudentPage(${currentStudentPage - 1})"><i class="fas fa-chevron-left"></i></button>`;
+    } else {
+      paginationHtml += `<button class="btn-page" disabled><i class="fas fa-chevron-left"></i></button>`;
+    }
+
+    // Page numbers
+    for (let i = 1; i <= totalStudentPages; i++) {
+      const activeClass = i === currentStudentPage ? ' active' : '';
+      paginationHtml += `<button class="btn-page${activeClass}" onclick="changeStudentPage(${i})">${i}</button>`;
+    }
+
+    // Next button
+    if (currentStudentPage < totalStudentPages) {
+      paginationHtml += `<button class="btn-page" onclick="changeStudentPage(${currentStudentPage + 1})"><i class="fas fa-chevron-right"></i></button>`;
+    } else {
+      paginationHtml += `<button class="btn-page" disabled><i class="fas fa-chevron-right"></i></button>`;
+    }
+
+    paginationHtml += '</div>';
+
+    paginationContainer.innerHTML = paginationHtml;
+  }
+
   // Function để update students table với data mới
   function updateStudentsTable(students) {
     const tableBody = document.getElementById('studentsTableBody');
     const userRole = '@userRole';
 
     if (!students || students.length === 0) {
+      let emptyMessage = 'Chưa có sinh viên nào trong lớp học này';
+      if (totalStudents > 0) {
+        emptyMessage = `Không có sinh viên nào trong trang ${currentStudentPage}`;
+      }
+
       tableBody.innerHTML = `
         <tr>
           <td colspan="${userRole !== "Sinhvien" ? "8" : "7"}" style="text-align: center; padding: 20px; color: #666;">
             <i class="fas fa-users" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
-            Chưa có sinh viên nào trong lớp học này
-            ${userRole !== "Sinhvien" ? `
+            ${emptyMessage}
+            ${userRole !== "Sinhvien" && totalStudents === 0 ? `
               <div style="margin-top: 12px;">
                 <button onclick="openInviteStudentModal()" style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">
                   <i class="fas fa-plus"></i> Mời sinh viên tham gia
@@ -572,6 +684,12 @@ var userRole = ViewBag.UserRole as string;
             ` : ''}
           </td>
         </tr>`;
+
+      // Clear search result info when no students
+      const resultInfo = document.getElementById('searchResultInfo');
+      if (resultInfo) {
+        resultInfo.style.display = 'none';
+      }
       return;
     }
 
@@ -598,6 +716,16 @@ var userRole = ViewBag.UserRole as string;
     `).join('');
 
     console.log(`Updated students table with ${students.length} students`);
+
+    // Reapply current search filter after updating table
+    const searchInput = document.getElementById('studentSearchInput');
+    if (searchInput && searchInput.value.trim()) {
+      const currentSearchTerm = searchInput.value.trim();
+      console.log('Reapplying search filter:', currentSearchTerm);
+      setTimeout(() => {
+        searchStudentsInList(currentSearchTerm);
+      }, 100);
+    }
   }
 
   function showLesson(chapterIdx, lessonIdx) {
@@ -663,7 +791,7 @@ var userRole = ViewBag.UserRole as string;
             </form>
             <div class="comments-list" id="commentsList">
                 <div class="comment">
-                    <img src="/images/avatar.jpg" alt="User Avatar" class="comment-avatar">
+                    <img src="@currentUserAvatar" alt="User Avatar" class="comment-avatar">
                     <div class="comment-content">
                         <div class="comment-header">
                             <h4>Nguyễn Văn A</h4>
@@ -698,28 +826,82 @@ var userRole = ViewBag.UserRole as string;
     } else {
       sidebar.style.display = 'none';
     }
-    if (tab === 'notices') {
-      loadNotifications(currentLopHocPhanId);
+    // COMMENTED OUT - NOTICES TAB LOGIC
+    // if (tab === 'notices') {
+    //   loadNotifications(currentLopHocPhanId);
+    // }
+  }
+
+  // Function wrapper để tìm kiếm với loại được chọn
+  function searchStudentWithType(query) {
+    console.log('DEBUG searchStudentWithType called:', query);
+    const searchTypeElement = document.getElementById('searchType');
+
+    if (!searchTypeElement) {
+      console.error('searchType element not found!');
+      return;
     }
+
+    const searchType = searchTypeElement.value;
+    console.log('DEBUG search type:', searchType);
+    searchStudent(query, searchType);
   }
 
   // Popup mời học viên
   function openInviteStudentModal() {
-    document.getElementById('inviteStudentModal').style.display = 'flex';
-    document.getElementById('searchStudentEmail').value = '';
-    document.getElementById('searchResults').innerHTML = '';
+    console.log('DEBUG: Opening invite student modal');
+    const modal = document.getElementById('inviteStudentModal');
+    if (!modal) {
+      console.error('inviteStudentModal not found!');
+      return;
+    }
+
+    modal.style.display = 'flex';
+    modal.style.visibility = 'visible';
+    modal.style.opacity = '1';
+
+    const searchInput = document.getElementById('searchStudentEmail');
+    const searchResults = document.getElementById('searchResults');
+
+    if (!searchInput) {
+      console.error('searchStudentEmail input not found!');
+      return;
+    }
+
+    if (!searchResults) {
+      console.error('searchResults container not found!');
+      return;
+    }
+
+    searchInput.value = '';
+    searchResults.innerHTML = '';
     selectedStudentsForInvite = []; // Reset selected students
     updateSelectedStudentsDisplay();
+
+    console.log('DEBUG: Modal opened successfully');
   }
 
   function closeInviteStudentModal() {
-    document.getElementById('inviteStudentModal').style.display = 'none';
+    const modal = document.getElementById('inviteStudentModal');
+    modal.style.display = 'none';
+    modal.style.visibility = 'hidden';
+    modal.style.opacity = '0';
     selectedStudentsForInvite = []; // Reset selected students when closing
     updateSelectedStudentsDisplay();
   }
 
-  function searchStudent(query) {
+  // Advanced search function with multiple search types
+  function searchStudent(query, searchType = 'all') {
+    console.log('DEBUG searchStudent called:', {
+      query,
+      searchType
+    });
     const resultsContainer = document.getElementById('searchResults');
+
+    if (!resultsContainer) {
+      console.error('searchResults container not found!');
+      return;
+    }
 
     if (!query.trim()) {
       resultsContainer.innerHTML = '';
@@ -729,10 +911,21 @@ var userRole = ViewBag.UserRole as string;
     // Hiển thị loading
     resultsContainer.innerHTML = '<div style="padding:12px; color:#666; text-align:center;"><i class="fas fa-spinner fa-spin"></i> Đang tìm kiếm...</div>';
 
-    // Call API để tìm kiếm sinh viên
-    fetch(`/User/ChiTietHocPhan/SearchStudents?email=${encodeURIComponent(query)}`)
-      .then(response => response.json())
+    // Call API để tìm kiếm sinh viên với nhiều tiêu chí
+    const url = `/User/ChiTietHocPhan/SearchStudents?searchTerm=${encodeURIComponent(query)}&searchType=${searchType}`;
+    console.log('DEBUG API URL:', url);
+
+    fetch(url)
+      .then(response => {
+        console.log('DEBUG API Response status:', response.status);
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+      })
       .then(data => {
+        console.log('DEBUG API Response data:', data);
+
         if (!data.success) {
           resultsContainer.innerHTML = `<div style="padding:12px; color:#e74c3c; text-align:center;">${data.message}</div>`;
           return;
@@ -742,6 +935,8 @@ var userRole = ViewBag.UserRole as string;
           resultsContainer.innerHTML = '<div style="padding:12px; color:#666; text-align:center;">Không tìm thấy sinh viên</div>';
           return;
         }
+
+        console.log('DEBUG Found students:', data.data.length);
 
         resultsContainer.innerHTML = data.data.map(student => {
           const isSelected = selectedStudentsForInvite.some(s => s.idTaiKhoan === student.idTaiKhoan);
@@ -753,7 +948,11 @@ var userRole = ViewBag.UserRole as string;
               <img src="${student.anhDaiDien || '/images/avatar.jpg'}" alt="${student.hoTen}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
               <div style="flex:1;">
                 <div style="font-weight:500; color:#333;">${student.hoTen}</div>
-                <div style="font-size:0.9rem; color:#666;">${student.email}</div>
+                <div style="font-size:0.85rem; color:#666;">${student.email}</div>
+                <div style="font-size:0.8rem; color:#999;">${student.tenDangNhap} | ${student.soDienThoai || 'Chưa có SĐT'}</div>
+              </div>
+              <div style="font-size:0.8rem; color:${student.trangThai === 'HoatDong' ? '#27ae60' : '#e74c3c'};">
+                ${student.trangThai === 'HoatDong' ? 'Hoạt động' : 'Tạm khóa'}
               </div>
             </div>
           `;
@@ -761,8 +960,30 @@ var userRole = ViewBag.UserRole as string;
       })
       .catch(error => {
         console.error('Error searching students:', error);
-        resultsContainer.innerHTML = '<div style="padding:12px; color:#e74c3c; text-align:center;">Lỗi tìm kiếm</div>';
+        resultsContainer.innerHTML = `<div style="padding:12px; color:#e74c3c; text-align:center;">Lỗi tìm kiếm: ${error.message}</div>`;
       });
+  }
+
+  // Function để cập nhật placeholder dựa trên loại tìm kiếm được chọn
+  function updateSearchPlaceholder() {
+    const searchType = document.getElementById('searchType').value;
+    const searchInput = document.getElementById('searchStudentEmail');
+
+    const placeholders = {
+      'all': 'Tìm kiếm sinh viên...',
+      'email': 'Nhập email sinh viên...',
+      'name': 'Nhập họ tên sinh viên...',
+      'username': 'Nhập tên đăng nhập...',
+      'phone': 'Nhập số điện thoại...'
+    };
+
+    searchInput.placeholder = placeholders[searchType] || placeholders['all'];
+
+    // Nếu có query hiện tại, tìm kiếm lại với loại mới
+    const currentQuery = searchInput.value.trim();
+    if (currentQuery) {
+      searchStudentWithType(currentQuery);
+    }
   }
 
   function toggleStudentSelection(idTaiKhoan, email, name, avatar) {
@@ -789,7 +1010,7 @@ var userRole = ViewBag.UserRole as string;
     // Refresh search results to update checkboxes
     const searchQuery = document.getElementById('searchStudentEmail').value;
     if (searchQuery.trim()) {
-      searchStudent(searchQuery);
+      searchStudentWithType(searchQuery);
     }
 
     console.log('Selected students:', selectedStudentsForInvite);
@@ -841,6 +1062,7 @@ var userRole = ViewBag.UserRole as string;
     `).join('');
   }
 
+
   function removeStudentFromSelection(idTaiKhoan) {
     selectedStudentsForInvite = selectedStudentsForInvite.filter(s => s.idTaiKhoan !== idTaiKhoan);
     updateSelectedStudentsDisplay();
@@ -848,7 +1070,7 @@ var userRole = ViewBag.UserRole as string;
     // Refresh search results if there's a query
     const searchQuery = document.getElementById('searchStudentEmail').value;
     if (searchQuery.trim()) {
-      searchStudent(searchQuery);
+      searchStudentWithType(searchQuery);
     }
   }
 
@@ -859,7 +1081,7 @@ var userRole = ViewBag.UserRole as string;
     // Refresh search results if there's a query
     const searchQuery = document.getElementById('searchStudentEmail').value;
     if (searchQuery.trim()) {
-      searchStudent(searchQuery);
+      searchStudentWithType(searchQuery);
     }
   }
 
@@ -937,6 +1159,7 @@ var userRole = ViewBag.UserRole as string;
       });
   }
 
+  /* COMMENTED OUT - NOTICE FUNCTIONS
   function toggleNoticeMenu(btn) {
     // Đóng tất cả menu khác
     document.querySelectorAll('.notice-menu-popup').forEach(p => p.style.display = 'none');
@@ -998,7 +1221,9 @@ var userRole = ViewBag.UserRole as string;
         }
       });
   }
+  END COMMENTED OUT - NOTICE FUNCTIONS */
 
+  /* COMMENTED OUT - EDIT AND DELETE NOTICE FUNCTIONS
   let currentEditNoticeCard = null;
   let currentDeleteNoticeCard = null;
 
@@ -1106,30 +1331,149 @@ var userRole = ViewBag.UserRole as string;
     }
     closeConfirmDeleteNoticeModal();
   }
+  END COMMENTED OUT - EDIT AND DELETE NOTICE FUNCTIONS */
+
+  let currentEditStudentId = null;
 
   function openEditStudentModal(btn) {
     const row = btn.closest('tr');
-    document.getElementById('editStudentUsername').value = row.children[0]?.innerText || '';
-    document.getElementById('editStudentName').value = row.children[1]?.innerText || '';
-    document.getElementById('editStudentRole').value = row.children[2]?.innerText || '';
-    document.getElementById('editStudentEmail').value = row.children[3]?.innerText || '';
-    document.getElementById('editStudentPhone').value = row.children[4]?.innerText || '';
-    document.getElementById('editStudentAvatar').value = '';
-    document.getElementById('editStudentStatus').value = row.querySelector('.status-badge')?.classList.contains('hoatdong') ? 'hoatdong' : 'khonghoatdong';
+    const cells = row.children;
+
+    // Lấy ID sinh viên từ data attribute hoặc parse từ table
+    const username = cells[0]?.innerText?.trim();
+    const email = cells[3]?.innerText?.trim();
+
+    // Tìm sinh viên bằng email để lấy ID
+    if (!email) {
+      alert('Không thể xác định sinh viên để chỉnh sửa');
+      return;
+    }
+
+    // Hiển thị loading trong modal
     document.getElementById('editStudentModal').style.display = 'flex';
     document.getElementById('editStudentModal').style.alignItems = 'center';
     document.getElementById('editStudentModal').style.justifyContent = 'center';
-    document.getElementById('editStudentForm').reset();
+
+    const modalContent = document.querySelector('#editStudentModal .modal-content');
+    modalContent.innerHTML = '<div style="padding:40px; text-align:center;"><i class="fas fa-spinner fa-spin"></i> Đang tải thông tin sinh viên...</div>';
+
+    // Tìm sinh viên theo email để lấy thông tin đầy đủ
+    fetch(`/User/ChiTietHocPhan/SearchStudents?searchTerm=${encodeURIComponent(email)}&searchType=email`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success && data.data && data.data.length > 0) {
+          const student = data.data[0]; // Lấy sinh viên đầu tiên
+          currentEditStudentId = student.idTaiKhoan;
+
+          // Hiển thị form chỉnh sửa
+          modalContent.innerHTML = `
+            <div class="modal-header" style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #e0e6ed; padding-bottom:18px; margin-bottom:24px;">
+              <h2 style="font-size:1.35rem; font-weight:700; color:#22334d; margin:0;">Chỉnh sửa sinh viên</h2>
+              <button onclick="closeEditStudentModal()" style="background:none; border:none; font-size:1.3rem; color:#888; cursor:pointer;"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="editStudentForm" onsubmit="submitEditStudent(event)">
+              <div class="form-group">
+                <label for="editStudentUsername">Tên đăng nhập</label>
+                <input type="text" id="editStudentUsername" value="${student.tenDangNhap || ''}" readonly style="background:#f5f5f5; color:#666;">
+              </div>
+              <div class="form-group">
+                <label for="editStudentName">Họ và tên *</label>
+                <input type="text" id="editStudentName" value="${student.hoTen || ''}" required>
+              </div>
+              <div class="form-group">
+                <label for="editStudentEmail">Email *</label>
+                <input type="email" id="editStudentEmail" value="${student.email || ''}" required>
+              </div>
+              <div class="form-group">
+                <label for="editStudentPhone">Số điện thoại</label>
+                <input type="text" id="editStudentPhone" value="${student.soDienThoai || ''}">
+              </div>
+              <div class="form-group">
+                <label>Trạng thái hiện tại</label>
+                <div style="padding:8px; background:${student.trangThai === 'HoatDong' ? '#d4edda' : '#f8d7da'}; border-radius:4px; color:${student.trangThai === 'HoatDong' ? '#155724' : '#721c24'};">
+                  ${student.trangThai === 'HoatDong' ? 'Hoạt động' : 'Tạm khóa'}
+                </div>
+              </div>
+              <div class="form-actions modal-actions">
+                <button type="button" onclick="closeEditStudentModal()" class="btn-cancel">Hủy</button>
+                <button type="submit" class="btn-primary">Lưu thay đổi</button>
+              </div>
+            </form>
+          `;
+        } else {
+          modalContent.innerHTML = `
+            <div style="padding:40px; text-align:center; color:#e74c3c;">
+              <i class="fas fa-exclamation-triangle" style="font-size:48px; margin-bottom:16px;"></i>
+              <h3>Không tìm thấy sinh viên</h3>
+              <button onclick="closeEditStudentModal()" class="btn-primary" style="margin-top:16px;">Đóng</button>
+            </div>
+          `;
+        }
+      })
+      .catch(error => {
+        console.error('Error loading student info:', error);
+        modalContent.innerHTML = `
+          <div style="padding:40px; text-align:center; color:#e74c3c;">
+            <i class="fas fa-exclamation-triangle" style="font-size:48px; margin-bottom:16px;"></i>
+            <h3>Lỗi tải thông tin sinh viên</h3>
+            <p>${error.message}</p>
+            <button onclick="closeEditStudentModal()" class="btn-primary" style="margin-top:16px;">Đóng</button>
+          </div>
+        `;
+      });
   }
 
   function closeEditStudentModal() {
     document.getElementById('editStudentModal').style.display = 'none';
+    currentEditStudentId = null;
   }
 
   function submitEditStudent(e) {
     e.preventDefault();
-    closeEditStudentModal();
+
+    if (!currentEditStudentId) {
+      alert('Không xác định được sinh viên để cập nhật');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('idTaiKhoan', currentEditStudentId);
+    formData.append('hoTen', document.getElementById('editStudentName').value.trim());
+    formData.append('email', document.getElementById('editStudentEmail').value.trim());
+    formData.append('soDienThoai', document.getElementById('editStudentPhone').value.trim());
+    formData.append('__RequestVerificationToken', document.querySelector('input[name="__RequestVerificationToken"]')?.value || '');
+
+    // Hiển thị loading
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
+
+    fetch('/User/ChiTietHocPhan/UpdateStudent', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('✅ ' + data.message);
+          closeEditStudentModal();
+          refreshStudentsList(); // Refresh danh sách sinh viên
+        } else {
+          alert('❌ ' + data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error updating student:', error);
+        alert('❌ Lỗi cập nhật sinh viên: ' + error.message);
+      })
+      .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+      });
   }
+
+
 
   let currentDeleteStudentRow = null;
 
@@ -1145,24 +1489,87 @@ var userRole = ViewBag.UserRole as string;
   }
 
   function confirmDeleteStudent() {
-    if (currentDeleteStudentRow) {
-      currentDeleteStudentRow.remove();
-      currentDeleteStudentRow = null;
+    if (!currentDeleteStudentRow) {
+      alert('Không xác định được sinh viên để xóa');
+      return;
     }
-    closeConfirmDeleteStudentModal();
+
+    const cells = currentDeleteStudentRow.children;
+    const email = cells[3]?.innerText?.trim();
+
+    if (!email) {
+      alert('Không thể xác định sinh viên để xóa');
+      return;
+    }
+
+    // Tìm sinh viên theo email để lấy ID
+    fetch(`/User/ChiTietHocPhan/SearchStudents?searchTerm=${encodeURIComponent(email)}&searchType=email`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success && data.data && data.data.length > 0) {
+          const student = data.data[0];
+          const studentId = student.idTaiKhoan;
+
+          // Gọi API để xóa sinh viên khỏi lớp
+          const formData = new FormData();
+          formData.append('idLopHocPhan', currentLopHocPhanId);
+          formData.append('idTaiKhoan', studentId);
+          formData.append('__RequestVerificationToken', document.querySelector('input[name="__RequestVerificationToken"]')?.value || '');
+
+          fetch('/User/ChiTietHocPhan/RemoveStudentFromClass', {
+              method: 'POST',
+              body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                alert('✅ ' + data.message);
+                closeConfirmDeleteStudentModal();
+                refreshStudentsList(); // Refresh danh sách sinh viên
+              } else {
+                alert('❌ ' + data.message);
+              }
+            })
+            .catch(error => {
+              console.error('Error removing student:', error);
+              alert('❌ Lỗi xóa sinh viên: ' + error.message);
+            });
+        } else {
+          alert('❌ Không tìm thấy thông tin sinh viên');
+        }
+      })
+      .catch(error => {
+        console.error('Error finding student:', error);
+        alert('❌ Lỗi tìm kiếm sinh viên: ' + error.message);
+      });
   }
 
+  /* COMMENTED OUT - LOAD AND RENDER NOTIFICATIONS FUNCTIONS
   function loadNotifications(idLopHocPhan, page = 1) {
+    console.log('Loading notifications for class:', idLopHocPhan);
     fetch(`/User/ThongBao/GetNotifications?idLopHocPhan=${idLopHocPhan}&page=${page}`)
       .then(res => res.json())
       .then(data => {
+        console.log('Notifications API response:', data);
         if (data.success) {
+          console.log('Notifications data:', data.data);
+          if (data.data && data.data.length > 0) {
+            data.data.forEach((notification, index) => {
+              console.log(`Notification ${index}:`, {
+                id: notification.idThongBao,
+                author: notification.tenGiangVien,
+                avatar: notification.avatar,
+                content: notification.noiDung
+              });
+            });
+          }
           renderNotifications(data.data);
         } else {
           document.getElementById('tab-notices').innerHTML = `<div style="padding:20px;color:red;">${data.message}</div>`;
         }
       })
       .catch(err => {
+        console.error('Error loading notifications:', err);
         document.getElementById('tab-notices').innerHTML = `<div style="padding:20px;color:red;">Lỗi khi tải thông báo</div>`;
       });
   }
@@ -1170,6 +1577,7 @@ var userRole = ViewBag.UserRole as string;
   function renderNotifications(notifications) {
     const userRole = '@userRole';
     const isNotStudent = !userRole || userRole.toLowerCase() !== 'sinhvien';
+    const currentUserAvatar = '@currentUserAvatar';
     const container = document.getElementById('tab-notices');
     if (!notifications || notifications.length === 0) {
       container.innerHTML = `<div style="padding:20px;text-align:center;color:#888;">Chưa có thông báo nào</div>`;
@@ -1178,12 +1586,14 @@ var userRole = ViewBag.UserRole as string;
     container.innerHTML = notifications.map(tb => `
       <div class="notice-card" data-id="${tb.idThongBao}">
         <div class="notice-header">
-          <img src="${tb.avatar ? tb.avatar : '/images/avatar.jpg'}" class="notice-avatar" />
+          <img src="${tb.avatar && tb.avatar.trim() !== '' ? tb.avatar : '/images/avatar.jpg'}" alt="Avatar của ${tb.tenGiangVien || 'Người tạo'}" class="notice-avatar" />
           <div class="notice-info">
-            <div class="notice-author">${tb.tenGiangVien || ''}</div>
+            <div class="notice-author">${tb.tenGiangVien || 'Không xác định'}</div>
             <div class="notice-time">${tb.ngayTao || ''}</div>
           </div>
-          <button class="notice-menu" onclick="toggleNoticeMenu(this)"><i class="fas fa-ellipsis-v"></i></button>
+          <button class="notice-menu" onclick="toggleNoticeMenu(this)" title="Tùy chọn">
+            <i class="fas fa-ellipsis-v" style="display: inline-block !important;"></i>
+          </button>
           ${isNotStudent ? `
           <div class="notice-menu-popup" style="display:none; position:absolute; right:24px; top:48px; background:#fff; box-shadow:0 2px 8px rgba(44,62,80,0.12); border-radius:8px; min-width:160px; z-index:10;">
             <button onclick="addNotice()" class="notice-menu-item">Thêm thông báo</button>
@@ -1196,14 +1606,16 @@ var userRole = ViewBag.UserRole as string;
           <div style="white-space:normal;word-break:break-word;overflow-wrap:break-word;">${tb.noiDung || ''}</div>
         </div>
         <div class="notice-comment">
-          <img src="${tb.avatar ? tb.avatar : '/images/avatar.jpg'}" alt="Avatar" class="comment-avatar">
+          <img src="${currentUserAvatar}" alt="Avatar của bạn" class="comment-avatar">
           <input type="text" placeholder="Thêm nhận xét trong lớp học...">
           <button class="comment-send"><i class="fas fa-paper-plane"></i></button>
         </div>
       </div>
     `).join('');
   }
+  END COMMENTED OUT - LOAD AND RENDER NOTIFICATIONS FUNCTIONS */
 
+  /* COMMENTED OUT - NOTIFICATION HUB
   let notificationConnection = null;
 
   function connectNotificationHub() {
@@ -1220,15 +1632,18 @@ var userRole = ViewBag.UserRole as string;
       notificationConnection.invoke("JoinClass", currentLopHocPhanId.toString());
     });
   }
+  END COMMENTED OUT - NOTIFICATION HUB */
 
   // Khởi tạo CKEditor khi DOM loaded
   window.addEventListener('DOMContentLoaded', function() {
+    /* COMMENTED OUT - CKEDITOR FOR NOTICES
     if (document.getElementById('noticeContent')) {
       CKEDITOR.replace('noticeContent');
     }
     if (document.getElementById('editNoticeContent')) {
       CKEDITOR.replace('editNoticeContent');
     }
+    END COMMENTED OUT - CKEDITOR FOR NOTICES */
   });
 
   // Hàm thêm bình luận
@@ -1263,6 +1678,147 @@ var userRole = ViewBag.UserRole as string;
 
     // TODO: Gửi comment lên server để lưu vào database
     console.log('Comment added:', commentText.value);
+  }
+
+  // Function để tìm kiếm sinh viên trong danh sách hiện tại
+  function searchStudentsInList(searchTerm) {
+    const tableBody = document.getElementById('studentsTableBody');
+    const rows = tableBody.getElementsByTagName('tr');
+
+    console.log('Searching students with term:', searchTerm);
+
+    if (!searchTerm.trim()) {
+      // Hiển thị tất cả sinh viên khi không có từ khóa tìm kiếm
+      for (let i = 0; i < rows.length; i++) {
+        rows[i].style.display = '';
+        // Remove highlights
+        removeHighlights(rows[i]);
+      }
+      updateSearchResultInfo(rows.length, rows.length);
+      return;
+    }
+
+    const searchLower = searchTerm.toLowerCase().trim();
+    let visibleCount = 0;
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      const cells = row.getElementsByTagName('td');
+
+      // Bỏ qua row empty state
+      if (cells.length < 4) {
+        continue;
+      }
+
+      // Remove previous highlights
+      removeHighlights(row);
+
+      // Lấy text từ các cột: tên đăng nhập, họ tên, email
+      const username = cells[0]?.textContent?.toLowerCase() || '';
+      const fullName = cells[1]?.textContent?.toLowerCase() || '';
+      const email = cells[3]?.textContent?.toLowerCase() || '';
+      const phone = cells[4]?.textContent?.toLowerCase() || '';
+
+      // Kiểm tra xem có match với từ khóa tìm kiếm không
+      const isMatch = username.includes(searchLower) ||
+        fullName.includes(searchLower) ||
+        email.includes(searchLower) ||
+        phone.includes(searchLower);
+
+      if (isMatch) {
+        row.style.display = '';
+        visibleCount++;
+        // Highlight text matches
+        highlightSearchTerm(row, searchTerm);
+      } else {
+        row.style.display = 'none';
+      }
+    }
+
+    console.log(`Found ${visibleCount} students matching "${searchTerm}"`);
+    updateSearchResultInfo(visibleCount, rows.length);
+  }
+
+  // Function để highlight text được tìm kiếm
+  function highlightSearchTerm(row, searchTerm) {
+    if (!searchTerm.trim()) return;
+
+    const cells = row.getElementsByTagName('td');
+    const searchLower = searchTerm.toLowerCase();
+
+    // Highlight trong các cột: tên đăng nhập, họ tên, email, số điện thoại
+    [0, 1, 3, 4].forEach(cellIndex => {
+      if (cells[cellIndex]) {
+        const originalText = cells[cellIndex].textContent;
+        const regex = new RegExp(`(${searchTerm})`, 'gi');
+        const highlightedText = originalText.replace(regex, '<mark style="background-color: #fff3cd; padding: 1px 3px; border-radius: 3px;">$1</mark>');
+
+        if (originalText.toLowerCase().includes(searchLower)) {
+          cells[cellIndex].innerHTML = highlightedText;
+        }
+      }
+    });
+  }
+
+  // Function để xóa highlight
+  function removeHighlights(row) {
+    const cells = row.getElementsByTagName('td');
+    [0, 1, 3, 4].forEach(cellIndex => {
+      if (cells[cellIndex]) {
+        const marks = cells[cellIndex].getElementsByTagName('mark');
+        while (marks.length > 0) {
+          const mark = marks[0];
+          mark.outerHTML = mark.innerHTML;
+        }
+      }
+    });
+  }
+
+  // Function để cập nhật thông tin kết quả tìm kiếm
+  function updateSearchResultInfo(visibleCount, totalCount) {
+    // Tìm hoặc tạo element hiển thị thông tin kết quả
+    let resultInfo = document.getElementById('searchResultInfo');
+    if (!resultInfo) {
+      resultInfo = document.createElement('div');
+      resultInfo.id = 'searchResultInfo';
+      resultInfo.style.cssText = 'padding: 8px 16px; background: #f8f9fa; border-radius: 6px; margin-bottom: 12px; font-size: 0.9rem; color: #666; border-left: 3px solid #007bff;';
+
+      const tableContainer = document.querySelector('.student-table');
+      tableContainer.insertBefore(resultInfo, tableContainer.firstChild);
+    }
+
+    const searchInput = document.getElementById('studentSearchInput');
+    const searchTerm = searchInput ? searchInput.value.trim() : '';
+
+    if (searchTerm) {
+      if (visibleCount === 0) {
+        resultInfo.innerHTML = `<i class="fas fa-search"></i> Không tìm thấy sinh viên nào với từ khóa "<strong>${searchTerm}</strong>" trong trang ${currentStudentPage}`;
+        resultInfo.style.borderLeftColor = '#dc3545';
+        resultInfo.style.color = '#dc3545';
+      } else {
+        resultInfo.innerHTML = `<i class="fas fa-search"></i> Tìm thấy <strong>${visibleCount}</strong> sinh viên với từ khóa "<strong>${searchTerm}</strong>" trong trang ${currentStudentPage} (tổng số ${totalStudents} sinh viên)`;
+        resultInfo.style.borderLeftColor = '#28a745';
+        resultInfo.style.color = '#28a745';
+      }
+      resultInfo.style.display = 'block';
+    } else {
+      resultInfo.style.display = 'none';
+    }
+  }
+
+  // Function để clear search
+  function clearStudentSearch() {
+    const searchInput = document.getElementById('studentSearchInput');
+
+    if (searchInput) {
+      searchInput.value = '';
+      searchStudentsInList('');
+    }
+
+    // Focus lại vào search input
+    if (searchInput) {
+      searchInput.focus();
+    }
   }
 </script>
 
