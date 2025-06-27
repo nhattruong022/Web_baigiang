@@ -20,7 +20,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     <div class="course-tabs">
       <button class="course-tab-btn active" onclick="showTab('lessons', this)"><i class="fas fa-book"></i> Bài giảng</button>
       <button class="course-tab-btn" onclick="showTab('students', this)"><i class="fas fa-users"></i> Danh sách sinh viên</button>
-      <!-- <button class="course-tab-btn" onclick="showTab('notices', this)"><i class="fas fa-bell"></i> Thông báo</button> -->
+      <button class="course-tab-btn" onclick="showTab('notices', this)"><i class="fas fa-bell"></i> Thông báo</button>
     </div>
   </div>
   <div class="main-box" style="background: #fff; border-radius: 18px; box-shadow: 0 4px 24px rgba(52,152,219,0.10), 0 1.5px 8px rgba(0,0,0,0.08); border: 1.5px solid #bfc9d1; overflow: visible; margin: 16px 24px 0 24px; display: flex; flex-direction: row; min-height: 650px;">
@@ -271,90 +271,13 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         </div>
         }
       </section>
-      <!-- COMMENTED OUT - NOTICE TAB SECTION
       <section class="main-lesson-content course-tab-content" id="tab-notices" style="display:none;">
-        <div class="notice-card">
-          <div class="notice-header">
-            <img src="/images/avatar.jpg" alt="Avatar" class="notice-avatar">
-            <div class="notice-info">
-              <div class="notice-author">ND Duy</div>
-              <div class="notice-time">3 thg 6</div>
-            </div>
-            <button class="notice-menu" onclick="toggleNoticeMenu(this)" title="Tùy chọn">
-              <i class="fas fa-ellipsis-v" style="display: inline-block;"></i>
-            </button>
-            @if (userRole == null || userRole.ToLower() != "sinhvien")
-            {
-            <div class="notice-menu-popup" style="display:none;">
-              <button onclick="addNotice()" class="notice-menu-item">Thêm thông báo</button>
-              <button onclick="editNotice(this)" class="notice-menu-item">Sửa thông báo</button>
-              <button onclick="deleteNotice(this)" class="notice-menu-item" style="color:#e74c3c;">Xóa thông báo</button>
-            </div>
-            }
-          </div>
-          <div class="notice-body">
-            <div style="white-space:normal;word-break:break-word;overflow-wrap:break-word;">
-              Các nhóm lưu ý,<br>
-              Không share tài liệu đồ án nhóm mình cho các nhóm khác (các nhóm không do Thầy hướng dẫn). Thầy đã cố gắng tạo các tài liệu cho khác nhau giữa các nhóm -> chia sẻ cho các bạn sẽ tạo ra những báo cáo giống nhau. Các em public ra -> sẽ bị các giáo viên, sinh viên khác biết Thầy tạo tài liệu cho các nhóm hướng dẫn -> fail chắc!<br>
-              T.Duy<br>
-              P/s: Vì có nhiều mail của các bạn không có trong nhóm -> yêu cầu quyền truy cập cái file Thầy gửi -> chứng tỏ trong nhóm có bạn share link.
-            </div>
-          </div>
-          <div class="notice-comment">
-            <img src="@currentUserAvatar" alt="Avatar" class="comment-avatar">
-            <input type="text" placeholder="Thêm nhận xét trong lớp học...">
-            <button class="comment-send"><i class="fas fa-paper-plane"></i></button>
-          </div>
-        </div>
-        <div class="notice-card">
-          <div class="notice-header">
-            <img src="/images/avatar.jpg" alt="Avatar" class="notice-avatar">
-            <div class="notice-info">
-              <div class="notice-author">Nguyễn Văn B</div>
-              <div class="notice-time">1 thg 6</div>
-            </div>
-            <button class="notice-menu" onclick="toggleNoticeMenu(this)" title="Tùy chọn">
-              <i class="fas fa-ellipsis-v" style="display: inline-block !important;"></i>
-            </button>
-          </div>
-          <div class="notice-body">
-            <div style="white-space:normal;word-break:break-word;overflow-wrap:break-word;">
-              Lịch học tuần này chuyển sang phòng B203.<br>
-              Các bạn chú ý đến đúng giờ!
-            </div>
-          </div>
-          <div class="notice-comment">
-            <img src="@currentUserAvatar" alt="Avatar" class="comment-avatar">
-            <input type="text" placeholder="Thêm nhận xét trong lớp học...">
-            <button class="comment-send"><i class="fas fa-paper-plane"></i></button>
-          </div>
-        </div>
-        <div class="notice-card">
-          <div class="notice-header">
-            <img src="/images/avatar.jpg" alt="Avatar" class="notice-avatar">
-            <div class="notice-info">
-              <div class="notice-author">Admin</div>
-              <div class="notice-time">28 thg 5</div>
-            </div>
-            <button class="notice-menu" onclick="toggleNoticeMenu(this)" title="Tùy chọn">
-              <i class="fas fa-ellipsis-v" style="display: inline-block !important;"></i>
-            </button>
-          </div>
-          <div class="notice-body">
-            <div style="white-space:normal;word-break:break-word;overflow-wrap:break-word;">
-              Nhớ nộp bài tập chương 1 trước 10/06.<br>
-              Nếu có thắc mắc liên hệ trợ giảng.
-            </div>
-          </div>
-          <div class="notice-comment">
-            <img src="@currentUserAvatar" alt="Avatar" class="comment-avatar">
-            <input type="text" placeholder="Thêm nhận xét trong lớp học...">
-            <button class="comment-send"><i class="fas fa-paper-plane"></i></button>
-          </div>
+        <!-- Nội dung thông báo sẽ được load từ API -->
+        <div style="padding: 40px; text-align: center; color: #666;">
+          <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
+          Đang tải thông báo...
         </div>
       </section>
-      END COMMENTED OUT - NOTICE TAB SECTION -->
-      <!-- COMMENTED OUT - ADD NOTICE MODAL
       @if (userRole == null || userRole.ToLower() != "sinhvien")
       {
       <div class="modal" id="addNoticeModal" style="display:none; position:fixed; z-index:1001; left:0; top:0; width:100vw; height:100vh; background:rgba(44,62,80,0.18); justify-content:center; align-items:center;">
@@ -380,8 +303,6 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         </div>
       </div>
       }
-      END COMMENTED OUT - ADD NOTICE MODAL -->
-      <!-- COMMENTED OUT - EDIT NOTICE MODAL
       @if (userRole == null || userRole.ToLower() != "sinhvien")
       {
       <div class="modal" id="editNoticeModal" style="display:none; position:fixed; z-index:1001; left:0; top:0; width:100vw; height:100vh; background:rgba(44,62,80,0.18); justify-content:center; align-items:center;">
@@ -407,8 +328,6 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         </div>
       </div>
       }
-      END COMMENTED OUT - EDIT NOTICE MODAL -->
-      <!-- COMMENTED OUT - DELETE NOTICE MODAL
       @if (userRole == null || userRole.ToLower() != "sinhvien")
       {
       <div class="modal" id="confirmDeleteNoticeModal" style="display:none; position:fixed; z-index:1002; left:0; top:0; width:100vw; height:100vh; background:rgba(44,62,80,0.18); justify-content:center; align-items:center;">
@@ -421,7 +340,6 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         </div>
       </div>
       }
-      END COMMENTED OUT - DELETE NOTICE MODAL -->
     </div>
   </div>
 </div>
@@ -435,6 +353,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
   let currentStudentPage = @(ViewBag.CurrentPage ?? 1);
   let totalStudentPages = @(ViewBag.TotalPages ?? 1);
   let totalStudents = @(ViewBag.TotalStudents ?? 0);
+  let hasUnloadedNotifications = false; // Theo dõi có thông báo mới chưa được load
 
   console.log('DEBUG: currentLopHocPhanId =', currentLopHocPhanId);
   console.log('DEBUG: Pagination info - current page:', currentStudentPage, 'total pages:', totalStudentPages, 'total students:', totalStudents);
@@ -557,6 +476,13 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         refreshStudentsList();
       }
     }, 30000);
+
+    // Clear notifications content ban đầu
+    clearNotificationsContent();
+
+    // Khởi tạo SignalR connection để nhận thông báo real-time
+    console.log('DEBUG: Initializing SignalR connection');
+    connectNotificationHub();
   };
 
   // Function để refresh danh sách sinh viên
@@ -729,13 +655,22 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
   }
 
   function showLesson(chapterIdx, lessonIdx) {
+    console.log('DEBUG showLesson called for chapter:', chapterIdx, 'lesson:', lessonIdx);
+
+    // Kiểm tra xem tab lessons có đang active không
+    const lessonsTab = document.getElementById('tab-lessons');
+    if (!lessonsTab) {
+      console.error('tab-lessons element not found');
+      return;
+    }
+
     // Kiểm tra dữ liệu hợp lệ từ chuongsData - hỗ trợ cả PascalCase và camelCase
     const chuong = chuongsData && chuongsData[chapterIdx] ? chuongsData[chapterIdx] : null;
     const baisList = chuong ? (chuong.bais || chuong.Bais) : null;
     const bai = baisList && baisList[lessonIdx] ? baisList[lessonIdx] : null;
 
     if (!chuong || !baisList || baisList.length === 0 || !bai) {
-      document.getElementById('tab-lessons').innerHTML = `
+      lessonsTab.innerHTML = `
         <div style="padding: 40px; text-align: center; color: #666;">
           <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 16px; display: block; color: #ffa500;"></i>
           <h3 style="margin-bottom: 8px; color: #666;">Không tìm thấy bài học</h3>
@@ -764,7 +699,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     const noiDungText = bai.noiDungText || bai.NoiDungText || '';
     const ngayTao = (bai.ngayTao || bai.NgayTao) ? new Date(bai.ngayTao || bai.NgayTao).toLocaleDateString('vi-VN') : 'Chưa cập nhật';
 
-    document.getElementById('tab-lessons').innerHTML = `
+    lessonsTab.innerHTML = `
         <div class="lesson-header">
             <h1>${tieuDeBai}</h1>
             <div class="lesson-meta">Chương: ${tenChuong} | Ngày tạo: ${ngayTao}</div>
@@ -815,21 +750,60 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
 
   // Tab switching for course detail
   function showTab(tab, btn) {
+    console.log('DEBUG: showTab called with tab =', tab);
+
+    // Remove active class from all tab buttons
     document.querySelectorAll('.course-tab-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    document.querySelectorAll('.course-tab-content').forEach(c => c.style.display = 'none');
-    document.getElementById('tab-' + tab).style.display = 'block';
-    // Ẩn/hiện menu chương & bài
-    var sidebar = document.querySelector('.sidebar-chapters');
-    if (tab === 'lessons') {
-      sidebar.style.display = 'block';
+
+    // Hide all tab contents first
+    document.querySelectorAll('.course-tab-content').forEach(c => {
+      c.style.display = 'none';
+    });
+
+    // Show the selected tab
+    const targetTab = document.getElementById('tab-' + tab);
+    if (targetTab) {
+      targetTab.style.display = 'block';
+      console.log('DEBUG: Displayed tab-' + tab);
     } else {
-      sidebar.style.display = 'none';
+      console.error('DEBUG: Tab not found: tab-' + tab);
     }
-    // COMMENTED OUT - NOTICES TAB LOGIC
-    // if (tab === 'notices') {
-    //   loadNotifications(currentLopHocPhanId);
-    // }
+
+    // Handle sidebar visibility
+    var sidebar = document.querySelector('.sidebar-chapters');
+    if (sidebar) {
+      if (tab === 'lessons') {
+        sidebar.style.display = 'block';
+      } else {
+        sidebar.style.display = 'none';
+      }
+    }
+
+    // Load specific content for each tab
+    switch (tab) {
+      case 'lessons':
+        console.log('DEBUG: Loading lessons content');
+        // Lessons content is already loaded on page load
+        clearNotificationsContent(); // Clear notifications when switching away
+        break;
+      case 'students':
+        console.log('DEBUG: Loading students content');
+        // Students content is already loaded, but we can refresh if needed
+        clearNotificationsContent(); // Clear notifications when switching away
+        break;
+      case 'notices':
+        console.log('DEBUG: Loading notifications content');
+        // Load notifications ngay lập tức khi switch sang tab
+        setTimeout(() => {
+          loadNotifications(currentLopHocPhanId);
+        }, 50); // Delay nhỏ để đảm bảo DOM đã update
+        break;
+      default:
+        console.log('DEBUG: Unknown tab:', tab);
+        clearNotificationsContent(); // Clear notifications when switching away
+        break;
+    }
   }
 
   // Function wrapper để tìm kiếm với loại được chọn
@@ -1159,7 +1133,6 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
       });
   }
 
-  /* COMMENTED OUT - NOTICE FUNCTIONS
   function toggleNoticeMenu(btn) {
     // Đóng tất cả menu khác
     document.querySelectorAll('.notice-menu-popup').forEach(p => p.style.display = 'none');
@@ -1221,9 +1194,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         }
       });
   }
-  END COMMENTED OUT - NOTICE FUNCTIONS */
 
-  /* COMMENTED OUT - EDIT AND DELETE NOTICE FUNCTIONS
   let currentEditNoticeCard = null;
   let currentDeleteNoticeCard = null;
 
@@ -1331,7 +1302,6 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     }
     closeConfirmDeleteNoticeModal();
   }
-  END COMMENTED OUT - EDIT AND DELETE NOTICE FUNCTIONS */
 
   let currentEditStudentId = null;
 
@@ -1544,13 +1514,41 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
       });
   }
 
-  /* COMMENTED OUT - LOAD AND RENDER NOTIFICATIONS FUNCTIONS
   function loadNotifications(idLopHocPhan, page = 1) {
     console.log('Loading notifications for class:', idLopHocPhan);
+
+    // Chỉ load khi đang ở tab thông báo
+    if (!isCurrentTabNotices()) {
+      console.log('Not on notifications tab, skipping load');
+      hasUnloadedNotifications = true;
+      return;
+    }
+
+    const noticesContainer = document.getElementById('tab-notices');
+    if (!noticesContainer) {
+      console.error('tab-notices container not found!');
+      return;
+    }
+
+    // Hiển thị loading spinner
+    noticesContainer.innerHTML = `
+      <div style="padding: 40px; text-align: center; color: #666;">
+        <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
+        Đang tải thông báo...
+      </div>
+    `;
+
     fetch(`/User/ThongBao/GetNotifications?idLopHocPhan=${idLopHocPhan}&page=${page}`)
       .then(res => res.json())
       .then(data => {
         console.log('Notifications API response:', data);
+
+        // Kiểm tra lại xem có còn ở tab thông báo không
+        if (!isCurrentTabNotices()) {
+          console.log('Tab switched during API call, not rendering');
+          return;
+        }
+
         if (data.success) {
           console.log('Notifications data:', data.data);
           if (data.data && data.data.length > 0) {
@@ -1564,13 +1562,44 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
             });
           }
           renderNotifications(data.data);
+          // Reset flag sau khi load thành công
+          hasUnloadedNotifications = false;
         } else {
-          document.getElementById('tab-notices').innerHTML = `<div style="padding:20px;color:red;">${data.message}</div>`;
+          noticesContainer.innerHTML = `
+            <div style="padding: 40px; text-align: center; color: #e74c3c;">
+              <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
+              <h3 style="margin-bottom: 8px;">Lỗi tải thông báo</h3>
+              <p style="margin: 0;">${data.message || 'Không thể tải thông báo'}</p>
+              <div style="margin-top: 16px;">
+                <button onclick="loadNotifications(${idLopHocPhan})" style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">
+                  <i class="fas fa-redo"></i> Thử lại
+                </button>
+              </div>
+            </div>
+          `;
         }
       })
       .catch(err => {
         console.error('Error loading notifications:', err);
-        document.getElementById('tab-notices').innerHTML = `<div style="padding:20px;color:red;">Lỗi khi tải thông báo</div>`;
+
+        // Kiểm tra lại xem có còn ở tab thông báo không
+        if (!isCurrentTabNotices()) {
+          console.log('Tab switched during API call, not showing error');
+          return;
+        }
+
+        noticesContainer.innerHTML = `
+          <div style="padding: 40px; text-align: center; color: #e74c3c;">
+            <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
+            <h3 style="margin-bottom: 8px;">Lỗi kết nối</h3>
+            <p style="margin: 0;">Không thể kết nối đến server để tải thông báo</p>
+            <div style="margin-top: 16px;">
+              <button onclick="loadNotifications(${idLopHocPhan})" style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">
+                <i class="fas fa-redo"></i> Thử lại
+              </button>
+            </div>
+          </div>
+        `;
       });
   }
 
@@ -1579,11 +1608,50 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     const isNotStudent = !userRole || userRole.toLowerCase() !== 'sinhvien';
     const currentUserAvatar = '@currentUserAvatar';
     const container = document.getElementById('tab-notices');
-    if (!notifications || notifications.length === 0) {
-      container.innerHTML = `<div style="padding:20px;text-align:center;color:#888;">Chưa có thông báo nào</div>`;
+
+    if (!container) {
+      console.error('tab-notices container not found!');
       return;
     }
-    container.innerHTML = notifications.map(tb => `
+
+    // Đảm bảo chỉ render khi đang ở tab thông báo
+    if (!isCurrentTabNotices()) {
+      console.log('Not on notifications tab, skipping render');
+      return;
+    }
+
+    if (!notifications || notifications.length === 0) {
+      container.innerHTML = `
+        <div style="padding: 40px; text-align: center; color: #666;">
+          <i class="fas fa-bell" style="font-size: 48px; margin-bottom: 16px; display: block; color: #ddd;"></i>
+          <h3 style="margin-bottom: 8px; color: #666;">Chưa có thông báo nào</h3>
+          <p style="margin: 0;">Lớp học này chưa có thông báo nào được tạo.</p>
+          ${isNotStudent ? `
+            <div style="margin-top: 20px;">
+              <button onclick="addNotice()" style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer;">
+                <i class="fas fa-plus"></i> Thêm thông báo đầu tiên
+              </button>
+            </div>
+          ` : ''}
+        </div>
+      `;
+      return;
+    }
+
+    // Header với nút thêm thông báo
+    let headerHtml = '';
+    if (isNotStudent) {
+      headerHtml = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 0 20px;">
+          <h3 style="margin: 0; color: #333;">Thông báo lớp học</h3>
+          <button onclick="addNotice()" style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">
+            <i class="fas fa-plus"></i> Thêm thông báo
+          </button>
+        </div>
+      `;
+    }
+
+    const notificationsHtml = notifications.map(tb => `
       <div class="notice-card" data-id="${tb.idThongBao}">
         <div class="notice-header">
           <img src="${tb.avatar && tb.avatar.trim() !== '' ? tb.avatar : '/images/avatar.jpg'}" alt="Avatar của ${tb.tenGiangVien || 'Người tạo'}" class="notice-avatar" />
@@ -1591,12 +1659,11 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
             <div class="notice-author">${tb.tenGiangVien || 'Không xác định'}</div>
             <div class="notice-time">${tb.ngayTao || ''}</div>
           </div>
+          ${isNotStudent ? `
           <button class="notice-menu" onclick="toggleNoticeMenu(this)" title="Tùy chọn">
             <i class="fas fa-ellipsis-v" style="display: inline-block !important;"></i>
           </button>
-          ${isNotStudent ? `
           <div class="notice-menu-popup" style="display:none; position:absolute; right:24px; top:48px; background:#fff; box-shadow:0 2px 8px rgba(44,62,80,0.12); border-radius:8px; min-width:160px; z-index:10;">
-            <button onclick="addNotice()" class="notice-menu-item">Thêm thông báo</button>
             <button onclick="editNotice(this)" class="notice-menu-item">Sửa thông báo</button>
             <button onclick="deleteNotice(this)" class="notice-menu-item" style="color:#e74c3c;">Xóa thông báo</button>
           </div>
@@ -1612,10 +1679,10 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         </div>
       </div>
     `).join('');
-  }
-  END COMMENTED OUT - LOAD AND RENDER NOTIFICATIONS FUNCTIONS */
 
-  /* COMMENTED OUT - NOTIFICATION HUB
+    container.innerHTML = headerHtml + notificationsHtml;
+  }
+
   let notificationConnection = null;
 
   function connectNotificationHub() {
@@ -1623,27 +1690,67 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
       .withUrl("/notificationHub")
       .build();
     notificationConnection.on("NewNotification", function(notification) {
-      loadNotifications(currentLopHocPhanId);
+      console.log('DEBUG: SignalR NewNotification received');
+      // Chỉ load thông báo nếu đang ở tab thông báo
+      if (isCurrentTabNotices()) {
+        console.log('DEBUG: Currently on notices tab, loading notifications');
+        loadNotifications(currentLopHocPhanId);
+      } else {
+        console.log('DEBUG: Not on notices tab, marking as pending');
+        hasUnloadedNotifications = true;
+      }
     });
     notificationConnection.on("UpdateNotification", function(notification) {
-      loadNotifications(currentLopHocPhanId);
+      console.log('DEBUG: SignalR UpdateNotification received');
+      // Chỉ load thông báo nếu đang ở tab thông báo
+      if (isCurrentTabNotices()) {
+        console.log('DEBUG: Currently on notices tab, loading notifications');
+        loadNotifications(currentLopHocPhanId);
+      } else {
+        console.log('DEBUG: Not on notices tab, marking as pending');
+        hasUnloadedNotifications = true;
+      }
     });
     notificationConnection.start().then(function() {
       notificationConnection.invoke("JoinClass", currentLopHocPhanId.toString());
     });
   }
-  END COMMENTED OUT - NOTIFICATION HUB */
+
+  // Function để kiểm tra xem có đang ở tab thông báo không
+  function isCurrentTabNotices() {
+    const noticesTab = document.getElementById('tab-notices');
+    const isVisible = noticesTab && noticesTab.style.display !== 'none' && noticesTab.style.display !== '';
+    console.log('DEBUG isCurrentTabNotices:', {
+      element: !!noticesTab,
+      display: noticesTab ? noticesTab.style.display : 'null',
+      isVisible: isVisible
+    });
+    return isVisible;
+  }
+
+  // Function để clear nội dung tab notifications khi chuyển sang tab khác
+  function clearNotificationsContent() {
+    const noticesContainer = document.getElementById('tab-notices');
+    if (noticesContainer) {
+      noticesContainer.innerHTML = `
+        <div style="padding: 40px; text-align: center; color: #666;">
+          <i class="fas fa-bell" style="font-size: 48px; margin-bottom: 16px; display: block; color: #ddd;"></i>
+          <h3 style="margin-bottom: 8px; color: #666;">Thông báo</h3>
+          <p style="margin: 0;">Vui lòng chọn tab "Thông báo" để xem thông báo của lớp học.</p>
+        </div>
+      `;
+      console.log('DEBUG: Cleared notifications content');
+    }
+  }
 
   // Khởi tạo CKEditor khi DOM loaded
   window.addEventListener('DOMContentLoaded', function() {
-    /* COMMENTED OUT - CKEDITOR FOR NOTICES
     if (document.getElementById('noticeContent')) {
       CKEDITOR.replace('noticeContent');
     }
     if (document.getElementById('editNoticeContent')) {
       CKEDITOR.replace('editNoticeContent');
     }
-    END COMMENTED OUT - CKEDITOR FOR NOTICES */
   });
 
   // Hàm thêm bình luận
