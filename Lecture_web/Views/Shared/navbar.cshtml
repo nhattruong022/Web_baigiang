@@ -28,13 +28,14 @@ var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
 
     @await Component.InvokeAsync("KhoaListMenu")
-    @await Component.InvokeAsync("BaiGiangListMenu")
+
     }
     @if (userRole == "Giangvien")
     {
     <li><a href="/User/QuanLyBaiGiang/Index"><i class="fas fa-book"></i><span>Quản lý bài giảng</span></a></li>
-    <li><a href="/User/QuanLyChuong/Index"><i class="fas fa-book"></i><span>Quản lý chương</span></a></li>
-    <li><a href="/User/QuanLyBai/Index"><i class="fas fa-book"></i><span>Quản lý bài</span></a></li>
+            @await Component.InvokeAsync("BaiGiangListMenu")
+@*     <li><a href="/User/QuanLyChuong/Index"><i class="fas fa-book"></i><span>Quản lý chương</span></a></li>
+    <li><a href="/User/QuanLyBai/Index"><i class="fas fa-book"></i><span>Quản lý bài</span></a></li> *@
     }
   </ul>
 </nav>

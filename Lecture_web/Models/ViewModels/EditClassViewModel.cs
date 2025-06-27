@@ -13,7 +13,7 @@ namespace Lecture_web.Models.ViewModels
         public string? MoTa { get; set; }
 
         [Required(ErrorMessage = "Chưa chọn học phần")]
-        public int HocPhanId { get; set; }
+        public int? HocPhanId { get; set; }
         public int? BaiGiangId { get; set; }
     }
 

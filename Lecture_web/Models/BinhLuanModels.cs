@@ -13,8 +13,13 @@ namespace Lecture_web.Models
         public DateTime NgayTao { get; set; }
         public int IdTaiKhoan { get; set; }
         public int? IdBinhLuanCha { get; set; }
-        public int IdBai { get; set; }
+        public int? IdBai { get; set; }
         public int? IdThongBao { get; set; }
+
+        public int IdLopHocPhan { get; set; }
+
+        [ForeignKey(nameof(IdLopHocPhan))]
+        public LopHocPhanModels LopHocPhan { get; set; }
 
         [ForeignKey(nameof(IdTaiKhoan))]
         public TaiKhoanModels TaiKhoan { get; set; }
