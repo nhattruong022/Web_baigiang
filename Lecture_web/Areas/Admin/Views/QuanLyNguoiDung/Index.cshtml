@@ -114,7 +114,12 @@
         </div>
         <div class="form-group">
           <label>Mật khẩu</label>
-          <input type="password" name="MatKhau" id="MatKhau">
+          <div style="position: relative; display: inline-block; width: 100%;">
+            <input type="password" name="MatKhau" id="MatKhau" style="width: 100%; padding-right: 40px;">
+            <button type="button" onclick="togglePassword('MatKhau')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #666; cursor: pointer; padding: 5px;" title="Hiện/Ẩn mật khẩu">
+              <i class="fas fa-eye" id="toggleIcon-MatKhau"></i>
+            </button>
+          </div>
           <span class="field-error" id="error-matKhau" style="color:#c0392b;font-size:0.95em"></span>
         </div>
         <div class="form-group">
@@ -170,7 +175,12 @@
         </div>
         <div class="form-group">
           <label>Mật khẩu</label>
-          <input type="password" name="MatKhau">
+          <div style="position: relative; display: inline-block; width: 100%;">
+            <input type="password" name="MatKhau" id="editMatKhau" style="width: 100%; padding-right: 40px;">
+            <button type="button" onclick="togglePassword('editMatKhau')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #666; cursor: pointer; padding: 5px;" title="Hiện/Ẩn mật khẩu">
+              <i class="fas fa-eye" id="toggleIcon-editMatKhau"></i>
+            </button>
+          </div>
         </div>
         <div class="form-group">
           <label>Họ và tên</label>
@@ -531,6 +541,20 @@
       var msg = newStatus === 'HoatDong' ? 'Bạn có chắc muốn chuyển trạng thái sang Hoạt động?' : 'Bạn có chắc muốn chuyển trạng thái sang Không hoạt động?';
       if (confirm(msg)) {
         updateStatusUser(id, newStatus);
+      }
+    }
+
+    // Function để toggle hiện/ẩn password
+    function togglePassword(inputId) {
+      const passwordInput = document.getElementById(inputId);
+      const toggleIcon = document.getElementById('toggleIcon-' + inputId);
+
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleIcon.className = 'fas fa-eye-slash';
+      } else {
+        passwordInput.type = 'password';
+        toggleIcon.className = 'fas fa-eye';
       }
     }
   </script>
