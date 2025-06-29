@@ -2340,17 +2340,53 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         continue;
       }
 
-      // Chỉ hiển thị action buttons cho Giảng viên
-      const actionButtons = userRole === 'Giangvien' ? `
-        <span class="comment-actions" style="display: flex; gap: 4px; margin-left: 8px;">
-          <a title="Sửa" class="edit" onclick='editComment(${commentId})' style="padding: 4px 6px; color: #007bff; background: rgba(0,123,255,0.1); border-radius: 4px; text-decoration: none; font-size: 0.8rem; transition: all 0.2s;" onmouseover="this.style.background='rgba(0,123,255,0.2)'" onmouseout="this.style.background='rgba(0,123,255,0.1)'">
+      // Logic action buttons theo yêu cầu
+      let actionButtons = '';
+      const commentUserId = c.idTaiKhoan || c.IdTaiKhoan;
+      const isOwnComment = commentUserId === currentUserId;
+      const commentAuthorRole = c.role || c.Role || c.vaiTro || c.VaiTro;
+
+      if (userRole === 'Giangvien') {
+        // Giảng viên: có thể reply comment của sinh viên, edit comment của mình, xóa tất cả comment
+        let buttons = [];
+
+        // Reply chỉ cho comment của sinh viên (KHÔNG reply comment của giảng viên)
+        if (commentAuthorRole !== 'Giangvien') {
+          buttons.push(`<a title="Phản hồi" class="reply" onclick='replyComment(${commentId})' style="padding: 4px 6px; color: #28a745; background: rgba(40,167,69,0.1); border-radius: 4px; text-decoration: none; font-size: 0.8rem; transition: all 0.2s;" onmouseover="this.style.background='rgba(40,167,69,0.2)'" onmouseout="this.style.background='rgba(40,167,69,0.1)'">
+            <i class="fas fa-reply"></i>
+          </a>`);
+        }
+
+        // Edit chỉ comment của mình
+        if (isOwnComment) {
+          buttons.push(`<a title="Sửa" class="edit" onclick='editComment(${commentId})' style="padding: 4px 6px; color: #007bff; background: rgba(0,123,255,0.1); border-radius: 4px; text-decoration: none; font-size: 0.8rem; transition: all 0.2s;" onmouseover="this.style.background='rgba(0,123,255,0.2)'" onmouseout="this.style.background='rgba(0,123,255,0.1)'">
             <i class="fas fa-pen"></i>
-          </a>
-          <a title="Xóa" class="delete" onclick='confirmDeleteComment(${commentId})' style="padding: 4px 6px; color: #dc3545; background: rgba(220,53,69,0.1); border-radius: 4px; text-decoration: none; font-size: 0.8rem; transition: all 0.2s;" onmouseover="this.style.background='rgba(220,53,69,0.2)'" onmouseout="this.style.background='rgba(220,53,69,0.1)'">
+          </a>`);
+        }
+
+        // Xóa tất cả comment (của mình và sinh viên)
+        buttons.push(`<a title="Xóa" class="delete" onclick='confirmDeleteComment(${commentId})' style="padding: 4px 6px; color: #dc3545; background: rgba(220,53,69,0.1); border-radius: 4px; text-decoration: none; font-size: 0.8rem; transition: all 0.2s;" onmouseover="this.style.background='rgba(220,53,69,0.2)'" onmouseout="this.style.background='rgba(220,53,69,0.1)'">
+          <i class="fas fa-trash"></i>
+        </a>`);
+
+        actionButtons = `<span class="comment-actions" style="display: flex; gap: 4px; margin-left: 8px;">${buttons.join('')}</span>`;
+
+      } else if (userRole === 'Sinhvien') {
+        // Sinh viên: chỉ edit/xóa comment của mình, KHÔNG có nút reply
+        if (isOwnComment) {
+          let buttons = [];
+
+          buttons.push(`<a title="Sửa" class="edit" onclick='editComment(${commentId})' style="padding: 4px 6px; color: #007bff; background: rgba(0,123,255,0.1); border-radius: 4px; text-decoration: none; font-size: 0.8rem; transition: all 0.2s;" onmouseover="this.style.background='rgba(0,123,255,0.2)'" onmouseout="this.style.background='rgba(0,123,255,0.1)'">
+            <i class="fas fa-pen"></i>
+          </a>`);
+
+          buttons.push(`<a title="Xóa" class="delete" onclick='confirmDeleteComment(${commentId})' style="padding: 4px 6px; color: #dc3545; background: rgba(220,53,69,0.1); border-radius: 4px; text-decoration: none; font-size: 0.8rem; transition: all 0.2s;" onmouseover="this.style.background='rgba(220,53,69,0.2)'" onmouseout="this.style.background='rgba(220,53,69,0.1)'">
             <i class="fas fa-trash"></i>
-          </a>
-        </span>
-      ` : '';
+          </a>`);
+
+          actionButtons = `<span class="comment-actions" style="display: flex; gap: 4px; margin-left: 8px;">${buttons.join('')}</span>`;
+        }
+      }
 
       // Tạo avatar hoặc chữ cái đầu
       const avatarHtml = avatar ?
@@ -2489,15 +2525,39 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
   }
 
   function replyComment(parentId) {
+    // Chỉ giảng viên mới có thể reply
+    if (userRole !== 'Giangvien') {
+      alert('Chỉ giảng viên mới có thể phản hồi bình luận');
+      return;
+    }
+
     const parentDiv = document.getElementById('comment-' + parentId);
     if (!parentDiv || parentDiv.querySelector('.reply-form')) return;
+
     const form = document.createElement('form');
     form.className = 'reply-form';
-    form.innerHTML = `<textarea placeholder='Phản hồi...' required></textarea><button type='submit'>Gửi</button>`;
+    form.style.cssText = 'margin-top: 12px; padding: 12px; background: #f8f9fa; border-radius: 6px; border: 1px solid #e9ecef;';
+    form.innerHTML = `
+      <textarea placeholder='Viết phản hồi...' required style='width: 100%; min-height: 60px; border: 1px solid #ced4da; border-radius: 4px; padding: 8px; font-family: inherit; resize: vertical; box-sizing: border-box;'></textarea>
+      <div style='margin-top: 8px; display: flex; gap: 8px; justify-content: flex-end;'>
+        <button type='button' onclick='this.closest(".reply-form").remove()' style='padding: 6px 12px; border: 1px solid #6c757d; background: white; color: #6c757d; border-radius: 4px; cursor: pointer;'>Hủy</button>
+        <button type='submit' style='padding: 6px 12px; border: none; background: #007bff; color: white; border-radius: 4px; cursor: pointer;'>Gửi phản hồi</button>
+      </div>
+    `;
+
     form.onsubmit = function(e) {
       e.preventDefault();
       const noiDung = form.querySelector('textarea').value.trim();
-      if (!noiDung) return;
+      if (!noiDung) {
+        alert('Vui lòng nhập nội dung phản hồi');
+        return;
+      }
+
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalText = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Đang gửi...';
+
       fetch('/User/ChiTietHocPhan/AddComment', {
         method: 'POST',
         headers: {
@@ -2506,7 +2566,8 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         body: JSON.stringify({
           NoiDung: noiDung,
           IdLopHocPhan: currentLopHocPhanId,
-          IdBinhLuanCha: parentId
+          IdBinhLuanCha: parentId,
+          IdBai: currentBaiId
         })
       }).then(res => res.json()).then(data => {
         if (data.success) {
@@ -2515,25 +2576,71 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
           if (currentBaiId) {
             loadCommentsForLesson(currentBaiId, true); // Maintain scroll position
           }
+        } else {
+          alert('Lỗi gửi phản hồi: ' + (data.message || 'Vui lòng thử lại'));
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
         }
+      }).catch(error => {
+        console.error('Error replying comment:', error);
+        alert('Lỗi kết nối. Vui lòng thử lại');
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
       });
     };
-    parentDiv.querySelector('.replies').prepend(form);
+
+    // Thêm form reply vào sau comment-main, không phải vào replies
+    const commentMain = parentDiv.querySelector('.comment-main');
+    if (commentMain) {
+      commentMain.appendChild(form);
+      // Focus vào textarea
+      setTimeout(() => {
+        form.querySelector('textarea').focus();
+      }, 100);
+    }
   }
 
   function editComment(commentId) {
     const commentDiv = document.getElementById('comment-' + commentId);
     if (!commentDiv || commentDiv.querySelector('.edit-form')) return;
-    const cmt = allComments.find(c => c.id === commentId);
+
+    const cmt = allComments.find(c => (c.id || c.Id) === commentId);
+    if (!cmt) {
+      alert('Không tìm thấy bình luận để chỉnh sửa');
+      return;
+    }
+
+    // Kiểm tra quyền edit: chỉ chủ bình luận mới được sửa
+    const commentUserId = cmt.idTaiKhoan || cmt.IdTaiKhoan;
+    if (commentUserId !== currentUserId) {
+      alert('Bạn chỉ có thể chỉnh sửa bình luận của mình');
+      return;
+    }
+
     const form = document.createElement('form');
     form.className = 'edit-form';
-    form.innerHTML = `<textarea required>${cmt.noiDung}</textarea>
-      <button type='submit'>Lưu</button>
-      <button type='button' class='cancel-edit' onclick='this.closest(".edit-form").remove()'>✖</button>`;
+    form.style.cssText = 'margin-top: 12px; padding: 12px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px;';
+    form.innerHTML = `
+      <textarea required style='width: 100%; min-height: 80px; border: 1px solid #ced4da; border-radius: 4px; padding: 8px; font-family: inherit; resize: vertical; box-sizing: border-box;'>${cmt.noiDung || cmt.NoiDung || ''}</textarea>
+      <div style='margin-top: 8px; display: flex; gap: 8px; justify-content: flex-end;'>
+        <button type='button' onclick='this.closest(".edit-form").remove()' style='padding: 6px 12px; border: 1px solid #6c757d; background: white; color: #6c757d; border-radius: 4px; cursor: pointer;'>Hủy</button>
+        <button type='submit' style='padding: 6px 12px; border: none; background: #28a745; color: white; border-radius: 4px; cursor: pointer;'>Lưu thay đổi</button>
+      </div>
+    `;
+
     form.onsubmit = function(e) {
       e.preventDefault();
       const noiDung = form.querySelector('textarea').value.trim();
-      if (!noiDung) return;
+      if (!noiDung) {
+        alert('Nội dung bình luận không được để trống');
+        return;
+      }
+
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalText = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Đang lưu...';
+
       fetch('/User/ChiTietHocPhan/EditComment', {
         method: 'POST',
         headers: {
@@ -2550,10 +2657,29 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
           if (currentBaiId) {
             loadCommentsForLesson(currentBaiId, true); // Maintain scroll position
           }
+        } else {
+          alert('Lỗi cập nhật bình luận: ' + (data.message || 'Vui lòng thử lại'));
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
         }
+      }).catch(error => {
+        console.error('Error editing comment:', error);
+        alert('Lỗi kết nối. Vui lòng thử lại');
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
       });
     };
-    commentDiv.querySelector('.comment-body').after(form);
+
+    const commentBody = commentDiv.querySelector('.comment-body');
+    if (commentBody) {
+      commentBody.after(form);
+      // Focus vào textarea và select all text
+      setTimeout(() => {
+        const textarea = form.querySelector('textarea');
+        textarea.focus();
+        textarea.select();
+      }, 100);
+    }
   }
 
   function deleteComment(commentId) {
