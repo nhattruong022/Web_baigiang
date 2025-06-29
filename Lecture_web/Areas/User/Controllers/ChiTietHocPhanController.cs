@@ -1014,6 +1014,13 @@ namespace Lecture_web.Areas.User.Controllers
                     return Json(new { success = false, message = "Thiếu dữ liệu bình luận hoặc lớp học phần." });
                 }
 
+                // Kiểm tra quyền reply: chỉ giảng viên mới được phản hồi bình luận
+                if (model.IdBinhLuanCha.HasValue && model.IdBinhLuanCha > 0 && userRole != "Giangvien")
+                {
+                    Console.WriteLine($"DEBUG: Student {userId} attempted to reply comment {model.IdBinhLuanCha}");
+                    return Json(new { success = false, message = "Chỉ giảng viên mới có thể phản hồi bình luận." });
+                }
+
                 _context.BinhLuan.Add(model);
                 await _context.SaveChangesAsync();
                 
