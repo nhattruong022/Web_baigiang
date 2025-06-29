@@ -13,7 +13,10 @@
           </div>
           <div class="profile-info">
             <div class="profile-avatar">
-              <img src="@(!string.IsNullOrEmpty(Model.AnhDaiDien) ? Model.AnhDaiDien : " /images/avatar.jpg")?v=@DateTime.Now.Ticks" alt="Profile Avatar" onerror="handleProfileAvatarError(this)" id="mainProfileAvatar">
+              @if (!string.IsNullOrEmpty(Model.AnhDaiDien))
+              {
+              <img src="@Model.AnhDaiDien?v=@DateTime.Now.Ticks" alt="Profile Avatar" id="mainProfileAvatar">
+              }
               <button class="btn-secondary" onclick="openChangeAvatarModal()">
                 <i class="fas fa-camera"></i>
                 Đổi ảnh

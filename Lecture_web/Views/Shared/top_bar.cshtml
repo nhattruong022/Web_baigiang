@@ -3,7 +3,8 @@
 @{
 
 var userName = "Guest";
-var avatar = "/images/avatar.jpg";
+string avatar = null;
+bool hasAvatar = false; // Thêm flag để track có avatar hay không
 
 Console.WriteLine("=== TOP BAR DEBUG START ===");
 Console.WriteLine($"User authenticated: {User.Identity.IsAuthenticated}");
@@ -56,37 +57,41 @@ userName = !string.IsNullOrEmpty(currentUser.HoTen) ?
 currentUser.HoTen :
 (currentUser.TenDangNhap ?? "User");
 
-// Xử lý avatar path
-if (!string.IsNullOrEmpty(currentUser.AnhDaiDien) &&
-!string.IsNullOrWhiteSpace(currentUser.AnhDaiDien))
+// Xử lý avatar path - CHỈ set khi thực sự có avatar trong DB
+if (!string.IsNullOrEmpty(currentUser.AnhDaiDien) && !string.IsNullOrWhiteSpace(currentUser.AnhDaiDien))
 {
 string cleanPath = currentUser.AnhDaiDien.Trim();
 if (cleanPath.StartsWith("/"))
 {
 avatar = cleanPath;
+hasAvatar = true;
 }
 else if (cleanPath.StartsWith("images/"))
 {
 avatar = "/" + cleanPath;
+hasAvatar = true;
 }
 else
 {
 avatar = "/images/" + cleanPath;
+hasAvatar = true;
 }
 
 Console.WriteLine($"Final avatar path: {avatar}");
 }
 else
 {
-avatar = "/images/avatar.jpg";
-Console.WriteLine("No avatar in database, using default");
+avatar = null;
+hasAvatar = false; // Rõ ràng không có avatar
+Console.WriteLine("No avatar found in database");
 }
 }
 else
 {
 Console.WriteLine($"ERROR: User with ID {userId} not found in database!");
 userName = $"User#{userId}";
-avatar = "/images/avatar.jpg";
+avatar = null;
+hasAvatar = false;
 }
 Console.WriteLine($"======================");
 }
@@ -102,19 +107,22 @@ catch (Exception ex)
 Console.WriteLine($"ERROR in top bar: {ex.Message}");
 Console.WriteLine($"Stack trace: {ex.StackTrace}");
 userName = "Error";
-avatar = "/images/avatar.jpg";
+avatar = null;
+hasAvatar = false;
 }
 }
 else
 {
 Console.WriteLine("User not authenticated");
 userName = "Guest";
+hasAvatar = false;
 }
 
 // Final validation
 if (string.IsNullOrEmpty(avatar) || string.IsNullOrWhiteSpace(avatar))
 {
-avatar = "/images/avatar.jpg";
+avatar = null;
+hasAvatar = false;
 }
 
 if (string.IsNullOrEmpty(userName) || string.IsNullOrWhiteSpace(userName))
@@ -125,6 +133,7 @@ userName = "User";
 Console.WriteLine($"=== FINAL VALUES ===");
 Console.WriteLine($"UserName: '{userName}'");
 Console.WriteLine($"Avatar: '{avatar}'");
+Console.WriteLine($"HasAvatar: {hasAvatar}");
 Console.WriteLine($"=== TOP BAR DEBUG END ===");
 }
 <header class="top-bar">
@@ -135,7 +144,15 @@ Console.WriteLine($"=== TOP BAR DEBUG END ===");
       <span class="notification-badge">5</span>
     </div>
     <div class="user-profile" onclick="toggleUserMenu()">
-      <img src="@avatar?v=@DateTime.Now.Ticks&r=@Random.Shared.Next()" alt="Avatar @userName" class="avatar" id="topBarAvatar" onerror="handleAvatarError(this)" style="border-radius: 50%; object-fit: cover;">
+      @if (hasAvatar && !string.IsNullOrEmpty(avatar))
+      {
+      <img src="@avatar?v=@DateTime.Now.Ticks&r=@Random.Shared.Next()" alt="Avatar @userName" class="avatar" id="topBarAvatar" onerror="handleAvatarError(this)" style="border-radius: 50%; object-fit: cover;" data-has-avatar="true">
+      }
+      else
+      {
+      <!-- Không hiện avatar nào cả khi không có trong DB -->
+      <div class="no-avatar" id="noAvatarPlaceholder" style="display: none;" data-has-avatar="false"></div>
+      }
       <span class="user-name" id="topBarUserName">@userName</span>
       <i class="fas fa-chevron-down"></i>
       <div class="user-dropdown">
@@ -158,11 +175,21 @@ Console.WriteLine($"=== TOP BAR DEBUG END ===");
 </header>
 
 <script>
-  // Function xử lý lỗi avatar
+  // Function xử lý lỗi avatar - CHỈ khi thực sự có avatar trong DB
   function handleAvatarError(img) {
-    console.log('Avatar error, falling back to default');
-    img.src = '/images/avatar.jpg?v=' + new Date().getTime();
-    img.onerror = null; // Prevent infinite loop
+    console.log('Avatar error occurred');
+
+    // Kiểm tra xem có avatar trong DB hay không
+    var hasAvatarInDb = img.getAttribute('data-has-avatar') === 'true';
+
+    if (hasAvatarInDb) {
+      console.log('Avatar exists in DB but failed to load, falling back to default');
+      img.src = '/images/avatar.jpg?v=' + new Date().getTime();
+      img.onerror = null; // Prevent infinite loop
+    } else {
+      console.log('No avatar in DB, hiding avatar completely');
+      img.style.display = 'none';
+    }
   }
 
   // Force refresh user info and avatar
@@ -183,35 +210,48 @@ Console.WriteLine($"=== TOP BAR DEBUG END ===");
 
     var topBarAvatar = document.getElementById('topBarAvatar');
     var topBarUserName = document.getElementById('topBarUserName');
+    var noAvatarPlaceholder = document.getElementById('noAvatarPlaceholder');
 
     // Debug current values from server
     console.log('Server rendered - User name:', topBarUserName?.textContent);
-    console.log('Server rendered - Avatar src:', topBarAvatar?.src);
+    console.log('Server rendered - Avatar element exists:', !!topBarAvatar);
+    console.log('Server rendered - No avatar placeholder exists:', !!noAvatarPlaceholder);
 
-    // LUÔN LUÔN ƯU TIÊN THÔNG TIN TỪ SERVER
-    // Chỉ áp dụng localStorage cho avatar nếu nó được set từ profile upload
-    var updatedAvatarFromProfile = localStorage.getItem('profileAvatarUpdated');
-    var updatedUrl = localStorage.getItem('updatedAvatarUrl');
+    // Chỉ xử lý avatar nếu thực sự có element avatar (tức là có trong DB)
+    if (topBarAvatar) {
+      console.log('Avatar element found, checking if has avatar in DB');
+      var hasAvatarInDb = topBarAvatar.getAttribute('data-has-avatar') === 'true';
+      console.log('Has avatar in DB:', hasAvatarInDb);
 
-    if (updatedAvatarFromProfile === 'true' && updatedUrl && topBarAvatar) {
-      console.log('Applying avatar from recent profile update:', updatedUrl);
-      topBarAvatar.src = updatedUrl + '?t=' + new Date().getTime();
+      if (hasAvatarInDb) {
+        // LUÔN LUÔN ƯU TIÊN THÔNG TIN TỪ SERVER
+        // Chỉ áp dụng localStorage cho avatar nếu nó được set từ profile upload
+        var updatedAvatarFromProfile = localStorage.getItem('profileAvatarUpdated');
+        var updatedUrl = localStorage.getItem('updatedAvatarUrl');
 
-      // Clear flag sau khi áp dụng
-      localStorage.removeItem('profileAvatarUpdated');
-    }
+        if (updatedAvatarFromProfile === 'true' && updatedUrl) {
+          console.log('Applying avatar from recent profile update:', updatedUrl);
+          topBarAvatar.src = updatedUrl + '?t=' + new Date().getTime();
 
-    // Kiểm tra avatar có load được không
-    if (topBarAvatar && topBarAvatar.src) {
-      var img = new Image();
-      img.onload = function() {
-        console.log('Avatar loaded successfully');
-      };
-      img.onerror = function() {
-        console.log('Avatar failed to load, using default');
-        handleAvatarError(topBarAvatar);
-      };
-      img.src = topBarAvatar.src;
+          // Clear flag sau khi áp dụng
+          localStorage.removeItem('profileAvatarUpdated');
+        }
+
+        // Kiểm tra avatar có load được không
+        if (topBarAvatar.src) {
+          var img = new Image();
+          img.onload = function() {
+            console.log('Avatar loaded successfully');
+          };
+          img.onerror = function() {
+            console.log('Avatar failed to load, using default');
+            handleAvatarError(topBarAvatar);
+          };
+          img.src = topBarAvatar.src;
+        }
+      }
+    } else {
+      console.log('No avatar element found - user has no avatar in database');
     }
 
     console.log('=== TOP BAR JAVASCRIPT END ===');
@@ -220,17 +260,47 @@ Console.WriteLine($"=== TOP BAR DEBUG END ===");
   // Lắng nghe sự kiện cập nhật avatar từ profile
   window.addEventListener('avatarUpdated', function(event) {
     console.log('Avatar update event received:', event.detail);
-    var topBarAvatar = document.getElementById('topBarAvatar');
-    if (topBarAvatar && event.detail.newAvatarUrl) {
-      var timestamp = new Date().getTime();
-      topBarAvatar.src = event.detail.newAvatarUrl + '?t=' + timestamp;
-      console.log('Top bar avatar updated via event:', event.detail.newAvatarUrl);
 
-      // Set flag để indicate avatar đã được update từ profile
-      localStorage.setItem('profileAvatarUpdated', 'true');
+    if (event.detail.newAvatarUrl) {
+      // Nếu có avatar mới, cần tạo element avatar
+      var topBarAvatar = document.getElementById('topBarAvatar');
+      var userProfile = document.querySelector('.user-profile');
+      var userName = document.querySelector('.user-name');
 
-      // Refresh page để cập nhật thông tin user từ server
-      setTimeout(refreshUserInfo, 1000);
+      if (!topBarAvatar && userProfile && userName) {
+        // Tạo avatar element mới
+        topBarAvatar = document.createElement('img');
+        topBarAvatar.id = 'topBarAvatar';
+        topBarAvatar.className = 'avatar';
+        topBarAvatar.style.borderRadius = '50%';
+        topBarAvatar.style.objectFit = 'cover';
+        topBarAvatar.setAttribute('data-has-avatar', 'true');
+        topBarAvatar.onerror = function() {
+          handleAvatarError(this);
+        };
+
+        // Insert before username
+        userProfile.insertBefore(topBarAvatar, userName);
+
+        // Hide no-avatar placeholder if exists
+        var noAvatarPlaceholder = document.getElementById('noAvatarPlaceholder');
+        if (noAvatarPlaceholder) {
+          noAvatarPlaceholder.style.display = 'none';
+        }
+      }
+
+      if (topBarAvatar) {
+        var timestamp = new Date().getTime();
+        topBarAvatar.src = event.detail.newAvatarUrl + '?t=' + timestamp;
+        topBarAvatar.setAttribute('data-has-avatar', 'true');
+        console.log('Top bar avatar updated via event:', event.detail.newAvatarUrl);
+
+        // Set flag để indicate avatar đã được update từ profile
+        localStorage.setItem('profileAvatarUpdated', 'true');
+
+        // Refresh page để cập nhật thông tin user từ server
+        setTimeout(refreshUserInfo, 1000);
+      }
     }
   });
 
@@ -238,7 +308,7 @@ Console.WriteLine($"=== TOP BAR DEBUG END ===");
   window.addEventListener('storage', function(event) {
     if (event.key === 'updatedAvatarUrl' && event.newValue) {
       var topBarAvatar = document.getElementById('topBarAvatar');
-      if (topBarAvatar) {
+      if (topBarAvatar && topBarAvatar.getAttribute('data-has-avatar') === 'true') {
         topBarAvatar.src = event.newValue + '?t=' + new Date().getTime();
         console.log('Avatar updated from storage:', event.newValue);
 

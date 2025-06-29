@@ -10,6 +10,7 @@ namespace Lecture_web.Models
         public int IdKhoa { get; set; }
 
         [Required(ErrorMessage = "Tên khoa không được để trống")]
+        [MaxLength(100, ErrorMessage = "Tên khoa tối đa 100 ký tự")]
         public string TenKhoa { get; set; }
 
         [Required(ErrorMessage = "Mô tả không được để trống")]

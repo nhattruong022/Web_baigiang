@@ -36,5 +36,21 @@ namespace Lecture_web.Hubs
             }
             await base.OnDisconnectedAsync(exception);
         }
+
+        // --- COMMENT REALTIME ---
+        public async Task SendComment(string classId, object comment)
+        {
+            await Clients.Group($"Class_{classId}").SendAsync("ReceiveComment", comment);
+        }
+
+        public async Task UpdateComment(string classId, object comment)
+        {
+            await Clients.Group($"Class_{classId}").SendAsync("UpdateComment", comment);
+        }
+
+        public async Task DeleteComment(string classId, int commentId)
+        {
+            await Clients.Group($"Class_{classId}").SendAsync("DeleteComment", commentId);
+        }
     }
 } 
