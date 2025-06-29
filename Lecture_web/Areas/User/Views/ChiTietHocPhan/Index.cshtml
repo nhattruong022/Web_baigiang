@@ -1460,53 +1460,111 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
 
   function editNotice(btn) {
     currentEditNoticeCard = btn.closest('.notice-card');
-    // Lấy HTML nội dung cũ
-    const htmlContent = currentEditNoticeCard.querySelector('.notice-body div')?.innerHTML || '';
+
+    console.log('=== DEBUG EDIT NOTICE ===');
+    console.log('Notice card:', currentEditNoticeCard);
+
+    // Lấy notice-body div
+    const noticeBodyDiv = currentEditNoticeCard.querySelector('.notice-body div');
+    console.log('Notice body div:', noticeBodyDiv);
+
+    if (!noticeBodyDiv) {
+      console.error('Cannot find notice-body div');
+      alert('Không tìm thấy nội dung thông báo để chỉnh sửa');
+      return;
+    }
+
+    // Debug: Xem tất cả dữ liệu có sẵn
+    const innerHTML = noticeBodyDiv.innerHTML;
+    const textContent = noticeBodyDiv.textContent || noticeBodyDiv.innerText || '';
+    const outerHTML = noticeBodyDiv.outerHTML;
+
+    console.log('innerHTML:', innerHTML);
+    console.log('textContent:', textContent);
+    console.log('outerHTML:', outerHTML);
+
     let title = '';
-    let content = htmlContent;
+    let content = '';
 
-    // Tạo thẻ tạm để parse HTML
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = htmlContent;
+    // Thử nhiều cách parse khác nhau
+    console.log('=== TRYING DIFFERENT PARSING METHODS ===');
 
-    // Lấy dòng đầu tiên (có thể là <p> hoặc text)
-    let firstText = '';
-    if (tempDiv.firstChild && tempDiv.firstChild.nodeType === 1 && tempDiv.firstChild.tagName === 'P') {
-      firstText = tempDiv.firstChild.innerText.trim();
-      title = firstText;
-      // Xóa dòng tiêu đề khỏi nội dung
-      tempDiv.removeChild(tempDiv.firstChild);
-      content = tempDiv.innerHTML.trim();
-    } else if (tempDiv.firstChild && tempDiv.firstChild.nodeType === 3) {
-      // Nếu là text node
-      firstText = tempDiv.firstChild.textContent.trim();
-      title = firstText;
-      tempDiv.removeChild(tempDiv.firstChild);
-      content = tempDiv.innerHTML.trim();
+    // Method 1: Parse markdown format **Title**\n\nContent
+    const markdownMatch = textContent.match(/^\*\*(.+?)\*\*\s*\n\n([\s\S]*)/);
+    if (markdownMatch) {
+      title = markdownMatch[1].trim();
+      content = markdownMatch[2].trim();
+      console.log('Method 1 - Markdown parse SUCCESS:', {
+        title,
+        content
+      });
     } else {
-      // Nếu không có <p>, lấy toàn bộ text đầu tiên
-      const match = htmlContent.match(/^(.+?)<br\s*\/?>([\\s\\S]*)/i);
-      if (match) {
-        title = match[1].trim();
-        content = match[2].trim();
+      console.log('Method 1 - Markdown parse FAILED');
+
+      // Method 2: Parse by line breaks  
+      const lines = textContent.split('\n').filter(line => line.trim());
+      if (lines.length >= 1) {
+        title = lines[0].replace(/^\*\*|\*\*$/g, '').trim();
+        content = lines.slice(1).join('\n').trim();
+        console.log('Method 2 - Line-based parse:', {
+          title,
+          content,
+          lines
+        });
+      } else {
+        console.log('Method 2 - Line-based parse FAILED');
+
+        // Method 3: Use entire text as title if no structure found
+        if (textContent.trim()) {
+          title = textContent.trim();
+          content = '';
+          console.log('Method 3 - Entire text as title:', {
+            title,
+            content
+          });
+        } else {
+          console.log('Method 3 - No text content found');
+          alert('Không tìm thấy nội dung thông báo');
+          return;
+        }
       }
     }
 
-    document.getElementById('editNoticeTitle').value = title;
+    console.log('=== FINAL RESULT ===');
+    console.log('Title to set:', title);
+    console.log('Content to set:', content);
+
+    // Close menu popups and show modal first
+    document.querySelectorAll('.notice-menu-popup').forEach(p => p.style.display = 'none');
+    document.getElementById('editNoticeModal').style.display = 'flex';
+    document.getElementById('editNoticeModal').style.alignItems = 'center';
+    document.getElementById('editNoticeModal').style.justifyContent = 'center';
+
+    // IMPORTANT: Reset form BEFORE setting values, not after!
+    document.getElementById('editNoticeForm').reset();
+
+    // Set title AFTER reset
+    const titleInput = document.getElementById('editNoticeTitle');
+    if (titleInput) {
+      titleInput.value = title;
+      console.log('Title input value set to:', titleInput.value);
+    } else {
+      console.error('editNoticeTitle input not found');
+    }
+
     // Destroy CKEditor instance nếu đã tồn tại
     if (window.CKEDITOR && CKEDITOR.instances.editNoticeContent) {
       CKEDITOR.instances.editNoticeContent.destroy(true);
     }
+
     // Khởi tạo lại CKEditor cho textarea
     CKEDITOR.replace('editNoticeContent');
     CKEDITOR.instances.editNoticeContent.on('instanceReady', function() {
       CKEDITOR.instances.editNoticeContent.setData(content);
+      console.log('CKEditor content set to:', content);
     });
-    document.getElementById('editNoticeModal').style.display = 'flex';
-    document.getElementById('editNoticeModal').style.alignItems = 'center';
-    document.getElementById('editNoticeModal').style.justifyContent = 'center';
-    document.getElementById('editNoticeForm').reset();
-    document.querySelectorAll('.notice-menu-popup').forEach(p => p.style.display = 'none');
+
+    console.log('=== EDIT MODAL OPENED ===');
   }
 
   function closeEditNoticeModal() {
