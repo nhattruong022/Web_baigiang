@@ -145,7 +145,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         </div>
         <!-- Phân trang -->
         <div id="studentsPagination">
-          @Html.Partial("_PaginationPartial")
+          <partial name="_PaginationPartial" />
         </div>
 
         <!-- Popup Mời học viên -->
@@ -346,72 +346,309 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
 
 <style>
   .comments-section {
-    max-height: 420px;
-    overflow-y: auto;
-    background: #f8f9fa;
-    border-radius: 8px;
-    padding: 16px;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e1e5e9;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     margin-top: 24px;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .comments-section h2 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    margin: 0;
+    padding: 16px 20px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .comment-form {
+    padding: 20px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px 8px 0 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .comments-list {
+    max-height: none;
+    overflow: visible;
+    padding: 20px;
+    background: #fff;
+    display: block !important;
+    visibility: visible !important;
+    min-height: 150px;
+    border-radius: 0 0 8px 8px;
+    border: 1px solid #e9ecef;
+    border-top: none;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Ensure no hidden overflow on main containers */
+  .lesson-content,
+  .course-tab-content,
+  #tab-lessons,
+  .lesson-body {
+    overflow: visible !important;
+    min-height: auto !important;
+  }
+
+
+
+  /* Custom scrollbar cho comments list */
+  .comments-list::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .comments-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+
+  .comments-list::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 4px;
+  }
+
+  .comments-list::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
   }
 
   .comment {
-    background: #fff;
-    border-radius: 6px;
-    margin-bottom: 12px;
-    padding: 12px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-    position: relative;
+    /* Inline styles are now applied in JavaScript for better flexibility */
   }
 
-  .comment .comment-actions {
-    margin-top: 6px;
+  .comment:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #007bff;
+    transform: translateY(-1px);
   }
 
-  .comment .comment-actions button {
-    background: none;
-    border: none;
+  .comment:last-child {
+    margin-bottom: 0;
+  }
+
+  .comment-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e9ecef;
+    float: left;
+    margin-right: 12px;
+  }
+
+  .comment-avatar-empty {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    float: left;
+    margin-right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .comment-main {
+    margin-left: 48px;
+  }
+
+  .comment-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .comment-author {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 0.95rem;
+  }
+
+  .comment-role {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  .comment-time {
+    color: #6c757d;
+    font-size: 0.85rem;
+  }
+
+  .comment-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 8px;
+  }
+
+  .comment-actions a {
+    color: #6c757d;
+    text-decoration: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+  }
+
+  .comment-actions a:hover {
+    background: #f8f9fa;
     color: #007bff;
-    margin-right: 8px;
-    cursor: pointer;
-    font-size: 0.95em;
   }
 
-  .comment .comment-actions button.delete {
+  .comment-actions a.delete:hover {
     color: #e74c3c;
+    background: #ffebee;
+  }
+
+  .comment-body {
+    color: #495057;
+    line-height: 1.5;
+    word-wrap: break-word;
+    font-size: 0.95rem;
   }
 
   .comment .replies {
-    margin-left: 32px;
-    margin-top: 8px;
+    margin-left: 0;
+    margin-top: 12px;
+    padding-left: 16px;
+    border-left: 2px solid #e9ecef;
   }
 
   .comment-form textarea {
     width: 100%;
-    min-height: 60px;
-    border-radius: 6px;
-    border: 1px solid #ddd;
-    padding: 8px;
-    margin-bottom: 8px;
+    min-height: 90px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    padding: 16px;
+    margin-bottom: 16px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    resize: vertical;
+    transition: border-color 0.2s ease;
+    box-sizing: border-box;
+  }
+
+  .comment-form textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
   }
 
   .comment-form button {
-    background: #007bff;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: #fff;
     border: none;
     border-radius: 6px;
-    padding: 8px 16px;
+    padding: 10px 20px;
     cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .comment-form button:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   }
 
   .show-more-btn {
     display: block;
-    margin: 0 auto;
-    background: #eee;
-    border: none;
+    margin: 16px auto;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
     border-radius: 6px;
-    padding: 6px 16px;
+    padding: 8px 16px;
     color: #007bff;
     cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+  }
+
+  .show-more-btn:hover {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+  }
+
+  .show-more-btn:not(:hover) {
+    transition: all 0.2s ease;
+  }
+
+  .show-more-btn.primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: transparent;
+  }
+
+  .show-more-btn.primary:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Responsive cho mobile */
+  @@media (max-width: 768px) {
+    .comments-list {
+      max-height: none !important;
+      padding: 16px;
+      overflow: visible !important;
+    }
+
+    .comment {
+      padding: 12px;
+      margin-bottom: 12px;
+      flex-direction: row !important;
+      gap: 8px;
+      overflow: visible !important;
+    }
+
+    .comment-header {
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 4px;
+    }
+
+    .comment-actions {
+      margin-left: auto;
+      margin-top: 0;
+    }
+
+    .comment-form {
+      padding: 16px;
+    }
+
+    .comment-form textarea {
+      min-height: 70px;
+      padding: 12px;
+    }
+
+    .comments-section {
+      margin-top: 20px !important;
+      padding: 16px !important;
+      overflow: visible !important;
+    }
+
+    .comment-role {
+      font-size: 0.7rem;
+      padding: 1px 6px;
+    }
   }
 </style>
 
@@ -426,33 +663,8 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
   let totalStudents = @(ViewBag.TotalStudents ?? 0);
   let hasUnloadedNotifications = false; // Theo dõi có thông báo mới chưa được load
 
-  console.log('DEBUG: currentLopHocPhanId =', currentLopHocPhanId);
-  console.log('DEBUG: Pagination info - current page:', currentStudentPage, 'total pages:', totalStudentPages, 'total students:', totalStudents);
-
   // Dữ liệu lessons từ ViewBag.Chuongs
   const chuongsData = @Html.Raw(Json.Serialize(ViewBag.Chuongs ?? new List < object > ()));
-
-  console.log('DEBUG: chuongsData =', chuongsData);
-  console.log('DEBUG: chuongsData type =', typeof chuongsData);
-  console.log('DEBUG: chuongsData length =', chuongsData ? chuongsData.length : 'null');
-
-  // Debug từng chương
-  if (chuongsData && chuongsData.length > 0) {
-    chuongsData.forEach((chuong, idx) => {
-      console.log(`DEBUG: Chuong ${idx}:`, chuong);
-      console.log(`DEBUG: Chuong ${idx} - tenChuong:`, chuong.tenChuong || chuong.TenChuong);
-      console.log(`DEBUG: Chuong ${idx} - bais:`, chuong.bais || chuong.Bais);
-      const baisList = chuong.bais || chuong.Bais;
-      if (baisList && baisList.length > 0) {
-        baisList.forEach((bai, baiIdx) => {
-          console.log(`DEBUG: Bai ${baiIdx}:`, bai);
-          console.log(`DEBUG: Bai ${baiIdx} - tieuDeBai:`, bai.tieuDeBai || bai.TieuDeBai);
-        });
-      }
-    });
-  } else {
-    console.log('DEBUG: No chuongsData found or empty array');
-  }
 
   // Function để render sidebar từ dữ liệu
   function renderChaptersList() {
@@ -507,14 +719,12 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     });
 
     chaptersList.innerHTML = html;
-    console.log('DEBUG: Rendered chapters list with', chuongsData.length, 'chapters');
   }
 
   // Hiển thị bài đầu tiên mặc định
   window.onload = function() {
     // Update currentLopHocPhanId from ViewBag
     currentLopHocPhanId = @(ViewBag.IdLopHocPhan ?? 1);
-    console.log('DEBUG: currentLopHocPhanId updated to =', currentLopHocPhanId);
 
     // Render sidebar trước
     renderChaptersList();
@@ -552,7 +762,6 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     clearNotificationsContent();
 
     // Khởi tạo SignalR connection để nhận thông báo real-time
-    console.log('DEBUG: Initializing SignalR connection');
     connectNotificationHub();
   };
 
@@ -724,7 +933,6 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
   }
 
   function showLesson(chapterIdx, lessonIdx) {
-    console.log('DEBUG showLesson called for chapter:', chapterIdx, 'lesson:', lessonIdx);
 
     // Kiểm tra xem tab lessons có đang active không
     const lessonsTab = document.getElementById('tab-lessons');
@@ -759,14 +967,14 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
       }
     }
 
-    console.log('DEBUG showLesson - chuong:', chuong);
-    console.log('DEBUG showLesson - bai:', bai);
-
     // Lấy properties hỗ trợ cả PascalCase và camelCase
     const tenChuong = chuong.tenChuong || chuong.TenChuong || 'Chương';
     const tieuDeBai = bai.tieuDeBai || bai.TieuDeBai || 'Tiêu đề bài học';
     const noiDungText = bai.noiDungText || bai.NoiDungText || '';
     const ngayTao = (bai.ngayTao || bai.NgayTao) ? new Date(bai.ngayTao || bai.NgayTao).toLocaleDateString('vi-VN') : 'Chưa cập nhật';
+
+    // Lưu lại id bài hiện tại để dùng khi gửi bình luận
+    currentBaiId = bai && (bai.idBai || bai.IdBai) ? (bai.idBai || bai.IdBai) : null;
 
     lessonsTab.innerHTML = `
         <div class="lesson-header">
@@ -787,35 +995,36 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
                 </div>
             </div>
         </div>
-        <div class="comments-section">
-            <h2>Bình luận</h2>
+        <div class="comments-section" style="margin-top: 32px; margin-bottom: 50px; padding: 0; background: #fff; border-radius: 8px; border: 1px solid #e9ecef; box-shadow: 0 2px 4px rgba(0,0,0,0.04); position: relative; z-index: 1; overflow: visible; min-height: 400px; width: 100%; box-sizing: border-box;">
+            <h2 style="margin: 20px 20px 0 20px; padding-bottom: 16px; color: #333; font-weight: 600; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #f0f0f0;">
+                <i class="fas fa-comments" style="color: #007bff; font-size: 1.2rem;"></i>
+                Bình luận 
+                <span id="commentCount" style="font-size: 0.8em; color: #666; font-weight: 400;">(0)</span>
+            </h2>
+
+
+            
             <form class="comment-form" onsubmit="event.preventDefault(); addComment();">
                 <textarea id="commentText" placeholder="Viết bình luận của bạn..." required></textarea>
-                <button type="submit">Gửi</button>
-            </form>
-            <div class="comments-list" id="commentsList">
-                <div class="comment">
-                    <img src="@currentUserAvatar" alt="User Avatar" class="comment-avatar">
-                    <div class="comment-content">
-                        <div class="comment-header">
-                            <h4>Nguyễn Văn A</h4>
-                            <span class="comment-time">2 giờ trước</span>
-                        </div>
-                        <p>Bài giảng rất hay và dễ hiểu. Cảm ơn thầy!</p>
-                    </div>
+                <div style="display: flex; gap: 8px; justify-content: flex-end; width: 100%;">
+                    <button type="submit" style="background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 500; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.15)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">Gửi</button>
                 </div>
-            </div>
+            </form>
+            
+                          <div class="comments-list" id="commentsList" style="margin-top: 0; min-height: 200px; width: 100%;">
+                  <!-- Comments will be loaded dynamically -->
+              </div>
         </div>
     `;
-    // Sau khi render bài học, load bình luận:
-    if (bai && bai.idBai || bai.IdBai) {
-      loadCommentsForLesson(bai.idBai || bai.IdBai);
-    }
 
-    // Lưu lại id bài hiện tại để dùng khi gửi bình luận
-    currentBaiId = bai && (bai.idBai || bai.IdBai) ? (bai.idBai || bai.IdBai) : null;
+    // Load bình luận sau khi render xong UI - thêm timeout để đảm bảo DOM ready
     if (currentBaiId) {
-      loadCommentsForLesson(currentBaiId);
+      setTimeout(() => {
+        const commentsList = document.getElementById('commentsList');
+        if (commentsList) {
+          loadCommentsForLesson(currentBaiId);
+        }
+      }, 100);
     }
   }
 
@@ -881,7 +1090,6 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
 
   // Function wrapper để tìm kiếm với loại được chọn
   function searchStudentWithType(query) {
-    console.log('DEBUG searchStudentWithType called:', query);
     const searchTypeElement = document.getElementById('searchType');
 
     if (!searchTypeElement) {
@@ -890,13 +1098,11 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     }
 
     const searchType = searchTypeElement.value;
-    console.log('DEBUG search type:', searchType);
     searchStudent(query, searchType);
   }
 
   // Popup mời học viên
   function openInviteStudentModal() {
-    console.log('DEBUG: Opening invite student modal');
     const modal = document.getElementById('inviteStudentModal');
     if (!modal) {
       console.error('inviteStudentModal not found!');
@@ -924,8 +1130,6 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     searchResults.innerHTML = '';
     selectedStudentsForInvite = []; // Reset selected students
     updateSelectedStudentsDisplay();
-
-    console.log('DEBUG: Modal opened successfully');
   }
 
   function closeInviteStudentModal() {
@@ -939,10 +1143,6 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
 
   // Advanced search function with multiple search types
   function searchStudent(query, searchType = 'all') {
-    console.log('DEBUG searchStudent called:', {
-      query,
-      searchType
-    });
     const resultsContainer = document.getElementById('searchResults');
 
     if (!resultsContainer) {
@@ -960,19 +1160,15 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
 
     // Call API để tìm kiếm sinh viên với nhiều tiêu chí
     const url = `/User/ChiTietHocPhan/SearchStudents?searchTerm=${encodeURIComponent(query)}&searchType=${searchType}`;
-    console.log('DEBUG API URL:', url);
 
     fetch(url)
       .then(response => {
-        console.log('DEBUG API Response status:', response.status);
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         return response.json();
       })
       .then(data => {
-        console.log('DEBUG API Response data:', data);
-
         if (!data.success) {
           resultsContainer.innerHTML = `<div style="padding:12px; color:#e74c3c; text-align:center;">${data.message}</div>`;
           return;
@@ -982,8 +1178,6 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
           resultsContainer.innerHTML = '<div style="padding:12px; color:#666; text-align:center;">Không tìm thấy sinh viên</div>';
           return;
         }
-
-        console.log('DEBUG Found students:', data.data.length);
 
         resultsContainer.innerHTML = data.data.map(student => {
           const isSelected = selectedStudentsForInvite.some(s => s.idTaiKhoan === student.idTaiKhoan);
@@ -1698,7 +1892,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         <div style="padding: 40px; text-align: center; color: #666;">
           <i class="fas fa-bell" style="font-size: 48px; margin-bottom: 16px; display: block; color: #ddd;"></i>
           <h3 style="margin-bottom: 8px; color: #666;">Thông báo</h3>
-          <p style="margin: 0;">Lớp học này chưa có thông báo nào được tạo.</p>
+          <p style="margin: 0;">Chưa có thông báo nào.</p>
         </div>
       `;
       return;
@@ -1756,24 +1950,18 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
       .withUrl("/notificationHub")
       .build();
     notificationConnection.on("NewNotification", function(notification) {
-      console.log('DEBUG: SignalR NewNotification received');
       // Chỉ load thông báo nếu đang ở tab thông báo
       if (isCurrentTabNotices()) {
-        console.log('DEBUG: Currently on notices tab, loading notifications');
         loadNotifications(currentLopHocPhanId);
       } else {
-        console.log('DEBUG: Not on notices tab, marking as pending');
         hasUnloadedNotifications = true;
       }
     });
     notificationConnection.on("UpdateNotification", function(notification) {
-      console.log('DEBUG: SignalR UpdateNotification received');
       // Chỉ load thông báo nếu đang ở tab thông báo
       if (isCurrentTabNotices()) {
-        console.log('DEBUG: Currently on notices tab, loading notifications');
         loadNotifications(currentLopHocPhanId);
       } else {
-        console.log('DEBUG: Not on notices tab, marking as pending');
         hasUnloadedNotifications = true;
       }
     });
@@ -1798,13 +1986,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
   function clearNotificationsContent() {
     const noticesContainer = document.getElementById('tab-notices');
     if (noticesContainer) {
-      noticesContainer.innerHTML = `
-        <div style="padding: 40px; text-align: center; color: #666;">
-          <i class="fas fa-bell" style="font-size: 48px; margin-bottom: 16px; display: block; color: #ddd;"></i>
-          <h3 style="margin-bottom: 8px; color: #666;">Thông báo</h3>
-          <p style="margin: 0;">Lớp học này chưa có thông báo nào được tạo.</p>
-        </div>
-      `;
+      noticesContainer.innerHTML = ``;
       console.log('DEBUG: Cleared notifications content');
     }
   }
@@ -1822,21 +2004,79 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
   // Hàm thêm bình luận
   function addComment() {
     const textarea = document.getElementById('commentText');
+    const submitBtn = document.querySelector('.comment-form button[type="submit"]');
     const noiDung = textarea.value.trim();
-    if (!noiDung || !currentBaiId) return;
+
+    if (!noiDung) {
+      alert('Vui lòng nhập nội dung bình luận');
+      return;
+    }
+
+    if (!currentBaiId) {
+      alert('Không xác định được bài học để bình luận');
+      return;
+    }
+
+    if (!submitBtn) {
+      alert('Không tìm thấy nút gửi');
+      return;
+    }
+
+    // Hiển thị loading
+    const originalText = submitBtn.textContent;
+    const originalStyle = submitBtn.style.cssText;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: 8px;"></i>Đang gửi...';
+    submitBtn.style.background = '#6c757d';
+
+    const requestBody = {
+      NoiDung: noiDung,
+      IdLopHocPhan: currentLopHocPhanId,
+      IdBai: currentBaiId
+    };
+
     fetch('/User/ChiTietHocPhan/AddComment', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        NoiDung: noiDung,
-        IdLopHocPhan: currentLopHocPhanId,
-        IdBai: currentBaiId
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify(requestBody)
       })
-    }).then(res => res.json()).then(data => {
-      if (data.success) textarea.value = '';
-    });
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          textarea.value = '';
+
+          // Hiển thị thông báo thành công tạm thời
+          submitBtn.innerHTML = '<i class="fas fa-check" style="margin-right: 8px;"></i>Đã gửi!';
+          submitBtn.style.background = '#28a745';
+
+          // Reload lại danh sách comments sau delay để đảm bảo data đã được lưu
+          setTimeout(() => {
+            loadCommentsForLesson(currentBaiId, false); // Load fresh, no scroll maintain
+          }, 1000); // 1 giây delay
+
+          // Khôi phục nút về trạng thái ban đầu
+          setTimeout(() => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.style.cssText = originalStyle;
+            submitBtn.disabled = false;
+          }, 1500);
+        } else {
+          alert('❌ Lỗi khi gửi bình luận: ' + (data.message || 'Vui lòng thử lại'));
+          submitBtn.innerHTML = originalText;
+          submitBtn.style.cssText = originalStyle;
+          submitBtn.disabled = false;
+        }
+      })
+      .catch(error => {
+        console.error('Error adding comment:', error);
+        alert('❌ Lỗi kết nối. Vui lòng thử lại');
+        submitBtn.innerHTML = originalText;
+        submitBtn.style.cssText = originalStyle;
+        submitBtn.disabled = false;
+      });
   }
 
   // Function để tìm kiếm sinh viên trong danh sách hiện tại
@@ -2001,62 +2241,232 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
 
   // --- UI logic ---
   let allComments = [];
-  let visibleCommentCount = 5;
+  let visibleCommentCount = 10; // Tăng từ 5 lên 10 để hiển thị nhiều comment hơn
 
   function renderComments() {
     const list = document.getElementById('commentsList');
-    if (!list) return;
-    list.innerHTML = renderCommentTree(allComments.filter(c => !c.idBinhLuanCha), 0);
-    if (allComments.length > visibleCommentCount) {
-      list.innerHTML += `<button class='show-more-btn' onclick='showMoreComments()'>Xem thêm bình luận</button>`;
+    if (!list) {
+      return;
+    }
+
+    if (!allComments || allComments.length === 0) {
+      list.innerHTML = `
+        <div style="text-align: center; padding: 40px 20px; color: #6c757d;">
+          <i class="fas fa-comments" style="font-size: 48px; margin-bottom: 16px; display: block; color: #dee2e6;"></i>
+          <h4 style="margin-bottom: 8px; color: #6c757d; font-weight: 500;">Chưa có bình luận nào</h4>
+          <p style="margin: 0; font-size: 0.9rem;">Hãy là người đầu tiên bình luận về bài học này!</p>
+
+        </div>
+      `;
+      return;
+    }
+
+    // Lấy các comment gốc (không phải reply) - hỗ trợ cả camelCase và PascalCase
+    const rootComments = allComments.filter(c => !(c.idBinhLuanCha || c.IdBinhLuanCha));
+
+    // Sắp xếp root comments theo thời gian tạo giảm dần (mới nhất lên đầu)
+    rootComments.sort((a, b) => {
+      const dateA = new Date(a.ngayTao || a.NgayTao || 0);
+      const dateB = new Date(b.ngayTao || b.NgayTao || 0);
+      return dateB.getTime() - dateA.getTime(); // Descending order (newest first)
+    });
+
+    const replyComments = allComments.filter(c => (c.idBinhLuanCha || c.IdBinhLuanCha));
+    const visibleComments = rootComments.slice(0, visibleCommentCount);
+
+    const renderedHtml = renderCommentTree(visibleComments, 0);
+
+    list.innerHTML = renderedHtml;
+
+    // Force repaint
+    list.style.visibility = 'hidden';
+    list.offsetHeight; // Trigger reflow
+    list.style.visibility = 'visible';
+
+    // Hiển thị nút "Xem thêm" hoặc "Hiển thị tất cả" nếu còn comment chưa hiển thị
+    if (rootComments.length > visibleCommentCount) {
+      const remainingCount = rootComments.length - visibleCommentCount;
+      list.innerHTML += `
+        <div style="text-align: center; margin-top: 20px; padding: 16px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef;">
+          <button class='show-more-btn' onclick='showMoreComments()' style="margin-right: 12px; background: #fff; border: 1px solid #007bff; color: #007bff; padding: 8px 16px; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;" onmouseover="this.style.background='#007bff'; this.style.color='white'; this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#fff'; this.style.color='#007bff'; this.style.transform='none'">
+            <i class="fas fa-chevron-down" style="margin-right: 6px;"></i>
+            Xem thêm ${remainingCount > 5 ? '5' : remainingCount} bình luận
+          </button>
+          <button class='show-more-btn primary' onclick='showAllComments()' style="background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-weight: 500;" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.15)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
+            <i class="fas fa-eye" style="margin-right: 6px;"></i>
+            Hiển thị tất cả (${rootComments.length})
+          </button>
+        </div>
+      `;
+    }
+
+    // Cập nhật số lượng comments trong title
+    const commentCountElement = document.getElementById('commentCount');
+    if (commentCountElement) {
+      commentCountElement.textContent = `(${allComments.length})`;
+    }
+
+    // Scroll to comments section if we have comments and it's visible
+    if (allComments.length > 0) {
+      setTimeout(() => {
+        const commentsSection = document.querySelector('.comments-section');
+        if (commentsSection) {
+          const rect = commentsSection.getBoundingClientRect();
+          if (rect.height > 0) {
+            commentsSection.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        }
+      }, 200);
     }
   }
 
   function renderCommentTree(comments, level) {
     let html = '';
+
     for (const c of comments) {
-      html += `
-        <div class="comment" id="comment-${c.id}">
-          ${c.avatar ? `<img src="${c.avatar}" class="comment-avatar" />` : '<div class="comment-avatar comment-avatar-empty"></div>'}
-          <div class="comment-main">
-            <div class="comment-header">
-              <span class="comment-author">${c.hoTen || c.tenDangNhap || 'Ẩn danh'}</span>
-              <span class="comment-role">${c.role || ''}</span>
-              <span class="comment-time">${c.ngayTao ? new Date(c.ngayTao).toLocaleString('vi-VN') : ''}</span>
-              <span class="comment-actions">
-                <a title="Sửa" class="edit" onclick='editComment(${c.id})'><i class="fas fa-pen"></i></a>
-                <a title="Xóa" class="delete" onclick='confirmDeleteComment(${c.id})'><i class="fas fa-trash"></i></a>
-              </span>
+      // Hỗ trợ cả camelCase và PascalCase
+      const commentId = c.id || c.Id;
+      const parentId = c.idBinhLuanCha || c.IdBinhLuanCha;
+      const content = c.noiDung || c.NoiDung || '';
+      const authorName = c.hoTen || c.HoTen || c.tenDangNhap || c.TenDangNhap || 'Ẩn danh';
+      const avatar = c.avatar || c.Avatar;
+      const role = c.role || c.Role || c.vaiTro || c.VaiTro;
+      const createdDate = c.ngayTao || c.NgayTao;
+
+      if (!commentId) {
+        continue;
+      }
+
+      // Chỉ hiển thị action buttons cho Giảng viên
+      const actionButtons = userRole === 'Giangvien' ? `
+        <span class="comment-actions" style="display: flex; gap: 4px; margin-left: 8px;">
+          <a title="Sửa" class="edit" onclick='editComment(${commentId})' style="padding: 4px 6px; color: #007bff; background: rgba(0,123,255,0.1); border-radius: 4px; text-decoration: none; font-size: 0.8rem; transition: all 0.2s;" onmouseover="this.style.background='rgba(0,123,255,0.2)'" onmouseout="this.style.background='rgba(0,123,255,0.1)'">
+            <i class="fas fa-pen"></i>
+          </a>
+          <a title="Xóa" class="delete" onclick='confirmDeleteComment(${commentId})' style="padding: 4px 6px; color: #dc3545; background: rgba(220,53,69,0.1); border-radius: 4px; text-decoration: none; font-size: 0.8rem; transition: all 0.2s;" onmouseover="this.style.background='rgba(220,53,69,0.2)'" onmouseout="this.style.background='rgba(220,53,69,0.1)'">
+            <i class="fas fa-trash"></i>
+          </a>
+        </span>
+      ` : '';
+
+      // Tạo avatar hoặc chữ cái đầu
+      const avatarHtml = avatar ?
+        `<img src="${avatar}" class="comment-avatar" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0;" />` :
+        `<div class="comment-avatar-empty" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(45deg, #007bff, #0056b3); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 1.1rem; flex-shrink: 0;">${authorName.charAt(0).toUpperCase()}</div>`;
+
+      // Lấy replies cho comment này - hỗ trợ cả hai format
+      const replies = allComments.filter(x => (x.idBinhLuanCha || x.IdBinhLuanCha) === commentId);
+
+      // Sắp xếp replies theo thời gian tạo tăng dần (cũ nhất trước) để duy trì flow hội thoại
+      replies.sort((a, b) => {
+        const dateA = new Date(a.ngayTao || a.NgayTao || 0);
+        const dateB = new Date(b.ngayTao || b.NgayTao || 0);
+        return dateA.getTime() - dateB.getTime(); // Ascending order (oldest first)
+      });
+
+      // Format thời gian
+      const formattedTime = createdDate ? new Date(createdDate).toLocaleString('vi-VN') : '';
+
+      const commentHtml = `
+        <div class="comment" id="comment-${commentId}" style="width: 100%; position: relative; z-index: ${10 + level}; overflow: visible; min-height: 60px; display: flex; gap: 12px; padding: 16px; margin-bottom: 16px; background: #fff; border: 1px solid #e9ecef; border-radius: 8px; box-sizing: border-box;">
+          ${avatarHtml}
+          <div class="comment-main" style="flex: 1; overflow: visible;">
+            <div class="comment-header" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; overflow: visible;">
+              <span class="comment-author" style="font-weight: 600; color: #333;">${authorName}</span>
+              ${role ? `<span class="comment-role" style="background: ${role === 'Giangvien' ? '#007bff' : '#28a745'}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem;">${role === 'Giangvien' ? 'Giảng viên' : 'Sinh viên'}</span>` : ''}
+              <span class="comment-time" style="color: #666; font-size: 0.85rem; margin-left: auto;">${formattedTime}</span>
+              ${actionButtons}
             </div>
-            <div class="comment-body">${c.noiDung}</div>
-            <div class="comment-replies">${renderCommentTree(allComments.filter(x => x.idBinhLuanCha === c.id), level+1)}</div>
+            <div class="comment-body" style="color: #333; line-height: 1.6; word-wrap: break-word; white-space: pre-wrap; overflow: visible;">${content || 'Nội dung trống'}</div>
+            ${replies.length > 0 ? `<div class="comment-replies" style="margin-top: 12px; padding-left: 16px; border-left: 2px solid #e9ecef; overflow: visible;">${renderCommentTree(replies, level+1)}</div>` : ''}
           </div>
         </div>
       `;
+
+      html += commentHtml;
     }
+
     return html;
   }
 
   function renderCommentActions(c) {
     let html = '';
-    if (c.idTaiKhoan === currentUserId) {
-      html += `<a title="Sửa" class="edit" onclick='editComment(${c.id})'><i class="fas fa-pen"></i></a>`;
-      html += `<a title="Xóa" class="delete" onclick='confirmDeleteComment(${c.id})'><i class="fas fa-trash"></i></a>`;
-    } else if (userRole === 'Giangvien' && c.role === 'Sinhvien') {
-      html += `<a title="Phản hồi" class="reply" onclick='replyComment(${c.id})'><i class="fas fa-reply"></i></a>`;
-      html += `<a title="Xóa" class="delete" onclick='confirmDeleteComment(${c.id})'><i class="fas fa-trash"></i></a>`;
+    // Chỉ Giảng viên mới có quyền sửa/xóa bình luận
+    if (userRole === 'Giangvien') {
+      if (c.idTaiKhoan === currentUserId) {
+        html += `<a title="Sửa" class="edit" onclick='editComment(${c.id})'><i class="fas fa-pen"></i></a>`;
+        html += `<a title="Xóa" class="delete" onclick='confirmDeleteComment(${c.id})'><i class="fas fa-trash"></i></a>`;
+      } else {
+        html += `<a title="Phản hồi" class="reply" onclick='replyComment(${c.id})'><i class="fas fa-reply"></i></a>`;
+        html += `<a title="Xóa" class="delete" onclick='confirmDeleteComment(${c.id})'><i class="fas fa-trash"></i></a>`;
+      }
     }
     return html;
   }
 
   function showMoreComments() {
-    visibleCommentCount += 5;
+    const oldVisibleCount = visibleCommentCount;
+    visibleCommentCount += 5; // Tăng 5 comment mỗi lần
     renderComments();
+
+    // Không cực kỳ cần thiết scroll khi xem thêm vì người dùng đang ở vị trí hiện tại
+    // Có thể giữ nguyên vị trí scroll hiện tại
+  }
+
+  function showAllComments() {
+    const rootComments = allComments.filter(c => !c.idBinhLuanCha);
+    visibleCommentCount = rootComments.length; // Hiển thị tất cả comments
+    renderComments();
+
+    // Scroll to top để thấy comment mới nhất (vì đã sắp xếp theo thứ tự giảm dần)
+    const commentsList = document.getElementById('commentsList');
+    if (commentsList) {
+      setTimeout(() => {
+        commentsList.scrollTop = 0;
+      }, 100);
+    }
   }
 
   function addCommentToUI(comment) {
-    allComments.push(comment);
+    // Hỗ trợ cả camelCase và PascalCase
+    const commentId = comment.id || comment.Id;
+
+    if (!comment || !commentId) {
+      return;
+    }
+
+    // Kiểm tra xem comment đã tồn tại chưa để tránh duplicate - hỗ trợ cả hai format
+    const existingIndex = allComments.findIndex(c => (c.id || c.Id) === commentId);
+    if (existingIndex >= 0) {
+      // Cập nhật comment hiện có với dữ liệu mới, giữ lại fields quan trọng
+      const existingComment = allComments[existingIndex];
+      allComments[existingIndex] = {
+        ...existingComment,
+        // Cập nhật các fields có thể thay đổi
+        noiDung: comment.noiDung || existingComment.noiDung,
+        ngayTao: comment.ngayTao || existingComment.ngayTao,
+        hoTen: comment.hoTen || existingComment.hoTen,
+        tenDangNhap: comment.tenDangNhap || existingComment.tenDangNhap,
+        avatar: comment.avatar !== undefined ? comment.avatar : existingComment.avatar,
+        role: comment.role || existingComment.role
+      };
+    } else {
+      // Thêm comment mới vào đầu danh sách (vì sắp xếp theo thời gian giảm dần)
+      allComments.unshift(comment);
+    }
+
     renderComments();
+
+    // Auto scroll to top để thấy comment mới nhất
+    const commentsList = document.getElementById('commentsList');
+    if (commentsList) {
+      setTimeout(() => {
+        commentsList.scrollTop = 0;
+      }, 100);
+    }
   }
 
   function updateCommentInUI(comment) {
@@ -2064,6 +2474,11 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     if (idx >= 0) {
       allComments[idx].noiDung = comment.noiDung;
       allComments[idx].ngayTao = comment.ngayTao;
+      // Cập nhật thông tin user nếu có
+      if (comment.hoTen) allComments[idx].hoTen = comment.hoTen;
+      if (comment.tenDangNhap) allComments[idx].tenDangNhap = comment.tenDangNhap;
+      if (comment.avatar !== undefined) allComments[idx].avatar = comment.avatar;
+      if (comment.role) allComments[idx].role = comment.role;
       renderComments();
     }
   }
@@ -2071,25 +2486,6 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
   function removeCommentFromUI(commentId) {
     allComments = allComments.filter(c => c.id !== commentId && c.idBinhLuanCha !== commentId);
     renderComments();
-  }
-  // --- Gửi bình luận ---
-  function addComment() {
-    const textarea = document.getElementById('commentText');
-    const noiDung = textarea.value.trim();
-    if (!noiDung || !currentBaiId) return;
-    fetch('/User/ChiTietHocPhan/AddComment', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        NoiDung: noiDung,
-        IdLopHocPhan: currentLopHocPhanId,
-        IdBai: currentBaiId
-      })
-    }).then(res => res.json()).then(data => {
-      if (data.success) textarea.value = '';
-    });
   }
 
   function replyComment(parentId) {
@@ -2113,7 +2509,13 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
           IdBinhLuanCha: parentId
         })
       }).then(res => res.json()).then(data => {
-        if (data.success) form.remove();
+        if (data.success) {
+          form.remove();
+          // Reload lại danh sách comments sau khi reply
+          if (currentBaiId) {
+            loadCommentsForLesson(currentBaiId, true); // Maintain scroll position
+          }
+        }
       });
     };
     parentDiv.querySelector('.replies').prepend(form);
@@ -2142,7 +2544,13 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
           NoiDung: noiDung
         })
       }).then(res => res.json()).then(data => {
-        if (data.success) form.remove();
+        if (data.success) {
+          form.remove();
+          // Reload lại danh sách comments sau khi edit
+          if (currentBaiId) {
+            loadCommentsForLesson(currentBaiId, true); // Maintain scroll position
+          }
+        }
       });
     };
     commentDiv.querySelector('.comment-body').after(form);
@@ -2150,22 +2558,97 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
 
   function deleteComment(commentId) {
     fetch('/User/ChiTietHocPhan/DeleteComment', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(commentId)
-    });
-  }
-  // --- Lấy bình luận ban đầu khi load bài học ---
-  function loadCommentsForLesson(idBai) {
-    fetch(`/User/ChiTietHocPhan/GetComments?idBai=${idBai}`)
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(commentId)
+      })
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          allComments = data.data;
-          visibleCommentCount = 5;
+          // Reload lại danh sách comments sau khi xóa
+          if (currentBaiId) {
+            loadCommentsForLesson(currentBaiId, true); // Maintain scroll position
+          }
+        }
+      })
+      .catch(error => {
+        console.error('Error deleting comment:', error);
+      });
+  }
+
+
+
+  // --- Lấy bình luận ban đầu khi load bài học ---
+  function loadCommentsForLesson(idBai, maintainScrollPosition = false) {
+    if (!idBai) {
+      return;
+    }
+
+    // Lưu scroll position hiện tại nếu cần
+    let currentScrollTop = 0;
+    const commentsList = document.getElementById('commentsList');
+    if (maintainScrollPosition && commentsList) {
+      currentScrollTop = commentsList.scrollTop;
+    }
+
+    fetch(`/User/ChiTietHocPhan/GetComments?idBai=${idBai}`)
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (data.success) {
+          allComments = data.data || [];
+
+          // Sắp xếp comments theo thời gian tạo giảm dần (mới nhất lên đầu)
+          allComments.sort((a, b) => {
+            const dateA = new Date(a.ngayTao || a.NgayTao || 0);
+            const dateB = new Date(b.ngayTao || b.NgayTao || 0);
+            return dateB.getTime() - dateA.getTime(); // Descending order (newest first)
+          });
+
+          // Chỉ reset visibleCommentCount nếu đây là lần load đầu tiên
+          if (!maintainScrollPosition) {
+            visibleCommentCount = 10; // Tăng số lượng hiển thị mặc định
+          }
           renderComments();
+
+          // Khôi phục scroll position hoặc scroll to bottom cho comment mới
+          if (maintainScrollPosition && commentsList) {
+            setTimeout(() => {
+              commentsList.scrollTop = currentScrollTop;
+            }, 100);
+          } else if (commentsList && allComments.length > 0) {
+            // Scroll to top để thấy comment mới nhất (vì đã sắp xếp theo thứ tự giảm dần)
+            setTimeout(() => {
+              commentsList.scrollTop = 0;
+            }, 100);
+          }
+        } else {
+          const commentsList = document.getElementById('commentsList');
+          if (commentsList) {
+            commentsList.innerHTML = `
+              <div style="text-align: center; padding: 20px; color: #e74c3c;">
+                <i class="fas fa-exclamation-triangle"></i> 
+                Lỗi tải bình luận: ${data.message || 'Không xác định'}
+              </div>
+            `;
+          }
+        }
+      })
+      .catch(error => {
+        const commentsList = document.getElementById('commentsList');
+        if (commentsList) {
+          commentsList.innerHTML = `
+            <div style="text-align: center; padding: 20px; color: #e74c3c;">
+              <i class="fas fa-exclamation-triangle"></i> 
+              Lỗi kết nối: ${error.message}
+            </div>
+          `;
         }
       });
   }
@@ -2178,6 +2661,14 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
       .then(data => {
         if (data.success) {
           allClassComments = data.data;
+
+          // Sắp xếp class comments theo thời gian tạo giảm dần (mới nhất lên đầu)
+          allClassComments.sort((a, b) => {
+            const dateA = new Date(a.ngayTao || a.NgayTao || 0);
+            const dateB = new Date(b.ngayTao || b.NgayTao || 0);
+            return dateB.getTime() - dateA.getTime(); // Descending order (newest first)
+          });
+
           renderClassComments();
         }
       });
@@ -2188,12 +2679,29 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
   function renderClassComments() {
     const list = document.getElementById('classCommentsList');
     if (!list) return;
-    list.innerHTML = renderClassCommentTree(allClassComments.filter(c => !c.idBinhLuanCha), 0);
+
+    // Lọc và sắp xếp root comments theo thời gian tạo giảm dần (mới nhất lên đầu)
+    const rootComments = allClassComments.filter(c => !c.idBinhLuanCha);
+    rootComments.sort((a, b) => {
+      const dateA = new Date(a.ngayTao || a.NgayTao || 0);
+      const dateB = new Date(b.ngayTao || b.NgayTao || 0);
+      return dateB.getTime() - dateA.getTime(); // Descending order (newest first)
+    });
+
+    list.innerHTML = renderClassCommentTree(rootComments, 0);
   }
 
   function renderClassCommentTree(comments, level) {
     let html = '';
     for (const c of comments) {
+      // Lấy và sắp xếp replies cho comment này
+      const replies = allClassComments.filter(x => x.idBinhLuanCha === c.id);
+      replies.sort((a, b) => {
+        const dateA = new Date(a.ngayTao || a.NgayTao || 0);
+        const dateB = new Date(b.ngayTao || b.NgayTao || 0);
+        return dateA.getTime() - dateB.getTime(); // Ascending order (oldest first)
+      });
+
       html += `
         <div class='comment' id='class-comment-${c.id}'>
           ${c.avatar ? `<img src='${c.avatar}' class='comment-avatar' style='width:36px;height:36px;border-radius:50%;'>` : ''}
@@ -2202,7 +2710,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
           <span style='margin-left:auto;font-size:0.9em;color:#aaa;'>${c.role || ''}</span>
         </div>
         <div class='comment-body' style='margin:8px 0;'>${c.noiDung}</div>
-        <div class='replies'>${renderClassCommentTree(allClassComments.filter(x => x.idBinhLuanCha === c.id), level+1)}</div>
+        <div class='replies'>${renderClassCommentTree(replies, level+1)}</div>
       `;
     }
     return html;
@@ -2222,14 +2730,19 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         IdLopHocPhan: currentLopHocPhanId
       })
     }).then(res => res.json()).then(data => {
-      if (data.success) textarea.value = '';
+      if (data.success) {
+        textarea.value = '';
+        // Reload lại danh sách comments cho class
+        loadCommentsForClass();
+      }
     });
   }
 
   // Realtime socket cho bình luận lớp
   commentConnection.on("ReceiveComment", function(comment) {
     if (comment.idLopHocPhan === currentLopHocPhanId) {
-      allClassComments.push(comment);
+      // Thêm comment mới vào đầu danh sách (newest first)
+      allClassComments.unshift(comment);
       renderClassComments();
     }
   });
@@ -2238,6 +2751,8 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
   let userRole = '@(ViewBag.UserRole ?? "")';
 
   let commentToDelete = null;
+
+
 
   function confirmDeleteComment(id) {
     commentToDelete = id;

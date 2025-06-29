@@ -52,8 +52,28 @@ namespace Lecture_web.Areas.User.Controllers
 
             try
             {
-                // Lấy danh sách tất cả lớp học phần để hiển thị trong dropdown
-                var allLopHocPhan = await _context.LopHocPhan
+                // Lấy danh sách lớp học phần mà user có quyền truy cập
+                IQueryable<LopHocPhanModels> accessibleClasses;
+                
+                if (userRole == "Giangvien")
+                {
+                    // Giảng viên chỉ xem được lớp của mình
+                    accessibleClasses = _context.LopHocPhan.Where(lhp => lhp.IdTaiKhoan == currentUserId);
+                }
+                else if (userRole == "Sinhvien")
+                {
+                    // Sinh viên chỉ xem được lớp mình tham gia
+                    accessibleClasses = _context.LopHocPhan
+                        .Where(lhp => lhp.LopHocPhan_SinhViens.Any(sv => sv.IdTaiKhoan == currentUserId));
+                }
+                else
+                {
+                    // Vai trò khác không có quyền truy cập
+                    Console.WriteLine($"ERROR: Invalid user role: {userRole}");
+                    return Unauthorized();
+                }
+
+                var allLopHocPhan = await accessibleClasses
                     .Include(lhp => lhp.HocPhan)
                     .Select(lhp => new 
                     { 
@@ -74,13 +94,36 @@ namespace Lecture_web.Areas.User.Controllers
                     Console.WriteLine($"  LHP: ID={item.IdLopHocPhan}, TenLop={item.TenLop}, HocPhan={item.TenHocPhan}");
                 }
 
-                // Nếu không có idLopHocPhan, lấy lớp học phần đầu tiên để test
-                int targetLopHocPhanId = idLopHocPhan ?? allLopHocPhan.FirstOrDefault()?.IdLopHocPhan ?? 1;
+                // Kiểm tra nếu có idLopHocPhan được chỉ định
+                if (idLopHocPhan.HasValue)
+                {
+                    // Kiểm tra user có quyền truy cập lớp học này không
+                    var hasAccess = allLopHocPhan.Any(lhp => lhp.IdLopHocPhan == idLopHocPhan.Value);
+                    if (!hasAccess)
+                    {
+                        Console.WriteLine($"ERROR: User {currentUserId} ({userRole}) does not have access to class {idLopHocPhan}");
+                        Console.WriteLine($"User's accessible classes: {string.Join(", ", allLopHocPhan.Select(lhp => lhp.IdLopHocPhan))}");
+                        return Forbid(); // HTTP 403 - Forbidden
+                    }
+                }
+
+                // Nếu không có idLopHocPhan, lấy lớp học phần đầu tiên mà user có quyền truy cập
+                int targetLopHocPhanId = idLopHocPhan ?? allLopHocPhan.FirstOrDefault()?.IdLopHocPhan ?? 0;
+                
+                if (targetLopHocPhanId == 0)
+                {
+                    Console.WriteLine($"ERROR: No accessible classes found for user {currentUserId} ({userRole})");
+                    ViewBag.ErrorMessage = userRole == "Giangvien" ? 
+                        "Bạn chưa tạo lớp học nào. Vui lòng tạo lớp học trước." :
+                        "Bạn chưa tham gia lớp học nào. Vui lòng liên hệ giảng viên để được mời vào lớp.";
+                    ViewBag.AllLopHocPhan = allLopHocPhan;
+                    return View("NoAccess");
+                }
                 
                 Console.WriteLine($"Target LopHocPhan ID determined: {targetLopHocPhanId} (from parameter: {idLopHocPhan})");
 
-                // Lấy thông tin lớp học phần
-                var lopHocPhan = await _context.LopHocPhan
+                // Lấy thông tin lớp học phần từ accessible classes
+                var lopHocPhan = await accessibleClasses
                     .Include(lhp => lhp.HocPhan)
                     .FirstOrDefaultAsync(lhp => lhp.IdLopHocPhan == targetLopHocPhanId);
 
@@ -322,21 +365,13 @@ namespace Lecture_web.Areas.User.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine($"ERROR in Index: {ex.Message}");
-                // Trả về dữ liệu mặc định nếu có lỗi
-                ViewBag.IdLopHocPhan = idLopHocPhan ?? 1;
-                ViewBag.TenLop = "Lớp mặc định";
-                ViewBag.IdBaiGiang = 1;
-                ViewBag.StudentsInClass = new List<object>();
-                ViewBag.Chuongs = new List<object>();
-                ViewBag.AllLopHocPhan = new List<object>();
+                Console.WriteLine($"StackTrace: {ex.StackTrace}");
                 
-                // Thông tin phân trang mặc định cho trường hợp lỗi
-                ViewBag.CurrentPage = 1;
-                ViewBag.TotalPages = 1;
-                ViewBag.TotalStudents = 0;
-                ViewBag.PageSize = pageSize;
-                ViewBag.ChangePageFunc = "changeStudentPage";
-                return View();
+                // Trả về thông báo lỗi chi tiết
+                ViewBag.ErrorMessage = $"Lỗi hệ thống: {ex.Message}";
+                ViewBag.UserRole = userRole;
+                ViewBag.AllLopHocPhan = new List<object>();
+                return View("NoAccess");
             }
         }
 
@@ -890,6 +925,49 @@ namespace Lecture_web.Areas.User.Controllers
 
         // TEST ACTION - để test API tìm kiếm
         [HttpGet]
+        public async Task<IActionResult> DebugAccess()
+        {
+            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+
+            // Lấy teacher classes
+            object teacherClasses;
+            if (userRole == "Giangvien")
+            {
+                teacherClasses = await _context.LopHocPhan.Where(lhp => lhp.IdTaiKhoan == currentUserId)
+                    .Select(lhp => new { lhp.IdLopHocPhan, lhp.TenLop }).ToListAsync();
+            }
+            else
+            {
+                teacherClasses = new List<object>();
+            }
+
+            // Lấy student classes
+            object studentClasses;
+            if (userRole == "Sinhvien")
+            {
+                studentClasses = await _context.LopHocPhan_SinhVien.Where(sv => sv.IdTaiKhoan == currentUserId)
+                    .Select(sv => new { sv.IdLopHocPhan }).ToListAsync();
+            }
+            else
+            {
+                studentClasses = new List<object>();
+            }
+
+            var result = new
+            {
+                UserId = currentUserId,
+                UserRole = userRole,
+                RequestedClass = Request.Query["idLopHocPhan"].ToString(),
+                AllClasses = await _context.LopHocPhan.Select(lhp => new { lhp.IdLopHocPhan, lhp.TenLop, lhp.IdTaiKhoan }).ToListAsync(),
+                TeacherClasses = teacherClasses,
+                StudentClasses = studentClasses
+            };
+
+            return Json(result);
+        }
+
+        [HttpGet]
         public async Task<IActionResult> TestSearch()
         {
             try
@@ -920,19 +998,33 @@ namespace Lecture_web.Areas.User.Controllers
         {
              try
             {
+                Console.WriteLine($"DEBUG: AddComment called - NoiDung: {model.NoiDung}, IdBai: {model.IdBai}, IdLopHocPhan: {model.IdLopHocPhan}");
+                
                 var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
                 var userRole = User.FindFirstValue(ClaimTypes.Role);
                 model.IdTaiKhoan = userId;
                 model.NgayTao = DateTime.Now;
 
+                Console.WriteLine($"DEBUG: User info - ID: {userId}, Role: {userRole}, Name: {User.Identity.Name}");
+
                 // Validate dữ liệu bắt buộc
                 if (string.IsNullOrWhiteSpace(model.NoiDung) || model.IdLopHocPhan == 0)
+                {
+                    Console.WriteLine($"DEBUG: Validation failed - NoiDung empty: {string.IsNullOrWhiteSpace(model.NoiDung)}, IdLopHocPhan: {model.IdLopHocPhan}");
                     return Json(new { success = false, message = "Thiếu dữ liệu bình luận hoặc lớp học phần." });
+                }
 
                 _context.BinhLuan.Add(model);
                 await _context.SaveChangesAsync();
-                // Broadcast qua SignalR
-                await _hubContext.Clients.Group($"Class_{model.IdLopHocPhan}").SendAsync("ReceiveComment", new {
+                
+                Console.WriteLine($"DEBUG: Comment saved to DB with ID: {model.IdBinhLuan}");
+                
+                // Lấy thông tin user đầy đủ để broadcast
+                var currentUser = await _context.TaiKhoan
+                    .FirstOrDefaultAsync(tk => tk.IdTaiKhoan == userId);
+                
+                // Broadcast qua SignalR với đầy đủ thông tin
+                var signalRData = new {
                     id = model.IdBinhLuan,
                     noiDung = model.NoiDung,
                     ngayTao = model.NgayTao,
@@ -941,13 +1033,22 @@ namespace Lecture_web.Areas.User.Controllers
                     idBai = model.IdBai,
                     idThongBao = model.IdThongBao,
                     idLopHocPhan = model.IdLopHocPhan,
-                    hoTen = User.Identity.Name,
+                    hoTen = currentUser?.HoTen ?? User.Identity.Name,
+                    tenDangNhap = currentUser?.TenDangNhap ?? "",
+                    avatar = currentUser?.AnhDaiDien,
                     role = userRole
-                });
+                };
+                
+                Console.WriteLine($"DEBUG: Broadcasting to SignalR group Class_{model.IdLopHocPhan}");
+                await _hubContext.Clients.Group($"Class_{model.IdLopHocPhan}").SendAsync("ReceiveComment", signalRData);
+                
+                Console.WriteLine($"DEBUG: AddComment completed successfully");
                 return Json(new { success = true });
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"DEBUG: AddComment error: {ex.Message}");
+                Console.WriteLine($"DEBUG: AddComment stack trace: {ex.StackTrace}");
                 return Json(new { success = false, message = ex.Message });
             }
         }
@@ -966,10 +1067,19 @@ namespace Lecture_web.Areas.User.Controllers
             comment.NoiDung = model.NoiDung;
             comment.NgayTao = DateTime.Now;
             await _context.SaveChangesAsync();
+            
+            // Lấy thông tin user để broadcast
+            var currentUser = await _context.TaiKhoan
+                .FirstOrDefaultAsync(tk => tk.IdTaiKhoan == userId);
+            
             await _hubContext.Clients.Group($"Class_{comment.IdLopHocPhan}").SendAsync("UpdateComment", new {
                 id = comment.IdBinhLuan,
                 noiDung = comment.NoiDung,
-                ngayTao = comment.NgayTao
+                ngayTao = comment.NgayTao,
+                hoTen = currentUser?.HoTen ?? User.Identity.Name,
+                tenDangNhap = currentUser?.TenDangNhap ?? "",
+                avatar = currentUser?.AnhDaiDien,
+                role = userRole
             });
             return Json(new { success = true });
         }
@@ -1003,7 +1113,10 @@ namespace Lecture_web.Areas.User.Controllers
         {
             try
             {
+                Console.WriteLine($"DEBUG: GetComments called with idBai = {idBai}");
+                
                 var comments = await _context.BinhLuan
+                    .Include(c => c.TaiKhoan)  // Include để load thông tin user
                     .Where(c => c.IdBai == idBai)
                     .OrderBy(c => c.NgayTao)
                     .Select(c => new {
@@ -1016,14 +1129,19 @@ namespace Lecture_web.Areas.User.Controllers
                         idThongBao = c.IdThongBao,
                         idLopHocPhan = c.IdLopHocPhan,
                         hoTen = c.TaiKhoan != null ? c.TaiKhoan.HoTen : "Ẩn danh",
-                        avatar = c.TaiKhoan != null ? c.TaiKhoan.AnhDaiDien : "/images/avatar.jpg",
+                        tenDangNhap = c.TaiKhoan != null ? c.TaiKhoan.TenDangNhap : "",
+                        avatar = c.TaiKhoan != null ? c.TaiKhoan.AnhDaiDien : null,
                         role = c.TaiKhoan != null ? c.TaiKhoan.VaiTro : ""
                     })
                     .ToListAsync();
+                    
+                Console.WriteLine($"DEBUG: Found {comments.Count} comments for idBai = {idBai}");
+                
                 return Json(new { success = true, data = comments });
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"DEBUG: GetComments error: {ex.Message}");
                 return Json(new { success = false, message = ex.Message });
             }
         }
@@ -1034,7 +1152,10 @@ namespace Lecture_web.Areas.User.Controllers
         {
             try
             {
+                Console.WriteLine($"DEBUG: GetCommentsByClass called with idLopHocPhan = {idLopHocPhan}");
+                
                 var comments = await _context.BinhLuan
+                    .Include(c => c.TaiKhoan)  // Include để load thông tin user
                     .Where(c => c.IdLopHocPhan == idLopHocPhan)
                     .OrderBy(c => c.NgayTao)
                     .Select(c => new {
@@ -1047,14 +1168,19 @@ namespace Lecture_web.Areas.User.Controllers
                         idThongBao = c.IdThongBao,
                         idLopHocPhan = c.IdLopHocPhan,
                         hoTen = c.TaiKhoan != null ? c.TaiKhoan.HoTen : "Ẩn danh",
+                        tenDangNhap = c.TaiKhoan != null ? c.TaiKhoan.TenDangNhap : "",
                         avatar = c.TaiKhoan != null ? c.TaiKhoan.AnhDaiDien : null,
                         role = c.TaiKhoan != null ? c.TaiKhoan.VaiTro : ""
                     })
                     .ToListAsync();
+                    
+                Console.WriteLine($"DEBUG: Found {comments.Count} comments for idLopHocPhan = {idLopHocPhan}");
+                
                 return Json(new { success = true, data = comments });
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"DEBUG: GetCommentsByClass error: {ex.Message}");
                 return Json(new { success = false, message = ex.Message });
             }
         }
