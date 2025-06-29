@@ -979,17 +979,10 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     lessonsTab.innerHTML = `
         <div class="lesson-header">
             <h1>${tieuDeBai}</h1>
-            <div class="lesson-meta">Chương: ${tenChuong} | Ngày tạo: ${ngayTao}</div>
+            <div class="lesson-meta">Chương: ${tenChuong}</div>
         </div>
         <div class="lesson-body">
-            <div class="lesson-materials">
-                <h4>Tài liệu bài giảng</h4>
-                <ul>
-                    <li><i class="fas fa-file-text"></i> <a href="#" onclick="alert('Chức năng đang phát triển')">Nội dung bài học</a> <span class="file-size">Text</span></li>
-                </ul>
-            </div>
             <div class="lesson-desc">
-                <h4>Nội dung bài học</h4>
                 <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid #007bff;">
                     ${noiDungText ? noiDungText.replace(/\n/g, '<br>') : 'Chưa có nội dung cho bài học này.'}
                 </div>
