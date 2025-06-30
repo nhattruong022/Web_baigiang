@@ -174,16 +174,16 @@
               if (!string.IsNullOrEmpty(l.GiangVienAvatarUrl))
               {
               // Nếu đường dẫn đã có / ở đầu thì dùng trực tiếp, không thì thêm ~/images/
-              string baseUrl = l.GiangVienAvatarUrl.StartsWith("/") ? l.GiangVienAvatarUrl : $"~/images/{l.GiangVienAvatarUrl}";
+                  string baseUrl = l.GiangVienAvatarUrl.StartsWith("/") ? l.GiangVienAvatarUrl : Url.Content($"~/images/{l.GiangVienAvatarUrl}");
               // Thêm cache buster dựa trên ngày cập nhật để force refresh
               avatarUrl = $"{baseUrl}?v={l.NgayCapNhat.Ticks}";
               }
               else
               {
-              avatarUrl = "~/images/avatar.jpg";
+              avatarUrl = Url.Content("~/images/avatar.jpg");
               }
               }
-              <img src="@avatarUrl" alt="Avatar @l.GiangVienName" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:2px solid #3498db;box-shadow:0 2px 8px rgba(52,152,235,0.2);" onerror="this.src='/images/avatar.jpg'">
+                            <img src="@avatarUrl" alt="Avatar @l.GiangVienName" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:2px solid #3498db;box-shadow:0 2px 8px rgba(52,152,235,0.2);" onerror="this.src='@Url.Content("~/images/avatar.jpg")'">
               <div>
                 <h4 style="margin:0;color:#2c3e50;font-weight:600;">Học phần: @l.TenHocPhan</h4>
                 <h4 style="margin:0;color:#34495e;font-weight:500;">Lớp: @l.TenLop</h4>
