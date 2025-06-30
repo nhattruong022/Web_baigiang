@@ -258,50 +258,45 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
       </tbody>
 
     </table>
-        <nav>
-            <ul class="pagination">
-                @* Nút Back *@
-                @if (Model.CurrentPage > 1)
-                {
-                    <li>
-                        <a href="?page=@(Model.CurrentPage-1)&search=@Model.SearchTerm">«</a>
-                    </li>
-                }
-                else
-                {
-                    <li class="disabled">
-                        <span>«</span>
-                    </li>
-                }
-
-                @* Các trang số *@
-                @for (int i = 1; i <= Model.TotalPages; i++)
-                {
-                    if (i == Model.CurrentPage)
+        @if (Model.TotalPages > 1)
+        {
+            <nav>
+                <ul class="pagination">
+                    @* Nút Back *@
+                    @if (Model.CurrentPage > 1)
                     {
-                        <li class="active"><span>@i</span></li>
+                        <li><a href="?page=@(Model.CurrentPage-1)&search=@Model.SearchTerm">«</a></li>
                     }
                     else
                     {
-                        <li><a href="?page=@i&search=@Model.SearchTerm">@i</a></li>
+                        <li class="disabled"><span>«</span></li>
                     }
-                }
 
-                @* Nút Next *@
-                @if (Model.CurrentPage < Model.TotalPages)
-                {
-                    <li>
-                        <a href="?page=@(Model.CurrentPage+1)&search=@Model.SearchTerm">»</a>
-                    </li>
-                }
-                else
-                {
-                    <li class="disabled">
-                        <span>»</span>
-                    </li>
-                }
-            </ul>
-        </nav>
+                    @* Các trang số *@
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        if (i == Model.CurrentPage)
+                        {
+                            <li class="active"><span>@i</span></li>
+                        }
+                        else
+                        {
+                            <li><a href="?page=@i&search=@Model.SearchTerm">@i</a></li>
+                        }
+                    }
+
+                    @* Nút Next *@
+                    @if (Model.CurrentPage < Model.TotalPages)
+                    {
+                        <li><a href="?page=@(Model.CurrentPage+1)&search=@Model.SearchTerm">»</a></li>
+                    }
+                    else
+                    {
+                        <li class="disabled"><span>»</span></li>
+                    }
+                </ul>
+            </nav>
+        }
 
 
   </div>
@@ -342,7 +337,7 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
                 <label>Lớp học phần <span class="required">*</span></label>
                 <div id="createLopHocPhanCheckboxes"
                      style="max-height:200px;overflow-y:auto;border:1px solid #ddd;padding:0.5rem;">
-                    <!-- Nơi render option lớp học phần -->
+                    <!-- Render danh sách lớp hp bằng ajax->
                 </div>
                 <span asp-validation-for="selectedlophocphanids" class="text-danger"></span>
             </div>
@@ -372,7 +367,6 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
         action="@Url.Action("LuuBaiGiang","QuanLyBaiGiang", new {area = "User"})"
         class="modal-form lecture-modal-form"
         id="editContentForm">
-            @*        onsubmit="event.preventDefault(); saveEditContent(); id="editContentForm"" *@
             @Html.AntiForgeryToken()
       <div class="form-group">
          <input type="hidden" name="idbaigiang" id="editIdBaiGiang"/>
@@ -394,7 +388,7 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
                 </select> *@
                 <div id="lectureClassCheckboxes" class=""
                      style="max-height:200px; overflow-y:auto; border:1px solid #ddd; padding:0.5rem;">
-                    <!-- Nơi render option lớp học phần -->
+                    <!-- Render danh sách lớp hp bằng ajax -->
                 </div>
       </div>
       <div class="form-actions">
@@ -579,7 +573,6 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
 //Xóa bài giảng
 
         $(function () {
-            // Khi click nút Xóa
             $(document).on('click', '.deletebutton', function (e) {
                 e.preventDefault();
                 var idbg = $(this).data('idbg');

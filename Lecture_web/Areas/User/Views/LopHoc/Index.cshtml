@@ -107,11 +107,15 @@
       margin: 1.5rem 0;
     }
 
+
+
     .class-title {
       padding: 1rem;
       text-align: center;
       color: #555;
       font-size: 24px;
+      width:100%;
+
 
     }
 
@@ -220,15 +224,18 @@
             <i class="fas fa-edit"></i>
             Chỉnh sửa
           </button>
-          <button class="btn-danger" onclick="deleteClass(this)">
+          <button class="btn-danger DeleteButton"
+          data-id="@l.IdLopHocPhan">
             <i class="fas fa-trash"></i>
             Xóa
           </button>
           }
           else if (userRole == "Sinhvien")
           {
-          <button style="background: linear-gradient(90deg, #f39c12 60%, #f7b731 100%); color: #fff; border: none; border-radius: 6px; padding: 10px 22px; font-size: 1.08rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 10px rgba(243,156,18,0.13); 
-                                     transition: background 0.2s, box-shadow 0.2s, transform 0.15s; letter-spacing: 0.5px;" class="btn-leave" onclick="leaveClass(1)">
+          <button type="button"
+              style="background: linear-gradient(90deg, #f39c12 60%, #f7b731 100%); color: #fff; border: none; border-radius: 6px; padding: 10px 22px;
+                        font-size: 1.08rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 10px rgba(243,156,18,0.13); 
+                          transition: background 0.2s, box-shadow 0.2s, transform 0.15s; letter-spacing: 0.5px;" class="btn btn-danger" onclick="OutClass(@l.IdLopHocPhan)">
             <i class="fas fa-sign-out-alt"></i>
             Rời lớp
           </button>
@@ -237,46 +244,40 @@
       </div>
 
       }
-      <nav>
-        <ul class="pagination">
-          @* Nút Back *@
-          @if (Model.CurrentPage > 1)
-          {
-          <li>
-            <a href="?page=@(Model.CurrentPage-1)&search=@Model.SearchTerm">«</a>
-          </li>
-          }
-          else
-          {
-          <li class="disabled">
-            <span>«</span>
-          </li>
-          }
-
-          @* Các trang số *@
-          @for (int i = 1; i <= Model.TotalPages; i++) { if (i==Model.CurrentPage) { <li class="active"><span>@i</span></li>
-            }
-            else
-            {
-            <li><a href="?page=@i&search=@Model.SearchTerm">@i</a></li>
-            }
-            }
-
-            @* Nút Next *@
-            @if (Model.CurrentPage
-
-            < Model.TotalPages) { <li>
-              <a href="?page=@(Model.CurrentPage+1)&search=@Model.SearchTerm">»</a>
-              </li>
-              }
-              else
-              {
-              <li class="disabled">
-                <span>»</span>
-              </li>
-              }
-        </ul>
-      </nav>
+        @if (Model.TotalPages > 1)
+        {
+            <nav>
+                <ul class="pagination">
+                    @if (Model.CurrentPage > 1)
+                    {
+                        <li><a href="?page=@(Model.CurrentPage-1)&search=@Model.SearchTerm">«</a></li>
+                    }
+                    else
+                    {
+                        <li class="disabled"><span>«</span></li>
+                    }
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        if (i == Model.CurrentPage)
+                        {
+                            <li class="active"><span>@i</span></li>
+                        }
+                        else
+                        {
+                            <li><a href="?page=@i&search=@Model.SearchTerm">@i</a></li>
+                        }
+                    }
+                    @if (Model.CurrentPage < Model.TotalPages)
+                    {
+                        <li><a href="?page=@(Model.CurrentPage+1)&search=@Model.SearchTerm">»</a></li>
+                    }
+                    else
+                    {
+                        <li class="disabled"><span>»</span></li>
+                    }
+                </ul>
+            </nav>
+        }
     </div>
 
 
@@ -310,7 +311,7 @@
               <label>Chọn học phần <span class="required">*</span></label>
               <select name="HocPhanId" id="classHocPhan" class="form-control" style="padding: 0.5rem 1rem; border-radius: 5px; border: 1px solid #ddd;">
                 <option value="">-- Chọn học phần --</option>
-                <!-- Options loaded via JS -->
+                <!-- Danh sách học phần-->
               </select>
               <span asp-validation-for="HocPhanId" class="text-danger"></span>
             </div>
@@ -318,7 +319,7 @@
               <label>Chọn bài giảng </label>
               <select name="BaiGiangId" id="classBaiGiang" class="form-control" style="padding: 0.5rem 1rem; border-radius: 5px; border: 1px solid #ddd;">
                 <option value="">-- Chọn bài giảng --</option>
-                <!-- Options loaded via JS -->
+                <!-- Danh sách bài giảng -->
               </select>
               <span asp-validation-for="BaiGiangId" class="text-danger"></span>
             </div>
@@ -390,13 +391,14 @@
       $('#classForm').on('submit', function(e) {
         e.preventDefault();
         var id = $('#classId').val(),
+            check = Boolean(id),
           url = id ?
           '@Url.Action("EditClass", "LopHoc", new { area = "User" })' :
           '@Url.Action("CreateClass", "LopHoc", new { area = "User" })',
           token = $(this).find('input[name="__RequestVerificationToken"]').val(),
           data = $(this).serialize();
 
-        // Clear old errors
+        // Clear lỗi củ
         $(this).find('span.text-danger').text('');
 
         $.ajax({
@@ -409,7 +411,14 @@
           })
           .done(function() {
             closeModal('classModal');
-            location.reload();
+                        Swal.fire({
+                            title: check ? 'Sửa lớp thành công' : 'Thêm lớp thành công',
+                            text: check
+                                ? 'Đã cập nhật lớp học phần thành công.'
+                                : 'Đã tạo lớp học phần mới thành công.',
+                            icon: 'success'
+                        })
+                .then(() => location.reload());
           })
           .fail(function(xhr) {
             if (xhr.status === 400 && xhr.responseJSON.errors) {
@@ -502,5 +511,89 @@
         $('#' + id).removeClass('open');
       };
     });
+
+
+        $(function () {
+            $('.DeleteButton').on('click', function () {
+                var id = $(this).data('id');
+                Swal.fire({
+                    title: 'Xác nhận xóa?',
+                    text: 'Bạn có chắc chắn muốn xóa lớp này?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Xác nhận xóa',
+                    cancelButtonText: 'Hủy'
+                }).then(function (res) {
+                    if (!res.isConfirmed) return;
+
+                    var token = $('input[name="__RequestVerificationToken"]').first().val();
+
+                    $.ajax({
+                        url: '@Url.Action("DeleteClass", "LopHoc", new { area = "User" })',
+                        type: 'POST',
+                        data: {
+                            idLopHocPhan: id,
+                            __RequestVerificationToken: token
+                        }
+                    })
+                        .done(function () {
+                            Swal.fire('Đã xóa', 'Lớp đã được xóa.', 'success')
+                                .then(() => location.reload());
+                        })
+                        .fail(function (xhr) {
+                            if (xhr.status === 400 && xhr.responseJSON && xhr.responseJSON.error) {
+                                Swal.fire('Không xóa được', xhr.responseJSON.error, 'error');
+                            } else {
+                                Swal.fire('Lỗi', 'Có lỗi xảy ra. Vui lòng thử lại.', 'error');
+                            }
+                        });
+                });
+            });
+        });
+
+        function OutClass(idLop) {
+            Swal.fire({
+                title: 'Xác nhận',
+                text: 'Bạn có chắc chắn muốn rời lớp này không?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Rời lớp',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (!result.isConfirmed) return;
+
+
+                var token = $('input[name="__RequestVerificationToken"]').val();
+
+                var url = '@Url.Action("OutClass", "LopHoc", new { area = "User" })';
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: {
+                        __RequestVerificationToken: token,
+                        idLop: idLop
+                    }
+                })
+                    .done(function (res) {
+                        if (res.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Bạn đã rời lớp',
+                                timer: 1200,
+                                showConfirmButton: false
+                            }).then(() => {
+                                window.location.href = '@Url.Action("Index", "LopHoc", new { area = "User" })';
+                            });
+                        } else {
+                            Swal.fire('Lỗi', 'Không thể rời lớp, thử lại sau.', 'error');
+                        }
+                    })
+                    .fail(function () {
+                        Swal.fire('Lỗi', 'Có lỗi server, thử lại sau.', 'error');
+                    });
+            });
+        }
+
   </script>
   }

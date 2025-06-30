@@ -48,9 +48,9 @@ namespace Lecture_web.Areas.User.Controllers
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                var key = search.Replace(" ", "").ToLower();
+                var key = search.Trim().Replace(" ", "").ToLower();
                 q = q.Where(x =>
-                  x.TieuDe.Replace(" ", "")
+                  x.TieuDe.Trim().Replace(" ", "")
                           .ToLower()
                           .Contains(key)
                 );
@@ -58,6 +58,15 @@ namespace Lecture_web.Areas.User.Controllers
 
             var totalItems = await q.CountAsync();
             var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+            if (totalPages == 0)
+            {
+                page = 1;
+            }
+            else
+            {
+                if (page < 1 || page > totalPages)
+                    return NotFound();
+            }
             var items = await q
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
@@ -139,7 +148,7 @@ namespace Lecture_web.Areas.User.Controllers
             }
 
             if (await _context.BaiGiang.AnyAsync(b =>
-               b.IdTaiKhoan == userId && b.TieuDe == sbg.tieude && b.IdBaiGiang != sbg.idbaigiang))
+               b.IdTaiKhoan == userId && b.TieuDe.Trim().Replace(" ","") == sbg.tieude.Trim().Replace(" ","") && b.IdBaiGiang != sbg.idbaigiang))
             {
                 return BadRequest(new
                 {
@@ -160,7 +169,6 @@ namespace Lecture_web.Areas.User.Controllers
             bg.MoTa = StringHelper.NormalizeString(sbg.mota);
             bg.NgayCapNhat = DateTime.Now;
 
-            // 5) Cập nhật lớp học phần
             var allClasses = await _context.LopHocPhan
                 .Where(lp => lp.IdTaiKhoan == userId)
                 .ToListAsync();
@@ -223,7 +231,7 @@ namespace Lecture_web.Areas.User.Controllers
 
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
             if (await _context.BaiGiang.AnyAsync(b =>
-                    b.IdTaiKhoan == userId && b.TieuDe == StringHelper.NormalizeString(bg.tieude)))
+                    b.IdTaiKhoan == userId && b.TieuDe.Trim().Replace(" ", "") == bg.tieude.Trim().Replace(" ","")))
             {
                 return BadRequest(new
                 {
