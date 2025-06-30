@@ -1071,8 +1071,11 @@ namespace Lecture_web.Areas.User.Controllers
             if (comment == null) return NotFound();
             // Chỉ chủ bình luận được sửa
             if (comment.IdTaiKhoan != userId) return Forbid();
+            
+            // Chỉ cập nhật nội dung, KHÔNG cập nhật NgayTao để giữ nguyên vị trí trong danh sách
             comment.NoiDung = model.NoiDung;
-            comment.NgayTao = DateTime.Now;
+            // comment.NgayTao = DateTime.Now; // ❌ Loại bỏ dòng này để không thay đổi thứ tự
+            
             await _context.SaveChangesAsync();
             
             // Lấy thông tin user để broadcast
@@ -1082,7 +1085,7 @@ namespace Lecture_web.Areas.User.Controllers
             await _hubContext.Clients.Group($"Class_{comment.IdLopHocPhan}").SendAsync("UpdateComment", new {
                 id = comment.IdBinhLuan,
                 noiDung = comment.NoiDung,
-                ngayTao = comment.NgayTao,
+                ngayTao = comment.NgayTao, // Giữ nguyên NgayTao ban đầu
                 hoTen = currentUser?.HoTen ?? User.Identity.Name,
                 tenDangNhap = currentUser?.TenDangNhap ?? "",
                 avatar = currentUser?.AnhDaiDien,
@@ -1114,18 +1117,31 @@ namespace Lecture_web.Areas.User.Controllers
             return Json(new { success = true });
         }
 
-        // API: Lấy danh sách bình luận cho bài học
+        // API: Lấy danh sách bình luận cho bài học với phân trang
         [HttpGet]
-        public async Task<IActionResult> GetComments(int idBai)
+        public async Task<IActionResult> GetComments(int idBai, int page = 1)
         {
             try
             {
-                Console.WriteLine($"DEBUG: GetComments called with idBai = {idBai}");
+                Console.WriteLine($"DEBUG: GetComments called with idBai = {idBai}, page = {page}");
                 
+                const int pageSize = 20; // 20 bình luận mỗi trang
+                
+                // Đếm tổng số bình luận
+                var totalComments = await _context.BinhLuan
+                    .Where(c => c.IdBai == idBai)
+                    .CountAsync();
+                
+                var totalPages = (int)Math.Ceiling((double)totalComments / pageSize);
+                var currentPage = Math.Max(1, Math.Min(page, totalPages));
+                
+                // Lấy bình luận có phân trang, sắp xếp theo thời gian tạo
                 var comments = await _context.BinhLuan
                     .Include(c => c.TaiKhoan)  // Include để load thông tin user
                     .Where(c => c.IdBai == idBai)
-                    .OrderBy(c => c.NgayTao)
+                    .OrderBy(c => c.NgayTao) // Bình luận cũ trước
+                    .Skip((currentPage - 1) * pageSize)
+                    .Take(pageSize)
                     .Select(c => new {
                         id = c.IdBinhLuan,
                         noiDung = c.NoiDung,
@@ -1142,9 +1158,18 @@ namespace Lecture_web.Areas.User.Controllers
                     })
                     .ToListAsync();
                     
-                Console.WriteLine($"DEBUG: Found {comments.Count} comments for idBai = {idBai}");
+                Console.WriteLine($"DEBUG: Found {comments.Count} comments for idBai = {idBai}, page {currentPage}/{totalPages}");
                 
-                return Json(new { success = true, data = comments });
+                return Json(new { 
+                    success = true, 
+                    data = comments,
+                    pagination = new {
+                        currentPage = currentPage,
+                        totalPages = totalPages,
+                        totalComments = totalComments,
+                        pageSize = pageSize
+                    }
+                });
             }
             catch (Exception ex)
             {
@@ -1153,18 +1178,31 @@ namespace Lecture_web.Areas.User.Controllers
             }
         }
 
-        // API: Lấy danh sách bình luận theo lớp học phần
+        // API: Lấy danh sách bình luận theo lớp học phần với phân trang
         [HttpGet]
-        public async Task<IActionResult> GetCommentsByClass(int idLopHocPhan)
+        public async Task<IActionResult> GetCommentsByClass(int idLopHocPhan, int page = 1)
         {
             try
             {
-                Console.WriteLine($"DEBUG: GetCommentsByClass called with idLopHocPhan = {idLopHocPhan}");
+                Console.WriteLine($"DEBUG: GetCommentsByClass called with idLopHocPhan = {idLopHocPhan}, page = {page}");
                 
+                const int pageSize = 20; // 20 bình luận mỗi trang
+                
+                // Đếm tổng số bình luận
+                var totalComments = await _context.BinhLuan
+                    .Where(c => c.IdLopHocPhan == idLopHocPhan)
+                    .CountAsync();
+                
+                var totalPages = (int)Math.Ceiling((double)totalComments / pageSize);
+                var currentPage = Math.Max(1, Math.Min(page, totalPages));
+                
+                // Lấy bình luận có phân trang, sắp xếp theo thời gian tạo
                 var comments = await _context.BinhLuan
                     .Include(c => c.TaiKhoan)  // Include để load thông tin user
                     .Where(c => c.IdLopHocPhan == idLopHocPhan)
-                    .OrderBy(c => c.NgayTao)
+                    .OrderBy(c => c.NgayTao) // Bình luận cũ trước
+                    .Skip((currentPage - 1) * pageSize)
+                    .Take(pageSize)
                     .Select(c => new {
                         id = c.IdBinhLuan,
                         noiDung = c.NoiDung,
@@ -1181,9 +1219,18 @@ namespace Lecture_web.Areas.User.Controllers
                     })
                     .ToListAsync();
                     
-                Console.WriteLine($"DEBUG: Found {comments.Count} comments for idLopHocPhan = {idLopHocPhan}");
+                Console.WriteLine($"DEBUG: Found {comments.Count} comments for idLopHocPhan = {idLopHocPhan}, page {currentPage}/{totalPages}");
                 
-                return Json(new { success = true, data = comments });
+                return Json(new { 
+                    success = true, 
+                    data = comments,
+                    pagination = new {
+                        currentPage = currentPage,
+                        totalPages = totalPages,
+                        totalComments = totalComments,
+                        pageSize = pageSize
+                    }
+                });
             }
             catch (Exception ex)
             {
