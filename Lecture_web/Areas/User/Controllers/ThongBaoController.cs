@@ -336,6 +336,58 @@ namespace Lecture_web.Areas.User.Controllers
                 return Json(new { success = false, message = $"Lỗi khi sửa thông báo: {ex.Message}" });
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteNotification([FromBody] DeleteNotificationRequest request)
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+                {
+                    return Json(new { success = false, message = "Không thể xác định người dùng" });
+                }
+
+                if (request.IdThongBao <= 0)
+                {
+                    return Json(new { success = false, message = "ID thông báo không hợp lệ" });
+                }
+
+                // Tìm thông báo
+                var thongBao = await _context.ThongBao
+                    .Include(tb => tb.LopHocPhan)
+                    .FirstOrDefaultAsync(tb => tb.IdThongBao == request.IdThongBao);
+                    
+                if (thongBao == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy thông báo" });
+                }
+
+                // Kiểm tra quyền: chỉ cho phép xóa nếi là giáo viên tạo thông báo
+                var userRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+                if (userRole != "Giangvien" || thongBao.IdTaiKhoan != userId)
+                {
+                    return Json(new { success = false, message = "Bạn không có quyền xóa thông báo này" });
+                }
+
+                // Lưu thông tin để gửi SignalR
+                var classId = thongBao.IdLopHocPhan;
+
+                // Xóa thông báo khỏi database
+                _context.ThongBao.Remove(thongBao);
+                await _context.SaveChangesAsync();
+
+                // Gửi SignalR để thông báo cho các client khác
+                await _hubContext.Clients.Group($"Class_{classId}")
+                    .SendAsync("DeleteNotification", request.IdThongBao);
+
+                return Json(new { success = true, message = "Xóa thông báo thành công!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Lỗi khi xóa thông báo: {ex.Message}" });
+            }
+        }
     }
 
     public class AddNotificationRequest
@@ -350,5 +402,10 @@ namespace Lecture_web.Areas.User.Controllers
         public int IdThongBao { get; set; }
         public string TieuDe { get; set; }
         public string NoiDung { get; set; }
+    }
+
+    public class DeleteNotificationRequest
+    {
+        public int IdThongBao { get; set; }
     }
 } 

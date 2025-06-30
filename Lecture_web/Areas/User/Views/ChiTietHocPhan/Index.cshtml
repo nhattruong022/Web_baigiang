@@ -289,11 +289,11 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
           <form id="addNoticeForm" onsubmit="submitAddNotice(event)">
             <div class="form-group">
               <label for="noticeTitle">Tiêu đề</label>
-              <input type="text" id="noticeTitle" required>
+              <input type="text" id="noticeTitle" required placeholder="Nhập tiêu đề thông báo...">
             </div>
             <div class="form-group">
               <label for="noticeContent">Nội dung</label>
-              <textarea id="noticeContent" rows="5" required style="resize:vertical;"></textarea>
+              <textarea id="noticeContent" rows="5" style="resize:vertical;"></textarea>
             </div>
             <div class="modal-actions">
               <button type="button" onclick="closeAddNoticeModal()" class="btn-cancel">Hủy</button>
@@ -314,11 +314,11 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
           <form id="editNoticeForm" onsubmit="submitEditNotice(event)">
             <div class="form-group">
               <label for="editNoticeTitle">Tiêu đề</label>
-              <input type="text" id="editNoticeTitle" required>
+              <input type="text" id="editNoticeTitle" required placeholder="Nhập tiêu đề thông báo...">
             </div>
             <div class="form-group">
               <label for="editNoticeContent">Nội dung</label>
-              <textarea id="editNoticeContent" rows="5" required style="resize:vertical;"></textarea>
+              <textarea id="editNoticeContent" rows="5" style="resize:vertical;"></textarea>
             </div>
             <div class="modal-actions">
               <button type="button" onclick="closeEditNoticeModal()" class="btn-cancel">Hủy</button>
@@ -653,7 +653,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
-<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.0/classic/ckeditor.js"></script>
 
 <script>
   let selectedStudentsForInvite = []; // Thay đổi từ single student thành array
@@ -1414,26 +1414,70 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     }
   }
 
+  let addNoticeEditor = null;
+
   function addNotice() {
     document.getElementById('addNoticeModal').style.display = 'flex';
     document.getElementById('addNoticeModal').style.alignItems = 'center';
     document.getElementById('addNoticeModal').style.justifyContent = 'center';
     document.getElementById('addNoticeForm').reset();
     document.querySelectorAll('.notice-menu-popup').forEach(p => p.style.display = 'none');
-    if (window.CKEDITOR && CKEDITOR.instances.noticeContent) {
-      CKEDITOR.instances.noticeContent.destroy(true);
+
+    // Hủy editor cũ nếu có
+    if (addNoticeEditor) {
+      addNoticeEditor.destroy().catch(error => console.log(error));
+      addNoticeEditor = null;
     }
-    CKEDITOR.replace('noticeContent');
+
+    // Khởi tạo CKEditor 5 với chỉ bold và italic
+    ClassicEditor
+      .create(document.querySelector('#noticeContent'), {
+        toolbar: {
+          items: ['bold', 'italic']
+        },
+        plugins: ['Essentials', 'Bold', 'Italic', 'Paragraph'],
+        removePlugins: ['CKFinderUploadAdapter', 'CKFinder', 'EasyImage', 'Image', 'ImageCaption', 'ImageStyle', 'ImageToolbar', 'ImageUpload', 'Indent', 'MediaEmbed']
+      })
+      .then(editor => {
+        addNoticeEditor = editor;
+      })
+      .catch(error => {
+        console.error('Error creating editor:', error);
+      });
   }
 
   function closeAddNoticeModal() {
     document.getElementById('addNoticeModal').style.display = 'none';
+    // Hủy editor khi đóng modal
+    if (addNoticeEditor) {
+      addNoticeEditor.destroy().catch(error => console.log(error));
+      addNoticeEditor = null;
+    }
   }
 
   function submitAddNotice(e) {
     e.preventDefault();
-    const title = document.getElementById('noticeTitle').value;
-    const content = CKEDITOR.instances.noticeContent.getData();
+    const title = document.getElementById('noticeTitle').value.trim();
+
+    if (!addNoticeEditor) {
+      alert('❌ Editor chưa được khởi tạo');
+      return;
+    }
+
+    const content = addNoticeEditor.getData().trim();
+
+    // Validation manual
+    if (!title) {
+      alert('❌ Vui lòng nhập tiêu đề thông báo');
+      document.getElementById('noticeTitle').focus();
+      return;
+    }
+
+    if (!content || content === '<p></p>' || content === '<p>&nbsp;</p>') {
+      alert('❌ Vui lòng nhập nội dung thông báo');
+      addNoticeEditor.editing.view.focus();
+      return;
+    }
     fetch('/User/ThongBao/AddNotification', {
         method: 'POST',
         headers: {
@@ -1552,29 +1596,65 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
       console.error('editNoticeTitle input not found');
     }
 
-    // Destroy CKEditor instance nếu đã tồn tại
-    if (window.CKEDITOR && CKEDITOR.instances.editNoticeContent) {
-      CKEDITOR.instances.editNoticeContent.destroy(true);
+    // Hủy CKEditor 5 instance nếu đã tồn tại
+    if (window.editNoticeEditor) {
+      window.editNoticeEditor.destroy().catch(error => console.log(error));
+      window.editNoticeEditor = null;
     }
 
-    // Khởi tạo lại CKEditor cho textarea
-    CKEDITOR.replace('editNoticeContent');
-    CKEDITOR.instances.editNoticeContent.on('instanceReady', function() {
-      CKEDITOR.instances.editNoticeContent.setData(content);
-      console.log('CKEditor content set to:', content);
-    });
+    // Khởi tạo lại CKEditor 5 cho textarea
+    ClassicEditor
+      .create(document.querySelector('#editNoticeContent'), {
+        toolbar: {
+          items: ['bold', 'italic']
+        },
+        plugins: ['Essentials', 'Bold', 'Italic', 'Paragraph'],
+        removePlugins: ['CKFinderUploadAdapter', 'CKFinder', 'EasyImage', 'Image', 'ImageCaption', 'ImageStyle', 'ImageToolbar', 'ImageUpload', 'Indent', 'MediaEmbed']
+      })
+      .then(editor => {
+        window.editNoticeEditor = editor;
+        editor.setData(content);
+        console.log('CKEditor 5 content set to:', content);
+      })
+      .catch(error => {
+        console.error('Error creating edit editor:', error);
+      });
 
     console.log('=== EDIT MODAL OPENED ===');
   }
 
   function closeEditNoticeModal() {
     document.getElementById('editNoticeModal').style.display = 'none';
+    // Hủy editor khi đóng modal
+    if (window.editNoticeEditor) {
+      window.editNoticeEditor.destroy().catch(error => console.log(error));
+      window.editNoticeEditor = null;
+    }
   }
 
   function submitEditNotice(e) {
     e.preventDefault();
-    const title = document.getElementById('editNoticeTitle').value;
-    const content = CKEDITOR.instances.editNoticeContent.getData();
+    const title = document.getElementById('editNoticeTitle').value.trim();
+
+    if (!window.editNoticeEditor) {
+      alert('❌ Editor chưa được khởi tạo');
+      return;
+    }
+
+    const content = window.editNoticeEditor.getData().trim();
+
+    // Validation manual  
+    if (!title) {
+      alert('❌ Vui lòng nhập tiêu đề thông báo');
+      document.getElementById('editNoticeTitle').focus();
+      return;
+    }
+
+    if (!content || content === '<p></p>' || content === '<p>&nbsp;</p>') {
+      alert('❌ Vui lòng nhập nội dung thông báo');
+      window.editNoticeEditor.editing.view.focus();
+      return;
+    }
     const id = currentEditNoticeCard?.getAttribute('data-id');
     if (!id) {
       alert('Không xác định được thông báo để sửa!');
@@ -1614,11 +1694,57 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
   }
 
   function confirmDeleteNotice() {
-    if (currentDeleteNoticeCard) {
-      currentDeleteNoticeCard.remove();
-      currentDeleteNoticeCard = null;
+    if (!currentDeleteNoticeCard) {
+      alert('Không xác định được thông báo để xóa');
+      return;
     }
-    closeConfirmDeleteNoticeModal();
+
+    const noticeId = currentDeleteNoticeCard.getAttribute('data-id');
+    if (!noticeId) {
+      alert('Không tìm thấy ID thông báo để xóa');
+      return;
+    }
+
+    // Hiển thị loading
+    const deleteBtn = document.querySelector('#confirmDeleteNoticeModal .btn-primary');
+    const originalText = deleteBtn.textContent;
+    deleteBtn.disabled = true;
+    deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xóa...';
+
+    // Gọi API xóa thông báo thực sự
+    fetch('/User/ThongBao/DeleteNotification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          IdThongBao: parseInt(noticeId)
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          // Xóa khỏi UI
+          currentDeleteNoticeCard.remove();
+          currentDeleteNoticeCard = null;
+          closeConfirmDeleteNoticeModal();
+
+          // Reload lại danh sách thông báo để đảm bảo đồng bộ
+          setTimeout(() => {
+            loadNotifications(currentLopHocPhanId);
+          }, 500);
+        } else {
+          alert('❌ Lỗi xóa thông báo: ' + (data.message || 'Vui lòng thử lại'));
+        }
+      })
+      .catch(error => {
+        console.error('Error deleting notification:', error);
+        alert('❌ Lỗi kết nối khi xóa thông báo');
+      })
+      .finally(() => {
+        deleteBtn.disabled = false;
+        deleteBtn.textContent = originalText;
+      });
   }
 
   let currentEditStudentId = null;
@@ -1939,13 +2065,27 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     }
 
     if (!notifications || notifications.length === 0) {
-      container.innerHTML = `
+      let emptyHtml = `
         <div style="padding: 40px; text-align: center; color: #666;">
           <i class="fas fa-bell" style="font-size: 48px; margin-bottom: 16px; display: block; color: #ddd;"></i>
           <h3 style="margin-bottom: 8px; color: #666;">Thông báo</h3>
           <p style="margin: 0;">Chưa có thông báo nào.</p>
-        </div>
       `;
+
+      // Thêm nút "Thêm thông báo" cho giảng viên
+      if (isNotStudent) {
+        emptyHtml += `
+          <div style="margin-top: 20px;">
+            <button onclick="addNotice()" style="background: #007bff; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 500; transition: all 0.2s;" onmouseover="this.style.background='#0056b3'; this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#007bff'; this.style.transform='none'">
+              <i class="fas fa-plus" style="margin-right: 8px;"></i>
+              Thêm thông báo đầu tiên
+            </button>
+          </div>
+        `;
+      }
+
+      emptyHtml += `</div>`;
+      container.innerHTML = emptyHtml;
       return;
     }
 
@@ -2016,6 +2156,16 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         hasUnloadedNotifications = true;
       }
     });
+    notificationConnection.on("DeleteNotification", function(notificationId) {
+      // Xử lý khi có thông báo bị xóa từ client khác
+      console.log('Notification deleted by another user:', notificationId);
+      if (isCurrentTabNotices()) {
+        // Reload lại danh sách thông báo để đồng bộ
+        loadNotifications(currentLopHocPhanId);
+      } else {
+        hasUnloadedNotifications = true;
+      }
+    });
     notificationConnection.start().then(function() {
       notificationConnection.invoke("JoinClass", currentLopHocPhanId.toString());
     });
@@ -2042,15 +2192,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     }
   }
 
-  // Khởi tạo CKEditor khi DOM loaded
-  window.addEventListener('DOMContentLoaded', function() {
-    if (document.getElementById('noticeContent')) {
-      CKEDITOR.replace('noticeContent');
-    }
-    if (document.getElementById('editNoticeContent')) {
-      CKEDITOR.replace('editNoticeContent');
-    }
-  });
+  // CKEditor 5 sẽ được khởi tạo khi cần thiết trong addNotice() và editNotice()
 
   // Hàm thêm bình luận
   function addComment() {
