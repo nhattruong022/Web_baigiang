@@ -12,8 +12,8 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
 @* CSRF Token for AJAX calls *@
 @Html.AntiForgeryToken()
 
-<div class="app-container">
-  <div class="header-row" style="display: flex; align-items: center; gap: 16px; margin: 24px 24px 0 32px;">
+<div class="app-container" style="max-width: 100vw; overflow-x: hidden;">
+  <div class="header-row" style="display: flex; align-items: center; gap: 16px; margin: 24px 24px 0 32px; max-width: 100%; overflow: hidden;">
     <a style="text-decoration: none; color: #22334d;" href="/User/LopHoc/Index" class="back-btn">
       <i class="fas fa-arrow-left"></i> Quay lại
     </a>
@@ -23,9 +23,9 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
       <button class="course-tab-btn" onclick="showTab('notices', this)"><i class="fas fa-bell"></i> Thông báo</button>
     </div>
   </div>
-  <div class="main-box" style="background: #fff; border-radius: 18px; box-shadow: 0 4px 24px rgba(52,152,219,0.10), 0 1.5px 8px rgba(0,0,0,0.08); border: 1.5px solid #bfc9d1; overflow: visible; margin: 16px 24px 0 24px; display: flex; flex-direction: row; min-height: 650px;">
+  <div class="main-box" style="background: #fff; border-radius: 18px; box-shadow: 0 4px 24px rgba(52,152,219,0.10), 0 1.5px 8px rgba(0,0,0,0.08); border: 1.5px solid #bfc9d1; overflow: hidden; margin: 16px 24px 0 24px; display: flex; flex-direction: row; min-height: 650px; max-width: calc(100vw - 48px);">
     <!-- Sidebar chương & bài -->
-    <aside class="sidebar-chapters">
+    <aside class="sidebar-chapters" style="width: 280px; min-width: 280px; max-width: 280px; flex-shrink: 0;">
       <h2>Chương & Bài</h2>
       <ul class="chapter-list" id="chaptersList">
         <!-- Sẽ được render bởi JavaScript từ ViewBag.Chuongs -->
@@ -35,7 +35,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         </li>
       </ul>
     </aside>
-    <div style="flex:1;display:flex;flex-direction:column;min-height: 600px;">
+    <div style="flex: 1; display: flex; flex-direction: column; min-height: 600px; overflow: hidden; min-width: 0;">
       <!-- Tab Contents -->
       <section class="main-lesson-content course-tab-content" id="tab-lessons" style="display:block;">
         <!-- Nội dung bài sẽ được render ở đây -->
@@ -353,6 +353,9 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     margin-top: 24px;
     padding: 0;
     overflow: hidden;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .comments-section h2 {
@@ -371,6 +374,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     border: 1px solid #e9ecef;
     border-radius: 8px 8px 0 0;
     width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
   }
 
@@ -388,6 +392,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     position: relative;
     z-index: 1;
     width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
   }
 
@@ -423,6 +428,9 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
 
   .comment {
     /* Inline styles are now applied in JavaScript for better flexibility */
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 
   .comment:hover {
@@ -533,6 +541,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
 
   .comment-form textarea {
     width: 100%;
+    max-width: 100%;
     min-height: 90px;
     border-radius: 8px;
     border: 1px solid #dee2e6;
@@ -605,10 +614,29 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
 
   /* Responsive cho mobile */
   @@media (max-width: 768px) {
+    .app-container {
+      max-width: 100vw !important;
+      overflow-x: hidden !important;
+    }
+
+    .main-box {
+      margin: 16px 8px 0 8px !important;
+      max-width: calc(100vw - 16px) !important;
+      flex-direction: column !important;
+    }
+
+    .sidebar-chapters {
+      width: 100% !important;
+      min-width: 100% !important;
+      max-width: 100% !important;
+      order: -1;
+    }
+
     .comments-list {
       max-height: none !important;
       padding: 16px;
-      overflow: visible !important;
+      overflow: hidden !important;
+      max-width: 100% !important;
     }
 
     .comment {
@@ -616,7 +644,8 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
       margin-bottom: 12px;
       flex-direction: row !important;
       gap: 8px;
-      overflow: visible !important;
+      overflow: hidden !important;
+      max-width: 100% !important;
     }
 
     .comment-header {
@@ -632,22 +661,46 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
 
     .comment-form {
       padding: 16px;
+      max-width: 100% !important;
     }
 
     .comment-form textarea {
       min-height: 70px;
       padding: 12px;
+      max-width: 100% !important;
     }
 
     .comments-section {
       margin-top: 20px !important;
       padding: 16px !important;
-      overflow: visible !important;
+      overflow: hidden !important;
+      max-width: 100% !important;
     }
 
     .comment-role {
       font-size: 0.7rem;
       padding: 1px 6px;
+    }
+
+    .lesson-desc div {
+      padding: 16px !important;
+      word-wrap: break-word !important;
+      overflow-wrap: break-word !important;
+      max-width: 100% !important;
+    }
+  }
+
+  /* Responsive cho desktop lớn */
+  @@media (min-width: 1400px) {
+    .main-box {
+      max-width: 1350px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .app-container {
+      max-width: 1400px;
+      margin: 0 auto;
     }
   }
 </style>
@@ -983,12 +1036,12 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         </div>
         <div class="lesson-body">
             <div class="lesson-desc">
-                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid #007bff; word-wrap: break-word; overflow-wrap: break-word; white-space: pre-wrap; max-width: 100%; box-sizing: border-box; line-height: 1.6; overflow: visible;">
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid #007bff; word-wrap: break-word; overflow-wrap: break-word; white-space: pre-wrap; max-width: 100%; width: 100%; box-sizing: border-box; line-height: 1.6; overflow: hidden;">
                     ${noiDungText ? noiDungText.replace(/\n/g, '<br>') : 'Chưa có nội dung cho bài học này.'}
                 </div>
             </div>
         </div>
-        <div class="comments-section" style="margin-top: 32px; margin-bottom: 50px; padding: 0; background: #fff; border-radius: 8px; border: 1px solid #e9ecef; box-shadow: 0 2px 4px rgba(0,0,0,0.04); position: relative; z-index: 1; overflow: visible; min-height: 400px; width: 100%; box-sizing: border-box;">
+        <div class="comments-section" style="margin-top: 32px; margin-bottom: 50px; padding: 0; background: #fff; border-radius: 8px; border: 1px solid #e9ecef; box-shadow: 0 2px 4px rgba(0,0,0,0.04); position: relative; z-index: 1; overflow: hidden; min-height: 400px; width: 100%; max-width: 100%; box-sizing: border-box;">
             <h2 style="margin: 20px 20px 0 20px; padding-bottom: 16px; color: #333; font-weight: 600; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #f0f0f0;">
                 <i class="fas fa-comments" style="color: #007bff; font-size: 1.2rem;"></i>
                 Bình luận 
@@ -1019,6 +1072,19 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         }
       }, 100);
     }
+
+    // Scroll về đầu tab khi chọn bài học mới
+    setTimeout(() => {
+      const lessonsTab = document.getElementById('tab-lessons');
+      if (lessonsTab) {
+        lessonsTab.scrollTop = 0;
+        // Scroll lên đầu trang nếu cần
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }
+    }, 150);
   }
 
   // Mở/đóng chương
@@ -1063,6 +1129,13 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     switch (tab) {
       case 'lessons':
         clearNotificationsContent();
+        // Scroll về đầu trang khi chuyển sang tab bài giảng
+        setTimeout(() => {
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+        }, 100);
         break;
       case 'students':
         clearNotificationsContent();
@@ -2248,6 +2321,17 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
           // Reload lại danh sách comments sau delay để đảm bảo data đã được lưu
           setTimeout(() => {
             loadCommentsForLesson(currentBaiId, false); // Load fresh, no scroll maintain
+
+            // Scroll xuống comment section sau khi user vừa gửi comment
+            setTimeout(() => {
+              const commentsSection = document.querySelector('.comments-section');
+              if (commentsSection) {
+                commentsSection.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'start'
+                });
+              }
+            }, 300);
           }, 1000); // 1 giây delay
 
           // Khôi phục nút về trạng thái ban đầu
@@ -2499,21 +2583,8 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
       commentCountElement.textContent = `(${allComments.length})`;
     }
 
-    // Scroll to comments section if we have comments and it's visible
-    if (allComments.length > 0) {
-      setTimeout(() => {
-        const commentsSection = document.querySelector('.comments-section');
-        if (commentsSection) {
-          const rect = commentsSection.getBoundingClientRect();
-          if (rect.height > 0) {
-            commentsSection.scrollIntoView({
-              behavior: 'smooth',
-              block: 'start'
-            });
-          }
-        }
-      }, 200);
-    }
+    // Chỉ scroll xuống comments khi user vừa gửi comment mới (không phải khi load bài học)
+    // Removed auto-scroll để tránh jump xuống comments khi load bài học
   }
 
   function renderCommentTree(comments, level) {
@@ -2689,13 +2760,8 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
 
     renderComments();
 
-    // Auto scroll to top để thấy comment mới nhất
-    const commentsList = document.getElementById('commentsList');
-    if (commentsList) {
-      setTimeout(() => {
-        commentsList.scrollTop = 0;
-      }, 100);
-    }
+    // Không tự động scroll để tránh làm phiền user
+    // Auto scroll chỉ khi user thực sự tương tác với comments
   }
 
   function updateCommentInUI(comment) {
@@ -2942,11 +3008,8 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
               commentsList.scrollTop = currentScrollTop;
             }, 100);
           } else if (commentsList && allComments.length > 0) {
-            // Chỉ scrollTop = 0 nếu vừa gửi bình luận gốc
-            // => Đoạn này sẽ không bị gọi khi reply vì reply luôn truyền maintainScrollPosition = true
-            setTimeout(() => {
-              commentsList.scrollTop = 0;
-            }, 100);
+            // Không tự động scroll khi load bài học để tránh jump xuống comments
+            // Chỉ scroll khi user thực sự tương tác với comments
           }
         } else {
           const commentsList = document.getElementById('commentsList');
