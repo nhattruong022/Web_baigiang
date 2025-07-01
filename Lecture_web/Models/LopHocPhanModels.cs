@@ -28,5 +28,6 @@ namespace Lecture_web.Models
         public BaiGiangModels? BaiGiang { get; set; }
         public ICollection<LopHocPhan_SinhVienModels> LopHocPhan_SinhViens { get; set; }
         public ICollection<ThongBaoModels> ThongBaos { get; set; }
+
     }
 }

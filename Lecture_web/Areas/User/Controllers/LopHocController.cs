@@ -56,9 +56,9 @@ namespace Lecture_web.Areas.User.Controllers
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                var key = search.Replace(" ", "").ToLower();
+                var key = search.Trim().Replace(" ", "").ToLower();
                 getLop = getLop.Where(x =>
-                    (x.TenHP + x.TenLop)
+                    (x.TenHP + x.TenLop).Trim()
                      .Replace(" ", "")
                      .ToLower()
                      .Contains(key)
@@ -66,6 +66,16 @@ namespace Lecture_web.Areas.User.Controllers
             }
 
             var total = await getLop.CountAsync();
+            var totalPages = (int)Math.Ceiling(total / (double)pageSize);
+            if (totalPages == 0)
+            {
+                page = 1;
+            }
+            else
+            {
+                if (page < 1 || page > totalPages)
+                    return NotFound();
+            }
             var list = await getLop
                              .OrderByDescending(x => x.NgayTao)
                              .Skip((page - 1) * pageSize)
@@ -83,8 +93,6 @@ namespace Lecture_web.Areas.User.Controllers
             {
                 var gv = gvinfo.First(u => u.IdTaiKhoan == x.GiangVienId);
                 
-                // Debug log để kiểm tra avatar path
-                System.Diagnostics.Debug.WriteLine($"GiangVien ID: {gv.IdTaiKhoan}, Name: {gv.HoTen}, Avatar: {gv.AnhDaiDien}");
                 
                 return new LopHocViewModel
                 {
@@ -234,7 +242,7 @@ namespace Lecture_web.Areas.User.Controllers
                 return BadRequest(new { errors });
             }
 
-            // 3) Lấy lớp cần sửa
+            // Lấy ra lớp đang sửa
             var lop = await _context.LopHocPhan
                 .FirstOrDefaultAsync(lp =>
                     lp.IdLopHocPhan ==lhp.IdLopHocPhan &&
@@ -243,7 +251,7 @@ namespace Lecture_web.Areas.User.Controllers
             if (lop == null)
                 return NotFound();
 
-            // 4) Kiểm tra học phần mới có tồn tại không
+            
             var hocPhan = await _context.HocPhan
                 .AnyAsync(h => h.IdHocPhan ==lhp.HocPhanId);
             if (!hocPhan)
@@ -293,6 +301,73 @@ namespace Lecture_web.Areas.User.Controllers
             await _context.SaveChangesAsync();
             return Ok(new { success = true });
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult>DeleteClass(int  idLopHocPhan)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+       
+            var lop = await _context.LopHocPhan
+                .FirstOrDefaultAsync(lp =>
+                    lp.IdLopHocPhan == idLopHocPhan &&
+                    lp.IdTaiKhoan == userId
+                );
+            if (lop == null)
+                return NotFound(new { error = "Lớp không tồn tại hoặc bạn không có quyền xóa." });
+
+            if (lop.IdBaiGiang.HasValue)
+                return BadRequest(new { error = "Không thể xóa vì lớp đang liên kết với bài giảng." });
+
+    
+            _context.LopHocPhan.Remove(lop);
+            await _context.SaveChangesAsync();
+            return Ok(new { success = true });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> OutClass(int idLop)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            var rootIds = await _context.BinhLuan
+                .Where(bl => bl.IdLopHocPhan == idLop &&
+                             bl.IdTaiKhoan == userId)
+                .Select(bl => bl.IdBinhLuan)
+                .ToListAsync();
+
+
+            if (rootIds.Any())
+            {
+               await _context.Database.ExecuteSqlRawAsync(
+                            @"UPDATE dbo.BinhLuan
+                  SET IdBinhLuanCha = NULL
+                  WHERE IdBinhLuanCha IN ({0});",
+                            string.Join(",", rootIds)
+                        );
+            }
+            // Xóa tất cả bl không có bl cha
+            await _context.BinhLuan
+                .Where(bl => rootIds.Contains(bl.IdBinhLuan))
+                .ExecuteDeleteAsync();
+
+            // Xóa bình luận sinh viên sau khi rời lớp
+            await _context.BinhLuan
+                .Where(bl => bl.IdLopHocPhan == idLop &&
+                             bl.IdTaiKhoan == userId)
+                .ExecuteDeleteAsync();
+
+            await _context.LopHocPhan_SinhVien
+            .Where(ls => ls.IdLopHocPhan == idLop &&
+                         ls.IdTaiKhoan == userId)
+            .ExecuteDeleteAsync();
+
+
+            return Json(new { success = true });
+        }
+
     }
 
 

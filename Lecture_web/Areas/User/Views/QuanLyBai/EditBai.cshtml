@@ -5,9 +5,15 @@
     }
 
 @section style {
-
+    <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/45.2.1/ckeditor5.css" />
 
         <style>
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            margin-left: 140px;
+            min-height: 100vh;
+        }
             .bai-modal-form textarea {
                 min-height: 400px;
                 height: auto;
@@ -62,6 +68,12 @@
             pointer-events: auto;
         }
 
+        .ck-content img.resizable-bound {
+            display: inline-block !important;
+            pointer-events: auto !important;
+        }
+
+
 
  
         </style>
@@ -86,13 +98,13 @@
                 <input asp-for="IdChuong" type="hidden" />
 
                 <div class="form-group">
-                    <label asp-for="TieuDeBai"></label>
-                    <input asp-for="TieuDeBai" class="form-control" />
+                    <label asp-for="TieuDeBai">Tiêu đề</label>
+                <input asp-for="TieuDeBai" class="form-control" maxlength="" />
                     <span asp-validation-for="TieuDeBai" class="text-danger"></span>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="NoiDung"></label>
+                    <label asp-for="NoiDung"> Nội dung</label>
                     
                     <textarea asp-for="NoiDung" 
                     class="form-control" 
@@ -122,18 +134,17 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.0/classic/ckeditor.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
 @*     <script src="~/lib/ckeditor5/ckeditor.js"></script> *@
 
   <script>
-
-
-
+        let myEditor;
         ClassicEditor
             .create(document.querySelector('#NoiDungEditor'), {
                 toolbar: [
                     'heading', '|', 'bold', 'italic', 'underline', 'strikethrough', 'link', 'blockQuote', 'insertTable',
                     '|', 'bulletedList', 'numberedList',
-                    '|', 'mediaEmbed', 'undo', 'redo',
+                    '|', 'mediaEmbed', 'undo', 'redo', 'imageStyle:alignLeft', 'imageStyle:center', 'imageStyle:alignRight'
                 ],
                 mediaEmbed: {
                     previewsInData: true,
@@ -160,14 +171,7 @@
                     ]
                 },
 
-                /*
-                simpleUpload: {
-                  uploadUrl: '/User/QuanLyBai/UploadImage',
-                  headers: {
-                    'RequestVerificationToken': ...
-                  }
-                },
-                */
+
                 link: {
                     decorators: {
                         addTargetBlank: {
@@ -181,19 +185,67 @@
                     }
                 },
             })
-            .then(editor => window.editorInstance = editor)
+            .then(editor => {
+                const editableEl = editor.ui.view.editable.element;
+
+                function makeImagesResizable() {
+                    const imgs = editableEl.querySelectorAll('img');
+                    console.log('🔍 makeImagesResizable, imgs:', imgs.length);
+                    imgs.forEach(img => {
+                        if (img.classList.contains('resizable-bound')) return;
+                        img.classList.add('resizable-bound');
+                        interact(img).resizable({
+                            edges: { left: true, right: true, bottom: true, top: true },
+                            invert: 'none',
+                            listeners: {
+                                move(event) {
+                                    // xóa việc dùng translate(), chỉ update kích thước
+                                    const img = event.target;
+
+                                    // Lấy kích thước mới
+                                    const w = Math.round(event.rect.width);
+                                    const h = Math.round(event.rect.height);
+
+                                    // Gán vào inline style để CKEditor getData() nhặt lên
+                                    img.style.width = w + 'px';
+                                    img.style.height = h + 'px';
+
+                                    // Nếu bạn thích: đặt luôn attribute width/height để dễ HTML
+                                    img.setAttribute('width', w);
+                                    img.setAttribute('height', h);
+                                }
+                            }
+                        })
+                    });
+                }
+
+                editor.model.document.on('change:data', () => {
+                    setTimeout(makeImagesResizable, 100);
+                });
+                // lần đầu
+                makeImagesResizable();
+            })
             .catch(console.error);
+
+
 
 
         $('#editBaiForm').on('submit', function (e) {
             e.preventDefault();
             var $f = $(this),
                 url = $f.attr('action'),
-                data = $f.serialize(),
                 token = $f.find('input[name="__RequestVerificationToken"]').val();
 
  
             $f.find('span.text-danger').text('');
+
+            if (myEditor) {
+                const htmlFromDom = myEditor.ui.view.editable.element.innerHTML;
+                // Gán vào textarea để serialize lên server
+                $f.find('textarea[name="NoiDung"]').val(htmlFromDom);
+            }
+
+            data = $f.serialize(),
 
             $.ajax({
                 url: url,
@@ -214,7 +266,8 @@
                 .fail(function (xhr) {
                     if (xhr.status === 400 && xhr.responseJSON.errors) {
                         var errs = xhr.responseJSON.errors;
-                        $f.find('span.text-danger').text('');
+                        $f.find('.is-invalid').removeClass('is-invalid');
+                        $f.find('span[data-valmsg-for]').text('');
                         $.each(errs, function (field, messages) {
                             var $msg = $f.find('span.text-danger[data-valmsg-for="' + field + '"]');
                             $msg.text(messages[0]);

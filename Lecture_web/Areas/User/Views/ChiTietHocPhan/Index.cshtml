@@ -2942,7 +2942,8 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
               commentsList.scrollTop = currentScrollTop;
             }, 100);
           } else if (commentsList && allComments.length > 0) {
-            // Scroll to top để thấy comment mới nhất (vì đã sắp xếp theo thứ tự giảm dần)
+            // Chỉ scrollTop = 0 nếu vừa gửi bình luận gốc
+            // => Đoạn này sẽ không bị gọi khi reply vì reply luôn truyền maintainScrollPosition = true
             setTimeout(() => {
               commentsList.scrollTop = 0;
             }, 100);

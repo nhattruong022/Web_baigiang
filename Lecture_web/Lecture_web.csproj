@@ -13,6 +13,7 @@
   <ItemGroup>
     <PackageReference Include="elfinder.Net8.AspNet" Version="8.0.12" />
     <PackageReference Include="elFinder.Net8.Drivers.FileSystem" Version="8.0.12" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.12.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

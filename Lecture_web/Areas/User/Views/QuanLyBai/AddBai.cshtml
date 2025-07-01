@@ -1,43 +1,220 @@
-  @{
-  ViewData["Title"] = "Thêm bài mới";
-  Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
-  }
+@model Lecture_web.Models.ViewModels.CreateBaiViewModel
+@{
+    ViewData["Title"] = "Chỉnh sửa bài";
+    Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+}
 
-  <main class="main-content">
+@section style {
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        .main-content {
+            margin-left: 140px;
+            padding: 20px;
+            flex: 1;
+        }
+
+        .bai-modal-form {
+            max-width: 1200px;
+            margin: 30px auto;
+        }
+
+        .text-danger {
+            color: red !important;
+            width: 100%;
+        }
+
+        .ck-editor__editable_inline {
+            min-height: 400px;
+        }
+
+        .text-danger {
+            color: red !important;
+            width: 100%;
+        }
+
+        .ck-editor__main, .ck-editor__editable_inline {
+            height: 400px;
+            max-height: 400px;
+            overflow-y: auto;
+            resize: none;
+        }
+
+        .ck-content iframe {
+            pointer-events: auto;
+        }
+
+
+        .ck-content .ck-media .ck-widget__wrapper {
+            padding-bottom: 56.25% !important;
+        }
+
+        .ck-editor__editable.ck-content ol {
+            list-style-type: decimal;
+            margin-left: 1.5em;
+            padding-left: 0;
+        }
+
+        .ck-editor__editable.ck-content ul {
+            list-style-type: disc;
+            margin-left: 1.5em;
+            padding-left: 0;
+        }
+
+        .ck-editor__editable.ck-content li {
+            margin: 0.5em 0;
+        }
+
+        .ck-editor__editable.ck-content iframe {
+            pointer-events: auto;
+        }
+
+
+
+        .ck-content figure.image.image-style-side {
+            float: right;
+            margin: 0 1em 1em 0;
+        }
+
+
+        .ck-content p > img {
+            display: inline;
+            vertical-align: middle;
+            margin: 0 .2em;
+        }
+
+
+        .ck-content figure.image {
+            display: block;
+            margin: 1em auto;
+        }
+
+
+        .ck-content figure.image {
+            clear: both;
+        }
+    </style>
+}
+
+<main class="main-content">
     <div class="assignment-management-container">
-      <div class="assignment-header">
-        <h2>Thêm bài mới</h2>
-      </div>
-      <form class="bai-modal-form" style="max-width:1300px; margin:30px auto; background:#f8f9fa; border-radius:16px; box-shadow:0 2px 8px rgba(52,152,219,0.08); padding:48px 56px 40px 56px;">
-        <div class="form-group">
-          <label>Tiêu đề <span class="required">*</span></label>
-          <input type="text" required placeholder="Nhập tiêu đề bài">
-        </div>
-        <div class="form-group">
-          <label>Nội dung</label>
-          <textarea rows="7" style="min-height:160px; font-size:1.08rem; padding:16px;" placeholder="Nhập nội dung bài"></textarea>
-        </div>
-        <div class="form-group">
-          <label>Bài giảng <span class="required">*</span></label>
-          <select class="styled-select" required>
-            <option value="">-- Chọn bài giảng --</option>
-            <option value="lecture1" selected>Lập trình web</option>
-            <option value="lecture2">Cơ sở dữ liệu</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Chương <span class="required">*</span></label>
-          <select class="styled-select" required>
-            <option value="">-- Chọn chương --</option>
-            <option value="1" selected>HTML Cơ bản</option>
-            <option value="2">CSS Cơ bản</option>
-          </select>
-        </div>
-
-        <div class="form-actions" style="display:flex; justify-content:flex-end; gap:12px; margin-top:10px;">
-          <button type="button" class="btn-secondary" onclick="window.location.href='assignment-management.html'">Hủy</button>
-          <button type="submit" class="btn-primary">Thêm mới <i class="fas fa-plus"></i></button>
-        </div>
-      </form>
+        <h2>thêm bài mới</h2>
+        <form asp-area="User"
+              asp-controller="QuanLyBai"
+              asp-action="AddBai"
+              id="createBaiForm"
+              method="post"
+              class="bai-modal-form">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="IdChuong" />
+            <div class="form-group mb-3">
+                <label asp-for="TieuDeBai" class="form-label">tiêu đề <span class="required">*</span></label>
+                <input asp-for="TieuDeBai" class="form-control" maxlength=""/>
+                <span asp-validation-for="TieuDeBai" class="text-danger" data-valmsg-for="TieuDeBai"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="NoiDung" class="form-label">nội dung</label>
+                <textarea asp-for="NoiDung" id="NoiDungEditor" class="form-control"></textarea>
+                <span asp-validation-for="NoiDung" class="text-danger" data-valmsg-for="NoiDung"></span>
+            </div>
+            <div class="d-flex justify-content-end gap-2 mb-3">
+                <a asp-area="User"
+                   asp-controller="QuanLyChuong"
+                   asp-action="Index"
+                   asp-route-idbg="@Model.IdBaiGiang"
+                   class="btn-secondary">Hủy</a>
+                <button type="submit" class="btn btn-primary">Thêm mới</button>
+            </div>
+        </form>
     </div>
-  </main>
+</main>
+
+@section scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.0/classic/ckeditor.js"></script>
+    <script>
+        let createEditor;
+        ClassicEditor
+            .create(document.querySelector('#NoiDungEditor'), {
+                toolbar: [
+                    'heading', '|', 'bold', 'italic', 'underline', 'strikethrough', 'link', 'blockQuote', 'insertTable',
+                    '|', 'bulletedList', 'numberedList',
+                    '|', 'mediaEmbed', 'undo', 'redo',
+                ],
+                mediaEmbed: {
+                    previewsInData: true,
+                    extraProviders: [
+                        {
+                            name: 'drive',
+                            url: [/https:\/\/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)\/view/],
+                            html: match => {
+                                const id = match[1];
+                                return (
+                                    '<div style="position:relative;padding-bottom:56.25%;height:0;">' +
+                                    `<iframe src="https://drive.google.com/file/d/${id}/preview" ` +
+                                    'style="position:absolute;top:0;left:0;width:100%;height:100%;" ' +
+                                    'frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>' +
+                                    '</iframe>' +
+                                    '</div>'
+                                );
+                            }
+                        }
+                    ]
+                },
+                link: {
+                    decorators: {
+                        addTargetBlank: {
+                            mode: 'automatic',
+                            callback: () => true,
+                            attributes: { target: '_blank', rel: 'noopener noreferrer' }
+                        }
+                    }
+                }
+            })
+            .then(editor => createEditor = editor)
+            .catch(console.error);
+
+        // 2) AJAX submit
+        $('#createBaiForm').on('submit', function (e) {
+            e.preventDefault();
+            var $f = $(this);
+            var url = $f.attr('action'),
+                data = $f.serialize(),
+                token = $f.find('input[name="__RequestVerificationToken"]').val();
+
+            $f.find('span.text-danger').text('');
+
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                headers: { 'RequestVerificationToken': token }
+            })
+                .done(function () {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Đã thêm bài',
+                        timer: 1200,
+                        showConfirmButton: false
+                    }).then(function () {
+                        window.location.href = '@Url.Action("Index", "QuanLyChuong", new { area = "User", idbg = Model.IdBaiGiang })';
+                    });
+                })
+                .fail(function (xhr) {
+                    if (xhr.status === 400 && xhr.responseJSON.errors) {
+                        var errs = xhr.responseJSON.errors;
+                        $f.find('.is-invalid').removeClass('is-invalid');
+                        $f.find('span[data-valmsg-for]').text('');
+                        $.each(errs, function (field, messages) {
+                            var $msg = $f.find('span.text-danger[data-valmsg-for="' + field + '"]');
+                            $msg.text(messages[0]);
+                        });
+                    } else {
+                        alert('Lỗi server, thử lại');
+                    }
+                });
+        });
+    </script>
+}

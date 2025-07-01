@@ -1096,22 +1096,65 @@ namespace Lecture_web.Areas.User.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteComment([FromBody] int id)
         {
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            var userRole = User.FindFirstValue(ClaimTypes.Role);
-            var comment = await _context.BinhLuan.FindAsync(id);
-            if (comment == null) return NotFound();
-            // Sinh viên chỉ xóa được bình luận của mình, giảng viên xóa được của mình và sinh viên
-            if (userRole == "Sinhvien" && comment.IdTaiKhoan != userId) return Forbid();
-            if (userRole == "Giangvien" && comment.IdTaiKhoan != userId)
+            try
             {
-                var owner = await _context.TaiKhoan.FindAsync(comment.IdTaiKhoan);
-                if (owner == null || owner.VaiTro != "Sinhvien") return Forbid();
+                var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                var userRole = User.FindFirstValue(ClaimTypes.Role);
+                var comment = await _context.BinhLuan.FindAsync(id);
+                
+                if (comment == null) return NotFound();
+                
+                // Sinh viên chỉ xóa được bình luận của mình, giảng viên xóa được của mình và sinh viên
+                if (userRole == "Sinhvien" && comment.IdTaiKhoan != userId) return Forbid();
+                if (userRole == "Giangvien" && comment.IdTaiKhoan != userId)
+                {
+                    var owner = await _context.TaiKhoan.FindAsync(comment.IdTaiKhoan);
+                    if (owner == null || owner.VaiTro != "Sinhvien") return Forbid();
+                }
+                
+                int classId = comment.IdLopHocPhan;
+                Console.WriteLine($"DEBUG: Deleting comment {id} and its children for class {classId}");
+                
+                // Tìm tất cả bình luận con (phản hồi) trước khi xóa comment cha
+                var childComments = await _context.BinhLuan
+                    .Where(c => c.IdBinhLuanCha == id)
+                    .ToListAsync();
+                
+                Console.WriteLine($"DEBUG: Found {childComments.Count} child comments to delete");
+                
+                // Xóa tất cả bình luận con trước và broadcast deletion
+                foreach (var child in childComments)
+                {
+                    Console.WriteLine($"DEBUG: Deleting child comment {child.IdBinhLuan}");
+                    _context.BinhLuan.Remove(child);
+                    // Broadcast xóa comment con
+                    await _hubContext.Clients.Group($"Class_{classId}").SendAsync("DeleteComment", child.IdBinhLuan);
+                }
+                
+                // Sau đó xóa comment cha
+                Console.WriteLine($"DEBUG: Deleting parent comment {id}");
+                _context.BinhLuan.Remove(comment);
+                
+                // Lưu changes
+                await _context.SaveChangesAsync();
+                Console.WriteLine($"DEBUG: Successfully deleted comment {id} and {childComments.Count} children");
+                
+                // Broadcast xóa comment cha
+                await _hubContext.Clients.Group($"Class_{classId}").SendAsync("DeleteComment", id);
+                
+                return Json(new { 
+                    success = true, 
+                    message = childComments.Count > 0 ? 
+                        $"Đã xóa bình luận và {childComments.Count} phản hồi" : 
+                        "Đã xóa bình luận"
+                });
             }
-            int classId = comment.IdLopHocPhan;
-            _context.BinhLuan.Remove(comment);
-            await _context.SaveChangesAsync();
-            await _hubContext.Clients.Group($"Class_{classId}").SendAsync("DeleteComment", id);
-            return Json(new { success = true });
+            catch (Exception ex)
+            {
+                Console.WriteLine($"DEBUG: DeleteComment error: {ex.Message}");
+                Console.WriteLine($"DEBUG: DeleteComment stack trace: {ex.StackTrace}");
+                return Json(new { success = false, message = $"Lỗi xóa bình luận: {ex.Message}" });
+            }
         }
 
         // API: Lấy danh sách bình luận cho bài học

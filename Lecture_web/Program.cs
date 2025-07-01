@@ -24,7 +24,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 // Add custom services
 builder.Services.AddScoped<Lecture_web.Service.EmailService>();
-
+builder.Services.AddScoped<Lecture_web.Service.ImageDataHandle>();
 
 // Add SignalR (MUST be before Build())
 builder.Services.AddSignalR();

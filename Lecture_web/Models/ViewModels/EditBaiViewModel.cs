@@ -8,6 +8,7 @@ namespace Lecture_web.Models.ViewModels
         public int IdBai { get; set; }
 
         [Required(ErrorMessage = "Chưa nhập tiêu đề bài")]
+        [MaxLength(100, ErrorMessage = "Tiêu đề không được vượt quá 100 ký tự")]
 
         public string TieuDeBai { get; set; }
 
