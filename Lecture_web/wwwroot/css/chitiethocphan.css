@@ -387,6 +387,10 @@ html, body, .app-container {
   max-width: 100%;
   margin-left: 0;
   margin-right: 0;
+  /* Đảm bảo text không tràn ra ngoài */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  box-sizing: border-box;
 }
 .lesson-header {
   padding: 24px 0;
@@ -407,6 +411,12 @@ html, body, .app-container {
 }
 .lesson-body {
   padding: 0;
+  /* Đảm bảo không tràn ra ngoài */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: visible;
 }
 .lesson-video {
   margin-bottom: 18px;
@@ -453,6 +463,13 @@ html, body, .app-container {
   color: #22334d;
   font-size: 1.08rem;
   margin-top: 8px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  max-width: 100%;
+  box-sizing: border-box;
+  line-height: 1.6;
+  overflow: visible;
 }
 .lesson-desc h4 {
   color: #2c3e50;

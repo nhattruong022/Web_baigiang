@@ -2,7 +2,7 @@
 ViewData["Title"] = "Chi tiết học phần";
 var userRole = ViewBag.UserRole as string;
 var currentUser = ViewBag.CurrentUser as Lecture_web.Models.TaiKhoanModels;
-var currentUserAvatar = currentUser?.AnhDaiDien ?? "/images/avatar.jpg";
+var currentUserAvatar = currentUser?.AnhDaiDien ?? "/images/avatars/avatar.jpg";
 var currentUserName = currentUser?.HoTen ?? "Người dùng";
 <link rel="stylesheet" href="~/css/chitiethocphan.css" />
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -983,7 +983,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         </div>
         <div class="lesson-body">
             <div class="lesson-desc">
-                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid #007bff;">
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid #007bff; word-wrap: break-word; overflow-wrap: break-word; white-space: pre-wrap; max-width: 100%; box-sizing: border-box; line-height: 1.6; overflow: visible;">
                     ${noiDungText ? noiDungText.replace(/\n/g, '<br>') : 'Chưa có nội dung cho bài học này.'}
                 </div>
             </div>
@@ -2942,7 +2942,8 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
               commentsList.scrollTop = currentScrollTop;
             }, 100);
           } else if (commentsList && allComments.length > 0) {
-            // Scroll to top để thấy comment mới nhất (vì đã sắp xếp theo thứ tự giảm dần)
+            // Chỉ scrollTop = 0 nếu vừa gửi bình luận gốc
+            // => Đoạn này sẽ không bị gọi khi reply vì reply luôn truyền maintainScrollPosition = true
             setTimeout(() => {
               commentsList.scrollTop = 0;
             }, 100);
