@@ -2,7 +2,7 @@
 ViewData["Title"] = "Chi tiết học phần";
 var userRole = ViewBag.UserRole as string;
 var currentUser = ViewBag.CurrentUser as Lecture_web.Models.TaiKhoanModels;
-var currentUserAvatar = currentUser?.AnhDaiDien ?? "/images/avatar.jpg";
+var currentUserAvatar = currentUser?.AnhDaiDien ?? "/images/avatars/avatar.jpg";
 var currentUserName = currentUser?.HoTen ?? "Người dùng";
 <link rel="stylesheet" href="~/css/chitiethocphan.css" />
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
