@@ -134,99 +134,50 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.0/classic/ckeditor.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
-@*     <script src="~/lib/ckeditor5/ckeditor.js"></script> *@
+
 
   <script>
-        let myEditor;
-        ClassicEditor
-            .create(document.querySelector('#NoiDungEditor'), {
-                toolbar: [
-                    'heading', '|', 'bold', 'italic', 'underline', 'strikethrough', 'link', 'blockQuote', 'insertTable',
-                    '|', 'bulletedList', 'numberedList',
-                    '|', 'mediaEmbed', 'undo', 'redo', 'imageStyle:alignLeft', 'imageStyle:center', 'imageStyle:alignRight'
-                ],
-                mediaEmbed: {
-                    previewsInData: true,
-
-  
-                    extraProviders: [
-                        {
-                            name: 'drive',
-                            url: [
-                                /https:\/\/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)\/view/
-                            ],
-                            html: match => {
-                                const id = match[1];
-                                return (
-                                    '<div style="position:relative;padding-bottom:56.25%;height:0;">' +
-                                    `<iframe src="https://drive.google.com/file/d/${id}/preview" ` +
-                                    'style="position:absolute;top:0;left:0;width:100%;height:100%;" ' +
-                                    'frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>' +
-                                    '</iframe>' +
-                                    '</div>'
-                                );
-                            }
-                        }
-                    ]
-                },
-
-
-                link: {
-                    decorators: {
-                        addTargetBlank: {
-                            mode: 'automatic',
-                            callback: () => true,
-                            attributes: {
-                                target: '_blank',
-                                rel: 'noopener noreferrer'
-                            }
-                        }
-                    }
-                },
-            })
-            .then(editor => {
-                const editableEl = editor.ui.view.editable.element;
-
-                function makeImagesResizable() {
-                    const imgs = editableEl.querySelectorAll('img');
-                    console.log('🔍 makeImagesResizable, imgs:', imgs.length);
-                    imgs.forEach(img => {
-                        if (img.classList.contains('resizable-bound')) return;
-                        img.classList.add('resizable-bound');
-                        interact(img).resizable({
-                            edges: { left: true, right: true, bottom: true, top: true },
-                            invert: 'none',
-                            listeners: {
-                                move(event) {
-                                    // xóa việc dùng translate(), chỉ update kích thước
-                                    const img = event.target;
-
-                                    // Lấy kích thước mới
-                                    const w = Math.round(event.rect.width);
-                                    const h = Math.round(event.rect.height);
-
-                                    // Gán vào inline style để CKEditor getData() nhặt lên
-                                    img.style.width = w + 'px';
-                                    img.style.height = h + 'px';
-
-                                    // Nếu bạn thích: đặt luôn attribute width/height để dễ HTML
-                                    img.setAttribute('width', w);
-                                    img.setAttribute('height', h);
-                                }
-                            }
-                        })
-                    });
-                }
-
-                editor.model.document.on('change:data', () => {
-                    setTimeout(makeImagesResizable, 100);
-                });
-                // lần đầu
-                makeImagesResizable();
-            })
+      ClassicEditor
+          .create(document.querySelector('#NoiDungEditor'), {
+              toolbar: [
+                  'heading', '|', 'bold', 'italic', 'link', 'blockQuote', 'insertTable',
+                  '|', 'bulletedList', 'numberedList',
+                  '|', 'mediaEmbed', 'undo', 'redo',
+              ],
+              mediaEmbed: {
+                  previewsInData: true,
+                  extraProviders: [
+                      {
+                          name: 'drive',
+                          url: [/https:\/\/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)\/view/],
+                          html: match => {
+                              const id = match[1];
+                              return (
+                                  '<div style="position:relative;padding-bottom:56.25%;height:0;">' +
+                                  `<iframe src="https://drive.google.com/file/d/${id}/preview" ` +
+                                  'style="position:absolute;top:0;left:0;width:100%;height:100%;" ' +
+                                  'frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>' +
+                                  '</iframe>' +
+                                  '</div>'
+                              );
+                          }
+                      }
+                  ]
+              },
+              link: {
+                  decorators: {
+                      addTargetBlank: {
+                          mode: 'automatic',
+                          callback: () => true,
+                          attributes: { target: '_blank', rel: 'noopener noreferrer' }
+                      }
+                  }
+              }
+          })
+            .then(editor => createEditor = editor)
             .catch(console.error);
 
+              
 
 
 
@@ -238,13 +189,6 @@
 
  
             $f.find('span.text-danger').text('');
-
-            if (myEditor) {
-                const htmlFromDom = myEditor.ui.view.editable.element.innerHTML;
-                // Gán vào textarea để serialize lên server
-                $f.find('textarea[name="NoiDung"]').val(htmlFromDom);
-            }
-
             data = $f.serialize(),
 
             $.ajax({

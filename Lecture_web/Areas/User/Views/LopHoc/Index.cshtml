@@ -174,7 +174,7 @@
               if (!string.IsNullOrEmpty(l.GiangVienAvatarUrl))
               {
               // Nếu đường dẫn đã có / ở đầu thì dùng trực tiếp, không thì thêm ~/images/
-                  string baseUrl = l.GiangVienAvatarUrl.StartsWith("/") ? l.GiangVienAvatarUrl : Url.Content($"~/images/{l.GiangVienAvatarUrl}");
+                  string baseUrl = l.GiangVienAvatarUrl.StartsWith("/") ? l.GiangVienAvatarUrl : Url.Content($"~/images/avatars/{l.GiangVienAvatarUrl}");
               // Thêm cache buster dựa trên ngày cập nhật để force refresh
               avatarUrl = $"{baseUrl}?v={l.NgayCapNhat.Ticks}";
               }
