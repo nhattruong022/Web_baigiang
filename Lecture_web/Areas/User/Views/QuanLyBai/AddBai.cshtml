@@ -31,6 +31,67 @@
             color: red !important;
             width: 100%;
         }
+
+        .ck-editor__main, .ck-editor__editable_inline {
+            height: 400px;
+            max-height: 400px;
+            overflow-y: auto;
+            resize: none;
+        }
+
+        .ck-content iframe {
+            pointer-events: auto;
+        }
+
+
+        .ck-content .ck-media .ck-widget__wrapper {
+            padding-bottom: 56.25% !important;
+        }
+
+        .ck-editor__editable.ck-content ol {
+            list-style-type: decimal;
+            margin-left: 1.5em;
+            padding-left: 0;
+        }
+
+        .ck-editor__editable.ck-content ul {
+            list-style-type: disc;
+            margin-left: 1.5em;
+            padding-left: 0;
+        }
+
+        .ck-editor__editable.ck-content li {
+            margin: 0.5em 0;
+        }
+
+        .ck-editor__editable.ck-content iframe {
+            pointer-events: auto;
+        }
+
+
+
+        .ck-content figure.image.image-style-side {
+            float: right;
+            margin: 0 1em 1em 0;
+        }
+
+
+        .ck-content p > img {
+            display: inline;
+            vertical-align: middle;
+            margin: 0 .2em;
+        }
+
+
+        .ck-content figure.image {
+            display: block;
+            margin: 1em auto;
+        }
+
+
+        .ck-content figure.image {
+            clear: both;
+        }
     </style>
 }
 
