@@ -79,7 +79,8 @@ namespace Lecture_web.Areas.User.Controllers
                         NoiDung = request.NoiDung,
                         NgayTao = thongBaoDetail.NgayTao.ToString("dd/MM/yyyy HH:mm"),
                         TenGiangVien = thongBaoDetail.TaiKhoan.HoTen,
-                        TenLopHocPhan = thongBaoDetail.LopHocPhan.TenLop
+                        TenLopHocPhan = thongBaoDetail.LopHocPhan.TenLop,
+                        Avatar = ProcessAvatarPath(thongBaoDetail.TaiKhoan.AnhDaiDien)
                     };
 
                     await _hubContext.Clients.Group($"Class_{request.IdLopHocPhan}")
@@ -224,16 +225,26 @@ namespace Lecture_web.Areas.User.Controllers
                         NoiDung = tb.NoiDung,
                         NgayTao = tb.NgayTao.ToString("dd/MM/yyyy HH:mm"),
                         TenGiangVien = tb.TaiKhoan.HoTen,
-                        Avatar = tb.TaiKhoan.AnhDaiDien
+                        rawAvatar = tb.TaiKhoan.AnhDaiDien
                     })
                     .ToListAsync();
 
-                System.Diagnostics.Debug.WriteLine($"Notifications retrieved: {notifications.Count}");
+                // Xử lý avatar path cho từng notification
+                var processedNotifications = notifications.Select(n => new
+                {
+                    idThongBao = n.IdThongBao,
+                    noiDung = n.NoiDung,
+                    ngayTao = n.NgayTao,
+                    tenGiangVien = n.TenGiangVien,
+                    avatar = ProcessAvatarPath(n.rawAvatar)
+                }).ToList();
+
+                System.Diagnostics.Debug.WriteLine($"Notifications retrieved: {processedNotifications.Count}");
 
                 return Json(new
                 {
                     success = true,
-                    data = notifications,
+                    data = processedNotifications,
                     pagination = new
                     {
                         currentPage = page,
@@ -268,20 +279,33 @@ namespace Lecture_web.Areas.User.Controllers
                         NoiDung = tb.NoiDung,
                         NgayTao = tb.NgayTao.ToString("dd/MM/yyyy HH:mm"),
                         TenGiangVien = tb.TaiKhoan.HoTen,
-                        Avatar = tb.TaiKhoan.AnhDaiDien,
+                        rawAvatar = tb.TaiKhoan.AnhDaiDien,
                         IsInviteToken = tb.NoiDung.StartsWith("USED|") || tb.NoiDung.StartsWith("INVITE|"),
                         IsEmpty = string.IsNullOrEmpty(tb.NoiDung),
                         Length = tb.NoiDung != null ? tb.NoiDung.Length : 0
                     })
                     .ToListAsync();
 
+                // Xử lý avatar path cho từng notification
+                var processedNotifications = allNotifications.Select(n => new
+                {
+                    idThongBao = n.IdThongBao,
+                    noiDung = n.NoiDung,
+                    ngayTao = n.NgayTao,
+                    tenGiangVien = n.TenGiangVien,
+                    avatar = ProcessAvatarPath(n.rawAvatar),
+                    isInviteToken = n.IsInviteToken,
+                    isEmpty = n.IsEmpty,
+                    length = n.Length
+                }).ToList();
+
                 return Json(new
                 {
                     success = true,
                     message = "Debug data retrieved",
                     idLopHocPhan = idLopHocPhan,
-                    totalRecords = allNotifications.Count,
-                    data = allNotifications
+                    totalRecords = processedNotifications.Count,
+                    data = processedNotifications
                 });
             }
             catch (Exception ex)
@@ -324,7 +348,8 @@ namespace Lecture_web.Areas.User.Controllers
                         NoiDung = request.NoiDung,
                         NgayTao = thongBaoDetail.NgayTao.ToString("dd/MM/yyyy HH:mm"),
                         TenGiangVien = thongBaoDetail.TaiKhoan.HoTen,
-                        TenLopHocPhan = thongBaoDetail.LopHocPhan.TenLop
+                        TenLopHocPhan = thongBaoDetail.LopHocPhan.TenLop,
+                        Avatar = ProcessAvatarPath(thongBaoDetail.TaiKhoan.AnhDaiDien)
                     };
                     await _hubContext.Clients.Group($"Class_{thongBaoDetail.IdLopHocPhan}")
                         .SendAsync("UpdateNotification", notificationData);
@@ -386,6 +411,30 @@ namespace Lecture_web.Areas.User.Controllers
             catch (Exception ex)
             {
                 return Json(new { success = false, message = $"Lỗi khi xóa thông báo: {ex.Message}" });
+            }
+        }
+
+        private string ProcessAvatarPath(string rawAvatar)
+        {
+            if (string.IsNullOrEmpty(rawAvatar))
+            {
+                return "/images/avatars/avatar.jpg"; // Fallback mặc định
+            }
+
+            // Nếu đường dẫn đã có / ở đầu thì dùng trực tiếp
+            if (rawAvatar.StartsWith("/"))
+            {
+                return rawAvatar;
+            }
+            // Nếu đường dẫn bắt đầu bằng images/ thì thêm / ở đầu
+            else if (rawAvatar.StartsWith("images/"))
+            {
+                return "/" + rawAvatar;
+            }
+            // Nếu không có format chuẩn thì thêm prefix
+            else
+            {
+                return "/images/avatars/" + rawAvatar;
             }
         }
     }

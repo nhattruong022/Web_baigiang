@@ -2,7 +2,7 @@
 ViewData["Title"] = "Chi tiết học phần";
 var userRole = ViewBag.UserRole as string;
 var currentUser = ViewBag.CurrentUser as Lecture_web.Models.TaiKhoanModels;
-var currentUserAvatar = currentUser?.AnhDaiDien ?? "/images/avatars/avatar.jpg";
+var currentUserAvatar = !string.IsNullOrEmpty(currentUser?.AnhDaiDien) ? currentUser.AnhDaiDien : "/images/avatars/avatar.jpg";
 var currentUserName = currentUser?.HoTen ?? "Người dùng";
 <link rel="stylesheet" href="~/css/chitiethocphan.css" />
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -103,14 +103,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
                   <td>@student.Email</td>
                   <td>@(student.SoDienThoai ?? "Chưa cập nhật")</td>
                   <td>
-                    @if (!string.IsNullOrEmpty(student.AnhDaiDien))
-                    {
-                    <img style="width:52px; height:52px; border-radius:50%;" src="@(!string.IsNullOrEmpty(student.AnhDaiDien) ? student.AnhDaiDien : " /images/avatar.jpg")" class="student-avatar" />
-                    }
-                    else
-                    {
-                    <img style="width:52px; height:52px; border-radius:50%;" src="/images/avatar.jpg" class="student-avatar" />
-                    }
+                    <img style="width:52px; height:52px; border-radius:50%;" src="@(!string.IsNullOrEmpty(student.AnhDaiDien) ? student.AnhDaiDien : " /images/avatars/avatar.jpg")" class="student-avatar" onerror="this.src='/images/avatars/avatar.jpg'" />
                   </td>
                   <td><span class="status-badge @(student.TrangThai == " HoatDong" ? "hoatdong" : "" )">@(student.TrangThai == "HoatDong" ? "Hoạt động" : (student.TrangThai ?? "Chưa cập nhật"))</span></td>
                   @if (userRole != "Sinhvien")
@@ -453,20 +446,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     margin-right: 12px;
   }
 
-  .comment-avatar-empty {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    float: left;
-    margin-right: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 600;
-    font-size: 14px;
-  }
+
 
   .comment-main {
     margin-left: 48px;
@@ -702,6 +682,69 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
       max-width: 1400px;
       margin: 0 auto;
     }
+  }
+
+  /* CSS cho avatar với fallback mặc định */
+  .student-avatar,
+  .comment-avatar,
+  .notice-avatar {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background-color: #f8f9fa;
+    border: 2px solid #e9ecef;
+    transition: all 0.2s ease;
+  }
+
+  .student-avatar:hover,
+  .comment-avatar:hover,
+  .notice-avatar:hover {
+    border-color: #007bff;
+    transform: scale(1.05);
+  }
+
+  /* Đảm bảo các avatar có kích thước cố định */
+  .student-avatar {
+    width: 52px !important;
+    height: 52px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+  }
+
+  .comment-avatar {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+  }
+
+  .notice-avatar {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+  }
+
+  /* CSS cho avatar trong top bar */
+  .top-bar-avatar {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* CSS cho avatar trong profile */
+  .profile-avatar {
+    width: 150px !important;
+    height: 150px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 </style>
 
@@ -960,7 +1003,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         <td>${student.email || 'N/A'}</td>
         <td>${student.soDienThoai || 'Chưa cập nhật'}</td>
         <td>
-          ${student.anhDaiDien ? `<img style='width:52px; height:52px; border-radius:50%;' src='${student.anhDaiDien}' class='student-avatar' />` : ''}
+          <img style="width:52px; height:52px; border-radius:50%;" src="${student.anhDaiDien || '/images/avatars/avatar.jpg'}" class="student-avatar" onerror="this.src='/images/avatars/avatar.jpg'" />
         </td>
         <td><span class="status-badge ${student.trangThai === 'HoatDong' ? 'hoatdong' : ''}">${student.trangThai === 'HoatDong' ? 'Hoạt động' : (student.trangThai || 'Chưa cập nhật')}</span></td>
         ${userRole !== "Sinhvien" ? `
@@ -1248,11 +1291,11 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         resultsContainer.innerHTML = data.data.map(student => {
           const isSelected = selectedStudentsForInvite.some(s => s.idTaiKhoan === student.idTaiKhoan);
           return `
-            <div class="search-result-item ${isSelected ? 'selected' : ''}" onclick="toggleStudentSelection(${student.idTaiKhoan}, '${student.email.replace(/'/g, "\\'")}', '${student.hoTen.replace(/'/g, "\\'")}', '${(student.anhDaiDien || '/images/avatar.jpg').replace(/'/g, "\\'")}'); event.stopPropagation();" style="padding:12px; display:flex; align-items:center; gap:12px; cursor:pointer; border-radius:6px; margin-bottom:4px; transition:all 0.2s; border: 2px solid ${isSelected ? '#2196F3' : 'transparent'}; background: ${isSelected ? '#e3f2fd' : 'transparent'};" onmouseover="if(!this.classList.contains('selected')) this.style.background='#f5f5f5'" onmouseout="if(!this.classList.contains('selected')) this.style.background='transparent'">
+            <div class="search-result-item ${isSelected ? 'selected' : ''}" onclick="toggleStudentSelection(${student.idTaiKhoan}, '${student.email.replace(/'/g, "\\'")}', '${student.hoTen.replace(/'/g, "\\'")}', '${(student.anhDaiDien || '/images/avatars/avatar.jpg').replace(/'/g, "\\'")}'); event.stopPropagation();" style="padding:12px; display:flex; align-items:center; gap:12px; cursor:pointer; border-radius:6px; margin-bottom:4px; transition:all 0.2s; border: 2px solid ${isSelected ? '#2196F3' : 'transparent'}; background: ${isSelected ? '#e3f2fd' : 'transparent'};" onmouseover="if(!this.classList.contains('selected')) this.style.background='#f5f5f5'" onmouseout="if(!this.classList.contains('selected')) this.style.background='transparent'">
               <div style="width:20px; height:20px; border:2px solid ${isSelected ? '#2196F3' : '#ddd'}; border-radius:4px; display:flex; align-items:center; justify-content:center; background:${isSelected ? '#2196F3' : 'white'};">
                 ${isSelected ? '<i class="fas fa-check" style="color:white; font-size:12px;"></i>' : ''}
               </div>
-              <img src="${student.anhDaiDien || '/images/avatar.jpg'}" alt="${student.hoTen}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+              <img src="${student.anhDaiDien || '/images/avatars/avatar.jpg'}" alt="${student.hoTen}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
               <div style="flex:1;">
                 <div style="font-weight:500; color:#333;">${student.hoTen}</div>
                 <div style="font-size:0.85rem; color:#666;">${student.email}</div>
@@ -1357,7 +1400,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     container.style.display = 'block';
     list.innerHTML = selectedStudentsForInvite.map((student, index) => `
       <div style="display:flex; align-items:center; gap:8px; padding:6px; border-bottom:1px solid #f0f0f0; ${index === selectedStudentsForInvite.length - 1 ? 'border-bottom:none;' : ''}">
-        <img src="${student.avatar || '/images/avatar.jpg'}" alt="${student.name}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">
+        <img src="${student.avatar || '/images/avatars/avatar.jpg'}" alt="${student.name}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">
         <div style="flex:1; font-size:0.85rem;">
           <div style="font-weight:500; color:#333;">${student.name}</div>
           <div style="color:#666;">${student.email}</div>
@@ -2124,6 +2167,11 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     const userRole = '@userRole';
     const isNotStudent = !userRole || userRole.toLowerCase() !== 'sinhvien';
     const currentUserAvatar = '@currentUserAvatar';
+
+    // DEBUG: Kiểm tra currentUserAvatar
+    console.log('DEBUG currentUserAvatar:', currentUserAvatar);
+    console.log('DEBUG currentUserAvatar length:', currentUserAvatar.length);
+
     const container = document.getElementById('tab-notices');
 
     if (!container) {
@@ -2178,7 +2226,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     const notificationsHtml = notifications.map(tb => `
       <div class="notice-card" data-id="${tb.idThongBao}">
         <div class="notice-header">
-          <img src="${tb.avatar && tb.avatar.trim() !== '' ? tb.avatar : '/images/avatar.jpg'}" alt="Avatar của ${tb.tenGiangVien || 'Người tạo'}" class="notice-avatar" />
+          <img src="${tb.avatar && tb.avatar.trim() !== '' ? tb.avatar : '/images/avatars/avatar.jpg'}" alt="Avatar của ${tb.tenGiangVien || 'Người tạo'}" class="notice-avatar" />
           <div class="notice-info">
             <div class="notice-author">${tb.tenGiangVien || 'Không xác định'}</div>
             <div class="notice-time">${tb.ngayTao || ''}</div>
@@ -2197,7 +2245,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
           <div style="white-space:normal;word-break:break-word;overflow-wrap:break-word;">${tb.noiDung || ''}</div>
         </div>
         <div class="notice-comment">
-          <img src="${currentUserAvatar}" alt="Avatar của bạn" class="comment-avatar">
+          <img src="${processedCurrentUserAvatar}" alt="Avatar của bạn" class="comment-avatar">
           <input type="text" placeholder="Thêm nhận xét trong lớp học...">
           <button class="comment-send"><i class="fas fa-paper-plane"></i></button>
         </div>
@@ -2652,10 +2700,8 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         }
       }
 
-      // Tạo avatar hoặc chữ cái đầu
-      const avatarHtml = avatar ?
-        `<img src="${avatar}" class="comment-avatar" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0;" />` :
-        `<div class="comment-avatar-empty" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(45deg, #007bff, #0056b3); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 1.1rem; flex-shrink: 0;">${authorName.charAt(0).toUpperCase()}</div>`;
+      // Tạo avatar với fallback đến ảnh mặc định
+      const avatarHtml = `<img src="${avatar || '/images/avatars/avatar.jpg'}" class="comment-avatar" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0;" onerror="this.src='/images/avatars/avatar.jpg'" />`;
 
       // Lấy replies cho comment này - hỗ trợ cả hai format
       const replies = allComments.filter(x => (x.idBinhLuanCha || x.IdBinhLuanCha) === commentId);
@@ -3087,7 +3133,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
 
       html += `
         <div class='comment' id='class-comment-${c.id}'>
-          ${c.avatar ? `<img src='${c.avatar}' class='comment-avatar' style='width:36px;height:36px;border-radius:50%;'>` : ''}
+          <img src='${c.avatar || '/images/avatars/avatar.jpg'}' class='comment-avatar' style='width:36px;height:36px;border-radius:50%;' onerror='this.src="/images/avatars/avatar.jpg"'>
           <b>${c.hoTen || 'Ẩn danh'}</b>
           <span style='color:#888;font-size:0.9em;'>${c.ngayTao ? new Date(c.ngayTao).toLocaleString('vi-VN') : ''}</span>
           <span style='margin-left:auto;font-size:0.9em;color:#aaa;'>${c.role || ''}</span>
@@ -3153,6 +3199,51 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
       closeConfirmDeleteModal();
     }
   }
+
+  // Function để xử lý lỗi avatar và fallback đến ảnh mặc định
+  function handleAvatarError(imgElement) {
+    if (imgElement.src !== window.location.origin + '/images/avatars/avatar.jpg' &&
+      imgElement.src !== '/images/avatars/avatar.jpg') {
+      imgElement.src = '/images/avatars/avatar.jpg';
+      imgElement.onerror = null; // Tránh loop
+    }
+  }
+
+  // Đảm bảo tất cả avatar có fallback khi DOM loaded
+  document.addEventListener('DOMContentLoaded', function() {
+    // Tìm tất cả img elements có class liên quan đến avatar
+    const avatarImages = document.querySelectorAll('.student-avatar, .comment-avatar, .notice-avatar, .top-bar-avatar, .profile-avatar');
+
+    avatarImages.forEach(img => {
+      // Thêm error handler nếu chưa có
+      if (!img.hasAttribute('onerror')) {
+        img.setAttribute('onerror', "handleAvatarError(this)");
+      }
+
+      // Kiểm tra nếu src rỗng hoặc null thì set về ảnh mặc định
+      if (!img.src || img.src === '' || img.src === window.location.href) {
+        img.src = '/images/avatars/avatar.jpg';
+      }
+    });
+  });
+
+  const isNotStudent = !userRole || userRole.toLowerCase() !== 'sinhvien';
+  const currentUserAvatar = '@currentUserAvatar';
+
+  // DEBUG: Kiểm tra currentUserAvatar
+  console.log('DEBUG currentUserAvatar:', currentUserAvatar);
+  console.log('DEBUG currentUserAvatar length:', currentUserAvatar.length);
+  console.log('DEBUG currentUserAvatar isEmpty:', !currentUserAvatar || currentUserAvatar.trim() === '');
+
+  // DEBUG: Thêm fallback cho currentUserAvatar nếu empty
+  let processedCurrentUserAvatar = currentUserAvatar;
+  if (!currentUserAvatar || currentUserAvatar.trim() === '') {
+    processedCurrentUserAvatar = '/images/avatars/avatar.jpg';
+    console.log('DEBUG: Using fallback avatar for current user');
+  }
+  console.log('DEBUG processedCurrentUserAvatar:', processedCurrentUserAvatar);
+
+  const container = document.getElementById('tab-notices');
 </script>
 
 @* Handle TempData messages *@

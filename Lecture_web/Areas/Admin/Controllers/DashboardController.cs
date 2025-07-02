@@ -18,7 +18,7 @@ namespace Lecture_web.Areas.Admin.Controllers
         {
             var username = User.Identity?.Name;
             var user = _context.TaiKhoan.FirstOrDefault(u => u.TenDangNhap == username);
-            ViewBag.Avatar = user != null && !string.IsNullOrEmpty(user.AnhDaiDien) ? user.AnhDaiDien : "/images/avatar.jpg";
+            ViewBag.Avatar = user != null && !string.IsNullOrEmpty(user.AnhDaiDien) ? user.AnhDaiDien : "/images/avatars/avatar.jpg";
             ViewBag.UserName = user?.HoTen ?? user?.TenDangNhap ?? "User";
             ViewBag.TotalKhoa = _context.Khoa.Count();
             ViewBag.TotalTaiKhoan = _context.TaiKhoan.Count();

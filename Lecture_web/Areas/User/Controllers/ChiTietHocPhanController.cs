@@ -1042,7 +1042,7 @@ namespace Lecture_web.Areas.User.Controllers
                     idLopHocPhan = model.IdLopHocPhan,
                     hoTen = currentUser?.HoTen ?? User.Identity.Name,
                     tenDangNhap = currentUser?.TenDangNhap ?? "",
-                    avatar = currentUser?.AnhDaiDien,
+                    avatar = ProcessAvatarPath(currentUser?.AnhDaiDien),
                     role = userRole
                 };
                 
@@ -1085,7 +1085,7 @@ namespace Lecture_web.Areas.User.Controllers
                 ngayTao = comment.NgayTao,
                 hoTen = currentUser?.HoTen ?? User.Identity.Name,
                 tenDangNhap = currentUser?.TenDangNhap ?? "",
-                avatar = currentUser?.AnhDaiDien,
+                avatar = ProcessAvatarPath(currentUser?.AnhDaiDien),
                 role = userRole
             });
             return Json(new { success = true });
@@ -1180,14 +1180,30 @@ namespace Lecture_web.Areas.User.Controllers
                         idLopHocPhan = c.IdLopHocPhan,
                         hoTen = c.TaiKhoan != null ? c.TaiKhoan.HoTen : "Ẩn danh",
                         tenDangNhap = c.TaiKhoan != null ? c.TaiKhoan.TenDangNhap : "",
-                        avatar = c.TaiKhoan != null ? c.TaiKhoan.AnhDaiDien : null,
+                        rawAvatar = c.TaiKhoan != null ? c.TaiKhoan.AnhDaiDien : null,
                         role = c.TaiKhoan != null ? c.TaiKhoan.VaiTro : ""
                     })
                     .ToListAsync();
-                    
-                Console.WriteLine($"DEBUG: Found {comments.Count} comments for idBai = {idBai}");
                 
-                return Json(new { success = true, data = comments });
+                // Xử lý avatar path cho từng comment
+                var processedComments = comments.Select(c => new {
+                    id = c.id,
+                    noiDung = c.noiDung,
+                    ngayTao = c.ngayTao,
+                    idTaiKhoan = c.idTaiKhoan,
+                    idBinhLuanCha = c.idBinhLuanCha,
+                    idBai = c.idBai,
+                    idThongBao = c.idThongBao,
+                    idLopHocPhan = c.idLopHocPhan,
+                    hoTen = c.hoTen,
+                    tenDangNhap = c.tenDangNhap,
+                    avatar = ProcessAvatarPath(c.rawAvatar),
+                    role = c.role
+                }).ToList();
+                    
+                Console.WriteLine($"DEBUG: Found {processedComments.Count} comments for idBai = {idBai}");
+                
+                return Json(new { success = true, data = processedComments });
             }
             catch (Exception ex)
             {
@@ -1219,19 +1235,59 @@ namespace Lecture_web.Areas.User.Controllers
                         idLopHocPhan = c.IdLopHocPhan,
                         hoTen = c.TaiKhoan != null ? c.TaiKhoan.HoTen : "Ẩn danh",
                         tenDangNhap = c.TaiKhoan != null ? c.TaiKhoan.TenDangNhap : "",
-                        avatar = c.TaiKhoan != null ? c.TaiKhoan.AnhDaiDien : null,
+                        rawAvatar = c.TaiKhoan != null ? c.TaiKhoan.AnhDaiDien : null,
                         role = c.TaiKhoan != null ? c.TaiKhoan.VaiTro : ""
                     })
                     .ToListAsync();
-                    
-                Console.WriteLine($"DEBUG: Found {comments.Count} comments for idLopHocPhan = {idLopHocPhan}");
                 
-                return Json(new { success = true, data = comments });
+                // Xử lý avatar path cho từng comment
+                var processedComments = comments.Select(c => new {
+                    id = c.id,
+                    noiDung = c.noiDung,
+                    ngayTao = c.ngayTao,
+                    idTaiKhoan = c.idTaiKhoan,
+                    idBinhLuanCha = c.idBinhLuanCha,
+                    idBai = c.idBai,
+                    idThongBao = c.idThongBao,
+                    idLopHocPhan = c.idLopHocPhan,
+                    hoTen = c.hoTen,
+                    tenDangNhap = c.tenDangNhap,
+                    avatar = ProcessAvatarPath(c.rawAvatar),
+                    role = c.role
+                }).ToList();
+                    
+                Console.WriteLine($"DEBUG: Found {processedComments.Count} comments for idLopHocPhan = {idLopHocPhan}");
+                
+                return Json(new { success = true, data = processedComments });
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"DEBUG: GetCommentsByClass error: {ex.Message}");
                 return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        private string ProcessAvatarPath(string rawAvatar)
+        {
+            if (string.IsNullOrEmpty(rawAvatar))
+            {
+                return "/images/avatars/avatar.jpg"; // Fallback mặc định
+            }
+
+            // Nếu đường dẫn đã có / ở đầu thì dùng trực tiếp
+            if (rawAvatar.StartsWith("/"))
+            {
+                return rawAvatar;
+            }
+            // Nếu đường dẫn bắt đầu bằng images/ thì thêm / ở đầu
+            else if (rawAvatar.StartsWith("images/"))
+            {
+                return "/" + rawAvatar;
+            }
+            // Nếu không có format chuẩn thì thêm prefix
+            else
+            {
+                return "/images/avatars/" + rawAvatar;
             }
         }
     }

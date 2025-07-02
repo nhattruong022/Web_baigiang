@@ -21,57 +21,42 @@ namespace Lecture_web.Controllers
         }
 
         [HttpGet]
+        public IActionResult Index()
+        {
+            var userId = HttpContext.Session.GetString("UserID");
+            Console.WriteLine($"Profile Index: UserID from session = '{userId}'");
+            
+            if (string.IsNullOrEmpty(userId))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            try
+            {
+                var user = _context.TaiKhoan.FirstOrDefault(tk => tk.ID.ToString() == userId);
+                Console.WriteLine($"Profile Index: Found user = {user?.TenDangNhap}, Avatar = '{user?.AnhDaiDien}'");
+
+                if (user == null)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+
+                // Không ghi đè avatar path, để view tự xử lý
+                return View(user);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Profile Index Error: {ex.Message}");
+                ViewBag.ErrorMessage = "Có lỗi xảy ra khi tải thông tin người dùng.";
+                return View();
+            }
+        }
+
+        // Giữ compatibility với routing cũ
+        [HttpGet]
         public IActionResult profile()
         {
-            Console.WriteLine("=== PROFILE DEBUG START ===");
-            
-            // Sử dụng ClaimTypes.NameIdentifier giống như top_bar để đảm bảo nhất quán
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            Console.WriteLine($"User ID claim: {userIdClaim}");
-            Console.WriteLine($"User authenticated: {User.Identity.IsAuthenticated}");
-            
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
-            {
-                Console.WriteLine("ERROR: No valid user ID claim found");
-                return RedirectToAction("Login", "Account");
-            }
-            
-            Console.WriteLine($"Looking for user with ID: {userId}");
-            
-            var user = _context.TaiKhoan.FirstOrDefault(u => u.IdTaiKhoan == userId);
-            if (user == null)
-            {
-                Console.WriteLine("ERROR: User not found in database");
-                return RedirectToAction("Login", "Account");
-            }
-            
-            Console.WriteLine($"Found user: {user.HoTen}, Avatar: {user.AnhDaiDien}");
-            
-            // Đảm bảo đường dẫn avatar đúng format
-            string avatarPath = "/images/avatar.jpg"; // Default
-            if (!string.IsNullOrEmpty(user.AnhDaiDien) && !string.IsNullOrWhiteSpace(user.AnhDaiDien))
-            {
-                string cleanPath = user.AnhDaiDien.Trim();
-                if (cleanPath.StartsWith("/"))
-                {
-                    avatarPath = cleanPath;
-                }
-                else if (cleanPath.StartsWith("images/"))
-                {
-                    avatarPath = "/" + cleanPath;
-                }
-                else
-                {
-                    avatarPath = "/images/" + cleanPath;
-                }
-            }
-            
-            Console.WriteLine($"Final avatar path: {avatarPath}");
-            Console.WriteLine("=== PROFILE DEBUG END ===");
-            
-            ViewBag.Avatar = avatarPath;
-            ViewBag.UserName = user.HoTen ?? user.TenDangNhap;
-            return View(user);
+            return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> LogOut()

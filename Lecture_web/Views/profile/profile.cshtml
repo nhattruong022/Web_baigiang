@@ -13,9 +13,39 @@
           </div>
           <div class="profile-info">
             <div class="profile-avatar">
-              @if (!string.IsNullOrEmpty(Model.AnhDaiDien))
+              @{
+              string profileAvatarUrl = "/images/avatars/avatar.jpg"; // Default
+              bool hasProfileAvatar = false;
+
+              if (!string.IsNullOrEmpty(Model.AnhDaiDien) && !string.IsNullOrWhiteSpace(Model.AnhDaiDien))
               {
-              <img src="@Model.AnhDaiDien?v=@DateTime.Now.Ticks" alt="Profile Avatar" id="mainProfileAvatar">
+              string cleanPath = Model.AnhDaiDien.Trim();
+              if (cleanPath.StartsWith("/"))
+              {
+              profileAvatarUrl = cleanPath;
+              hasProfileAvatar = true;
+              }
+              else if (cleanPath.StartsWith("images/"))
+              {
+              profileAvatarUrl = "/" + cleanPath;
+              hasProfileAvatar = true;
+              }
+              else
+              {
+              profileAvatarUrl = "/images/" + cleanPath;
+              hasProfileAvatar = true;
+              }
+              }
+              // Thêm cache buster
+              profileAvatarUrl = profileAvatarUrl + "?v=" + DateTime.Now.Ticks;
+              }
+              @if (hasProfileAvatar)
+              {
+              <img src="@profileAvatarUrl" alt="Profile Avatar" id="mainProfileAvatar" onerror="handleProfileAvatarError(this)" data-has-avatar="true">
+              }
+              else
+              {
+              <img src="/images/avatars/avatar.jpg?v=@DateTime.Now.Ticks" alt="Profile Avatar" id="mainProfileAvatar" onerror="handleProfileAvatarError(this)" data-has-avatar="false">
               }
               <button class="btn-secondary" onclick="openChangeAvatarModal()">
                 <i class="fas fa-camera"></i>
@@ -217,6 +247,16 @@
         border-color: #3498db;
       }
 
+      /* Đảm bảo avatar profile luôn hiển thị */
+      .profile-avatar img {
+        width: 150px !important;
+        height: 150px !important;
+        display: block !important;
+        margin: 0 auto !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
+
       .form-group input[type="file"] {
         padding: 8px;
         border: 2px dashed #ddd;
@@ -241,7 +281,7 @@
       // Function xử lý lỗi avatar profile
       function handleProfileAvatarError(img) {
         console.log('Profile avatar error, falling back to default');
-        img.src = '/images/avatar.jpg?v=' + new Date().getTime();
+        img.src = '/images/avatars/avatar.jpg?v=' + new Date().getTime();
         img.onerror = null; // Prevent infinite loop
       }
 
