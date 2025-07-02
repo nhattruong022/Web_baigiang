@@ -170,8 +170,18 @@
           <a href="~/User/ChiTietHocPhan/Index?idLopHocPhan=@l.IdLopHocPhan">
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
               @{
+
               // Controller đã xử lý đường dẫn avatar, chỉ cần thêm cache buster
               string avatarUrl = $"{l.GiangVienAvatarUrl}?v={l.NgayCapNhat.Ticks}";
+
+              string avatarUrl = "";
+              if (!string.IsNullOrEmpty(l.GiangVienAvatarUrl))
+              {
+              // Nếu đường dẫn đã có / ở đầu thì dùng trực tiếp, không thì thêm ~/images/
+                  string baseUrl = l.GiangVienAvatarUrl.StartsWith("/") ? l.GiangVienAvatarUrl : Url.Content($"~/images/avatars/{l.GiangVienAvatarUrl}");
+              // Thêm cache buster dựa trên ngày cập nhật để force refresh
+              avatarUrl = $"{baseUrl}?v={l.NgayCapNhat.Ticks}";
+
               }
               <img src="@avatarUrl" alt="Avatar @l.GiangVienName" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:2px solid #3498db;box-shadow:0 2px 8px rgba(52,152,235,0.2);" onerror="this.src='@Url.Content(" ~/images/avatars/avatar.jpg")'">
               <div>
