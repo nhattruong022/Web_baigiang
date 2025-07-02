@@ -110,12 +110,12 @@ namespace Lecture_web.Areas.Admin.Controllers
                 if (AnhDaiDien != null && AnhDaiDien.Length > 0)
                 {
                     var fileName = Path.GetFileName(AnhDaiDien.FileName);
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", fileName);
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/avatars", fileName);
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         AnhDaiDien.CopyTo(stream);
                     }
-                    model.AnhDaiDien = "/images/" + fileName;
+                    model.AnhDaiDien = "/images/avatars/" + fileName;
                 }
 
                 // Chuẩn hóa dữ liệu trước khi lưu
@@ -202,12 +202,12 @@ namespace Lecture_web.Areas.Admin.Controllers
                 if (AnhDaiDien != null && AnhDaiDien.Length > 0)
                 {
                     var fileName = Path.GetFileName(AnhDaiDien.FileName);
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", fileName);
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/avatars", fileName);
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         AnhDaiDien.CopyTo(stream);
                     }
-                    user.AnhDaiDien = "/images/" + fileName;
+                    user.AnhDaiDien = "/images/avatars/" + fileName;
                 }
 
                 _context.TaiKhoan.Update(user);

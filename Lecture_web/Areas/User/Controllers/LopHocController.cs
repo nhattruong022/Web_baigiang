@@ -93,6 +93,31 @@ namespace Lecture_web.Areas.User.Controllers
             {
                 var gv = gvinfo.First(u => u.IdTaiKhoan == x.GiangVienId);
                 
+                // Xử lý avatar URL với fallback
+                string avatarUrl = null;
+                if (!string.IsNullOrEmpty(gv.AnhDaiDien))
+                {
+                    // Nếu đường dẫn đã có / ở đầu thì dùng trực tiếp
+                    if (gv.AnhDaiDien.StartsWith("/"))
+                    {
+                        avatarUrl = gv.AnhDaiDien;
+                    }
+                    // Nếu đường dẫn bắt đầu bằng images/ thì thêm / ở đầu
+                    else if (gv.AnhDaiDien.StartsWith("images/"))
+                    {
+                        avatarUrl = "/" + gv.AnhDaiDien;
+                    }
+                    // Nếu không có format chuẩn thì thêm prefix
+                    else
+                    {
+                        avatarUrl = "/images/avatars/" + gv.AnhDaiDien;
+                    }
+                }
+                // Fallback nếu không có avatar
+                else
+                {
+                    avatarUrl = "/images/avatars/avatar.jpg";
+                }
                 
                 return new LopHocViewModel
                 {
@@ -103,7 +128,7 @@ namespace Lecture_web.Areas.User.Controllers
                     NgayTao = x.NgayTao,
                     NgayCapNhat = x.NgayCapNhat,
                     GiangVienName = gv.HoTen,
-                    GiangVienAvatarUrl = gv.AnhDaiDien,
+                    GiangVienAvatarUrl = avatarUrl,
                     Mota = x.Mota
                 };
             }).ToList();
