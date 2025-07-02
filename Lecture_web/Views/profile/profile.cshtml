@@ -15,38 +15,26 @@
             <div class="profile-avatar">
               @{
               string profileAvatarUrl = "/images/avatars/avatar.jpg"; // Default
-              bool hasProfileAvatar = false;
-
               if (!string.IsNullOrEmpty(Model.AnhDaiDien) && !string.IsNullOrWhiteSpace(Model.AnhDaiDien))
               {
               string cleanPath = Model.AnhDaiDien.Trim();
               if (cleanPath.StartsWith("/"))
               {
               profileAvatarUrl = cleanPath;
-              hasProfileAvatar = true;
               }
               else if (cleanPath.StartsWith("images/"))
               {
               profileAvatarUrl = "/" + cleanPath;
-              hasProfileAvatar = true;
               }
               else
               {
-              profileAvatarUrl = "/images/" + cleanPath;
-              hasProfileAvatar = true;
+              profileAvatarUrl = "/images/avatars/" + cleanPath;
               }
               }
               // Thêm cache buster
               profileAvatarUrl = profileAvatarUrl + "?v=" + DateTime.Now.Ticks;
               }
-              @if (hasProfileAvatar)
-              {
-              <img src="@profileAvatarUrl" alt="Profile Avatar" id="mainProfileAvatar" onerror="handleProfileAvatarError(this)" data-has-avatar="true">
-              }
-              else
-              {
-              <img src="/images/avatars/avatar.jpg?v=@DateTime.Now.Ticks" alt="Profile Avatar" id="mainProfileAvatar" onerror="handleProfileAvatarError(this)" data-has-avatar="false">
-              }
+              <img src="@profileAvatarUrl" alt="Profile Avatar" id="mainProfileAvatar" onerror="handleProfileAvatarError(this)">
               <button class="btn-secondary" onclick="openChangeAvatarModal()">
                 <i class="fas fa-camera"></i>
                 Đổi ảnh
