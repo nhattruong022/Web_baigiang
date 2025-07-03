@@ -21,12 +21,11 @@ namespace Lecture_web.Areas.User.Controllers
         }
         [HttpGet]
         [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-        public async Task<IActionResult> Index(string search, int page = 1)
+        public async Task<IActionResult> Index(string search, int page = 1, int? idHocPhan = null)
         {
             const int pageSize = 4;
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
             var role = User.FindFirst(ClaimTypes.Role)?.Value;
-
 
             var typeUser =
                 role == "Giangvien"
@@ -34,8 +33,7 @@ namespace Lecture_web.Areas.User.Controllers
                   : _context.LopHocPhan
                       .Where(lp => lp.LopHocPhan_SinhViens.Any(sv => sv.IdTaiKhoan == userId));
 
-
-                         var getLop = typeUser
+            var getLop = typeUser
                 .Include(lp => lp.HocPhan)
                 .Include(lp => lp.LopHocPhan_SinhViens)
                     .ThenInclude(sv => sv.TaiKhoan)
@@ -46,13 +44,17 @@ namespace Lecture_web.Areas.User.Controllers
                     TenHP = lp.HocPhan.TenHocPhan,
                     lp.NgayTao,
                     lp.NgayCapNhat,
- 
                     SoSV = lp.LopHocPhan_SinhViens.Count(sv => 
                         sv.TaiKhoan != null && sv.TaiKhoan.VaiTro == "Sinhvien"),
                     GiangVienId = lp.IdTaiKhoan,
-                    Mota = lp.MoTa
+                    Mota = lp.MoTa,
+                    IdHocPhan = lp.IdHocPhan
                 });
 
+            if (idHocPhan.HasValue)
+            {
+                getLop = getLop.Where(x => x.IdHocPhan == idHocPhan.Value);
+            }
 
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -82,7 +84,13 @@ namespace Lecture_web.Areas.User.Controllers
                              .Take(pageSize)
                              .ToListAsync();
 
- 
+            if (idHocPhan.HasValue && !list.Any())
+            {
+                string message = role == "Sinhvien" ? "Chưa tham gia lớp học này" : "Không sở hữu lớp này";
+                ViewBag.AccessDeniedMessage = message;
+                return View("AccessDenied");
+            }
+
             var gvIds = list.Select(x => x.GiangVienId).Distinct().ToList();
             var gvinfo = await _context.TaiKhoan
                               .Where(u => gvIds.Contains(u.IdTaiKhoan))

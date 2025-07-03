@@ -1,0 +1,12 @@
+@{
+Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+}
+<div style="text-align:center; margin-top:60px;">
+  <h2 style="color:#e74c3c;">
+    <i class="fas fa-exclamation-triangle"></i>
+    @ViewBag.AccessDeniedMessage
+  </h2>
+  <a href="@Url.Action("Index", "LopHoc" , new { area="User" })" class="btn btn-primary" style="margin-top:20px;">
+    Quay lại danh sách lớp học
+  </a>
+</div>
