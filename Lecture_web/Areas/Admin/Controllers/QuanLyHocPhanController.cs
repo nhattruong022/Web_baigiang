@@ -172,7 +172,16 @@ namespace Lecture_web.Areas.Admin.Controllers
             var hocPhan = _context.HocPhan.FirstOrDefault(h => h.IdHocPhan == model.Id);
             if (hocPhan == null)
                 return Json(new { success = false, message = "Không tìm thấy học phần!" });
-         
+
+            // Nếu chuyển sang Inactive thì kiểm tra liên kết lớp học phần
+            if (model.TrangThai.Trim().ToLower() == "inactive")
+            {
+                bool hasLopHocPhan = _context.LopHocPhan.Any(lhp => lhp.IdHocPhan == hocPhan.IdHocPhan);
+                if (hasLopHocPhan)
+                {
+                    return Json(new { success = false, message = "Không thể chuyển học phần sang Inactive vì đang có lớp học phần liên kết!" });
+                }
+            }
 
             hocPhan.TrangThai = model.TrangThai;
             hocPhan.NgayCapNhat = DateTime.Now;
