@@ -193,3 +193,78 @@
     padding: 12px 4vw 12px 4vw;
   }
 }
+
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    padding: 10px;
+    z-index: auto;
+  }
+  .main-content {
+    margin-left: 0;
+    padding: 10px;
+  }
+  .dashboard-card {
+    padding: 10px;
+  }
+  .quick-actions,
+  .filters-section {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+  .search-bar {
+    width: 100% !important;
+    margin-top: 8px;
+  }
+  .filter-group {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+  .filter-group label {
+    margin-bottom: 2px;
+  }
+  .role-filter,
+  .status-filter {
+    width: 100%;
+    min-width: 0;
+  }
+  .table-container {
+    overflow-x: auto;
+  }
+  .user-table {
+    min-width: 700px;
+    font-size: 14px;
+  }
+  .btn-primary, .btn-secondary {
+    width: 100%;
+    justify-content: center;
+    font-size: 1rem;
+    padding: 12px;
+  }
+  .modal-content {
+    margin: 10px;
+    max-width: 98vw;
+    padding: 10px;
+  }
+}
+@media (max-width: 480px) {
+  .dashboard-card {
+    padding: 5px;
+  }
+  .user-table th, .user-table td {
+    padding: 6px;
+    font-size: 12px;
+  }
+  .btn-primary, .btn-secondary {
+    font-size: 0.95rem;
+    padding: 10px;
+  }
+}
