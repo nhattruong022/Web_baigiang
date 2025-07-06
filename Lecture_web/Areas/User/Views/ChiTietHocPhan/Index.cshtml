@@ -143,65 +143,34 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
           <partial name="_PaginationPartial" />
         </div>
 
-        <!-- Popup Mời học viên -->
+        <!-- Popup Mời học viên (UI mới giống import Excel user) -->
         @if (userRole != "Sinhvien")
         {
         <div class="modal" id="inviteStudentModal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100vw; height:100vh; background:rgba(44,62,80,0.18); justify-content:center; align-items:center;">
-          <div class="modal-content" style="background:#fff; border-radius:14px; box-shadow:0 8px 32px rgba(52,152,219,0.18),0 1.5px 8px rgba(0,0,0,0.08); padding:0; width:420px; max-width:90vw; position:relative; overflow:hidden;">
+          <div class="modal-content" style="background:#fff; border-radius:14px; box-shadow:0 8px 32px rgba(52,152,219,0.18),0 1.5px 8px rgba(0,0,0,0.08); padding:0; width:480px; max-width:95vw; position:relative; overflow:hidden;">
             <div class="modal-header" style="background:#fff; padding:20px 24px 16px 24px; border-bottom:1px solid #e5e5e5; display:flex; align-items:center; justify-content:space-between;">
-              <h2 style="font-size:1.2rem; font-weight:600; color:#333; margin:0;">Mời học viên</h2>
+              <h2 style="font-size:1.2rem; font-weight:600; color:#333; margin:0;">Mời học viên từ Excel</h2>
               <button onclick="closeInviteStudentModal()" style="position:absolute; top:16px; right:20px; background:none; border:none; font-size:1.3rem; color:#666; cursor:pointer;"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body" style="padding:20px 24px;">
-              <div style="display:flex; gap:12px; margin-bottom:18px;">
-                <button class="invite-excel-btn secondary" onclick="downloadInviteExcelTemplate()"><i class="fas fa-download"></i> Tải template Excel</button>
-                <button class="invite-excel-btn" onclick="openImportInviteExcelModal()"><i class="fas fa-file-excel"></i> Import từ Excel</button>
+              <div style="margin-bottom:18px;">
+                <b>Bước 1: Tải template Excel</b>
+                <div style="color:#666; font-size:0.95rem; margin-bottom:8px;">Nếu bạn chưa có file Excel, hãy tải template mẫu để biết định dạng dữ liệu.</div>
+                <button class="btn-secondary" onclick="downloadInviteExcelTemplate()"><i class="fas fa-download"></i> Tải template Excel</button>
               </div>
-              <!-- Phần chọn thủ công giữ nguyên -->
-              <div id="manualInviteSection">
-                <div style="margin-bottom:16px;">
-                  <div style="display:flex; gap:8px; margin-bottom:8px;">
-                    <select id="searchType" style="padding:12px; border:1px solid #ddd; border-radius:8px; background:white; min-width:140px;" onchange="updateSearchPlaceholder()">
-                      <option value="all">Tất cả</option>
-                      <option value="email">Email</option>
-                      <option value="name">Họ tên</option>
-                      <option value="username">Tên đăng nhập</option>
-                      <option value="phone">Số điện thoại</option>
-                    </select>
-                    <input type="text" id="searchStudentEmail" placeholder="Tìm kiếm sinh viên..." style="flex:1; padding:12px 16px; border:1px solid #ddd; border-radius:8px; font-size:1rem; outline:none;" oninput="searchStudentWithType(this.value)" onkeyup="searchStudentWithType(this.value)">
-                  </div>
-                  <div style="font-size:0.85rem; color:#666; margin-top:4px;">
-                    Nhập từ khóa để tìm kiếm sinh viên theo tiêu chí đã chọn
-                  </div>
+              <div style="margin-bottom:18px;">
+                <b>Bước 2: Upload file Excel</b>
+                <div id="inviteStudentDropZone" style="border:1.5px dashed #007bff; border-radius:8px; background:#fafdff; padding:28px 12px; text-align:center; margin-top:8px; cursor:pointer; transition:background 0.2s;">
+                  <i class="fas fa-cloud-upload-alt" style="font-size:2.5rem; color:#007bff;"></i>
+                  <div style="margin:10px 0 6px 0; color:#666;">Click để chọn file Excel hoặc kéo thả file vào đây</div>
+                  <div style="font-size:0.95rem; color:#888;">Hỗ trợ file .xlsx, .xls</div>
+                  <input type="file" id="inviteStudentExcelFile" accept=".xlsx,.xls" style="display:none;">
+                  <div id="inviteStudentFileStatus" style="margin-top:10px;"></div>
                 </div>
-
-                <!-- Hiển thị sinh viên đã chọn -->
-                <div id="selectedStudentsContainer" style="margin-bottom:16px; display:none;">
-                  <h4 style="font-size:0.9rem; color:#333; margin-bottom:8px;">Sinh viên đã chọn:</h4>
-                  <div id="selectedStudentsList" style="max-height:100px; overflow-y:auto; border:1px solid #e0e0e0; border-radius:6px; padding:8px;">
-                    <!-- Selected students will be displayed here -->
-                  </div>
-                  <div style="margin-top:8px; text-align:right;">
-                    <button type="button" onclick="clearSelectedStudents()" style="background:none; border:1px solid #ddd; color:#666; padding:4px 8px; border-radius:4px; font-size:0.8rem; cursor:pointer;">Xóa tất cả chọn</button>
-                  </div>
-                </div>
-
-                <div id="searchResults" style="max-height:200px; overflow-y:auto;">
-                  <!-- Kết quả tìm kiếm sẽ hiển thị ở đây -->
-                </div>
-                <div style="color:#666; font-size:0.9rem; margin-top:12px; text-align:center;">
-                  Tìm kiếm và chọn nhiều sinh viên để mời cùng lúc
-                </div>
+                <div id="inviteStudentPreviewBtnWrapper" style="text-align:center; margin-top:14px;"></div>
               </div>
-            </div>
-            <div class="modal-footer" style="padding:16px 24px; background:#f8f9fa; display:flex; justify-content:space-between; align-items:center;">
-              <div id="selectedCount" style="font-size:0.9rem; color:#666;">
-                Đã chọn: <span id="selectedCountNumber">0</span> sinh viên
-              </div>
-              <div style="display:flex; gap:12px;">
-                <button type="button" onclick="closeInviteStudentModal()" style="padding:8px 20px; border:1px solid #ddd; background:#fff; color:#666; border-radius:6px; font-size:0.95rem; cursor:pointer;">Hủy</button>
-                <button type="button" onclick="inviteSelectedStudent()" id="inviteButton" style="padding:8px 20px; background:#007bff; color:#fff; border:none; border-radius:6px; font-size:0.95rem; cursor:pointer;" disabled>Mời</button>
-              </div>
+              <div id="inviteStudentPreviewSection" style="display:none; margin-top:18px;"></div>
+              <div id="inviteStudentResult" style="margin-top:18px;"></div>
             </div>
           </div>
         </div>
@@ -3375,6 +3344,158 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         alert('Lỗi khi gửi lời mời: ' + err.message);
       });
   }
+
+  // --- Invite Student Excel Popup Logic ---
+  (function() {
+    // Elements
+    const dropZone = document.getElementById('inviteStudentDropZone');
+    const fileInput = document.getElementById('inviteStudentExcelFile');
+    const fileStatus = document.getElementById('inviteStudentFileStatus');
+    const previewSection = document.getElementById('inviteStudentPreviewSection');
+    const resultSection = document.getElementById('inviteStudentResult');
+    let selectedFile = null;
+
+    if (!dropZone || !fileInput) return;
+
+    // Click to open file dialog
+    dropZone.addEventListener('click', function(e) {
+      if (e.target.tagName !== 'INPUT') fileInput.click();
+    });
+
+    // Drag & drop
+    dropZone.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      dropZone.style.background = '#e3f1fb';
+      dropZone.style.borderColor = '#2980b9';
+    });
+    dropZone.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+      dropZone.style.background = '#fafdff';
+      dropZone.style.borderColor = '#007bff';
+    });
+    dropZone.addEventListener('drop', function(e) {
+      e.preventDefault();
+      dropZone.style.background = '#fafdff';
+      dropZone.style.borderColor = '#007bff';
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        fileInput.files = e.dataTransfer.files;
+        handleFileChange();
+      }
+    });
+
+    // File input change
+    fileInput.addEventListener('change', handleFileChange);
+
+    function handleFileChange() {
+      selectedFile = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+      if (selectedFile) {
+        fileStatus.innerHTML = `<span style='color:green;'><i class='fas fa-check-circle'></i> File đã chọn: <b>${selectedFile.name}</b></span><br><span style='color:#888;font-size:0.95em;'>Click để chọn file khác</span>`;
+        previewSection.style.display = 'none';
+        previewSection.innerHTML = '';
+        resultSection.innerHTML = '';
+        showPreviewButton();
+      } else {
+        fileStatus.innerHTML = '';
+        previewSection.style.display = 'none';
+        previewSection.innerHTML = '';
+        resultSection.innerHTML = '';
+        removePreviewButton();
+      }
+    }
+
+    function showPreviewButton() {
+      removePreviewButton();
+      const btn = document.createElement('button');
+      btn.className = 'btn-primary';
+      btn.style.marginTop = '0';
+      btn.innerHTML = '<i class="fas fa-eye"></i> Xem trước dữ liệu';
+      btn.onclick = previewInviteStudentExcel;
+      // Đặt nút ra ngoài khung dropzone
+      const wrapper = document.getElementById('inviteStudentPreviewBtnWrapper');
+      if (wrapper) {
+        wrapper.innerHTML = '';
+        wrapper.appendChild(btn);
+      }
+    }
+
+    function removePreviewButton() {
+      const wrapper = document.getElementById('inviteStudentPreviewBtnWrapper');
+      if (wrapper) wrapper.innerHTML = '';
+    }
+
+    function previewInviteStudentExcel() {
+      if (!selectedFile) {
+        alert('Vui lòng chọn file Excel');
+        return;
+      }
+      const formData = new FormData();
+      formData.append('excelFile', selectedFile);
+      formData.append('idLopHocPhan', currentLopHocPhanId);
+      previewSection.style.display = 'block';
+      previewSection.innerHTML = `<div style='padding:12px; color:#666;'><i class='fas fa-spinner fa-spin'></i> Đang kiểm tra dữ liệu...</div>`;
+      resultSection.innerHTML = '';
+      fetch('/User/ChiTietHocPhan/PreviewInviteExcel', {
+          method: 'POST',
+          body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            let html = `<div style='background:#e6fff0;padding:12px;border-radius:6px;margin-bottom:10px;'>Tìm thấy <b>${data.valid.length}</b> sinh viên hợp lệ, <b>${data.invalid.length}</b> dòng lỗi.</div>`;
+            if (data.valid.length > 0) {
+              html += `<div style='max-height:180px;overflow:auto;'><table style='width:100%;border-collapse:collapse;'><thead><tr><th>Email</th><th>Tên đăng nhập</th><th>Họ tên</th></tr></thead><tbody>${data.valid.map(s=>`<tr><td>${s.email}</td><td>${s.tenDangNhap}</td><td>${s.hoTen}</td></tr>`).join('')}</tbody></table></div>`;
+              html += `<button class='btn-primary' style='margin-top:10px;' onclick='window.confirmInviteStudentExcel()'>Xác nhận mời ${data.valid.length} sinh viên</button>`;
+            }
+            if (data.invalid.length > 0) {
+              html += `<div style='background:#ffeaea;padding:10px;border-radius:6px;margin-top:10px;'><b>Lỗi:</b><ul>${data.invalid.map(e=>`<li>${e}</li>`).join('')}</ul></div>`;
+            }
+            previewSection.innerHTML = html;
+            previewSection.style.display = 'block';
+            resultSection.innerHTML = '';
+          } else {
+            previewSection.innerHTML = `<div style='background:#ffeaea;padding:10px;border-radius:6px;'>${data.message || 'Lỗi không xác định'}</div>`;
+            previewSection.style.display = 'block';
+            resultSection.innerHTML = '';
+          }
+        })
+        .catch(err => {
+          previewSection.innerHTML = `<div style='background:#ffeaea;padding:10px;border-radius:6px;'>Lỗi khi đọc file Excel: ${err.message}</div>`;
+          previewSection.style.display = 'block';
+          resultSection.innerHTML = '';
+        });
+    }
+
+    // Để gọi từ HTML động
+    window.confirmInviteStudentExcel = function() {
+      if (!selectedFile) {
+        alert('Vui lòng chọn file Excel');
+        return;
+      }
+      const formData = new FormData();
+      formData.append('excelFile', selectedFile);
+      formData.append('idLopHocPhan', currentLopHocPhanId);
+      resultSection.innerHTML = `<div style='padding:12px; color:#666;'><i class='fas fa-spinner fa-spin'></i> Đang gửi lời mời...</div>`;
+      fetch('/User/ChiTietHocPhan/ConfirmInviteExcel', {
+          method: 'POST',
+          body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            resultSection.innerHTML = `<div style='background:#e6fff0;padding:12px;border-radius:6px;'>${data.message}</div>`;
+            setTimeout(() => {
+              closeInviteStudentModal();
+              refreshStudentsList();
+            }, 2000);
+          } else {
+            resultSection.innerHTML = `<div style='background:#ffeaea;padding:10px;border-radius:6px;'>${data.message || 'Lỗi không xác định'}</div>`;
+          }
+        })
+        .catch(err => {
+          resultSection.innerHTML = `<div style='background:#ffeaea;padding:10px;border-radius:6px;'>Lỗi khi gửi lời mời: ${err.message}</div>`;
+        });
+    };
+  })();
 </script>
 
 @* Handle TempData messages *@
