@@ -11,6 +11,7 @@ using Lecture_web.Service;
 using Lecture_web.Models;
 using Microsoft.AspNetCore.SignalR;
 using Lecture_web.Hubs;
+using Microsoft.AspNetCore.Http;
 
 namespace Lecture_web.Areas.User.Controllers
 {
@@ -842,9 +843,15 @@ namespace Lecture_web.Areas.User.Controllers
                 Console.WriteLine($"DEBUG AcceptInvitation: Adding new member to class");
                 _context.LopHocPhan_SinhVien.Add(newMember);
 
-                // Cập nhật invitation (đánh dấu đã sử dụng)
-                invitation.NoiDung = invitation.NoiDung.Replace("INVITE|", "USED|");
-                invitation.NgayCapNhat = DateTime.Now;
+                // Đánh dấu tất cả lời mời INVITE cùng lớp của sinh viên này thành USED
+                var allInvites = await _context.ThongBao
+                    .Where(tb => tb.IdTaiKhoan == currentUserId && tb.IdLopHocPhan == idLopHocPhan && tb.NoiDung.StartsWith("INVITE|"))
+                    .ToListAsync();
+                foreach (var invite in allInvites)
+                {
+                    invite.NoiDung = invite.NoiDung.Replace("INVITE|", "USED|");
+                    invite.NgayCapNhat = DateTime.Now;
+                }
 
                 await _context.SaveChangesAsync();
                 Console.WriteLine($"DEBUG AcceptInvitation: Successfully saved to database");
@@ -1289,6 +1296,135 @@ namespace Lecture_web.Areas.User.Controllers
             {
                 return "/images/avatars/" + rawAvatar;
             }
+        }
+
+        [HttpGet]
+        public IActionResult DownloadInviteExcelTemplate()
+        {
+            var excelService = new ExcelService();
+            var bytes = excelService.GenerateInviteStudentTemplate();
+            return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "InviteStudentsTemplate.xlsx");
+        }
+        [HttpPost]
+        public async Task<IActionResult> PreviewInviteExcel(int idLopHocPhan, IFormFile excelFile)
+        {
+            if (excelFile == null || excelFile.Length == 0)
+                return Json(new { success = false, message = "Vui lòng chọn file Excel" });
+            var excelService = new ExcelService();
+            var result = excelService.ImportInviteStudentsFromExcel(excelFile.OpenReadStream());
+            var valid = new List<object>();
+            var invalid = new List<string>(result.Invalid);
+            foreach (var row in result.Valid)
+            {
+                // Tìm sinh viên theo email hoặc tên đăng nhập
+                var query = _context.TaiKhoan.AsQueryable();
+                if (!string.IsNullOrWhiteSpace(row.email))
+                    query = query.Where(tk => tk.Email == row.email);
+                else if (!string.IsNullOrWhiteSpace(row.tenDangNhap))
+                    query = query.Where(tk => tk.TenDangNhap == row.tenDangNhap);
+                var user = await query.FirstOrDefaultAsync();
+                if (user == null)
+                {
+                    invalid.Add($"Không tìm thấy sinh viên với Email '{row.email}' hoặc Tên đăng nhập '{row.tenDangNhap}'");
+                    continue;
+                }
+                if (user.VaiTro != "Sinhvien")
+                {
+                    invalid.Add($"{user.HoTen} ({user.Email}) không phải là sinh viên");
+                    continue;
+                }
+                if (user.TrangThai != "HoatDong")
+                {
+                    invalid.Add($"{user.HoTen} ({user.Email}) đang bị khóa hoặc không hoạt động");
+                    continue;
+                }
+                // Kiểm tra đã tham gia lớp chưa
+                bool alreadyInClass = await _context.LopHocPhan_SinhVien.AnyAsync(x => x.IdLopHocPhan == idLopHocPhan && x.IdTaiKhoan == user.IdTaiKhoan);
+                if (alreadyInClass)
+                {
+                    invalid.Add($"{user.HoTen} ({user.Email}) đã tham gia lớp này");
+                    continue;
+                }
+                valid.Add(new { email = user.Email, tenDangNhap = user.TenDangNhap, hoTen = user.HoTen, idTaiKhoan = user.IdTaiKhoan });
+            }
+            return Json(new { success = true, valid, invalid });
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> ConfirmInviteExcel(int idLopHocPhan, IFormFile excelFile)
+        {
+            if (excelFile == null || excelFile.Length == 0)
+                return Json(new { success = false, message = "Vui lòng chọn file Excel" });
+            var excelService = new ExcelService();
+            var result = excelService.ImportInviteStudentsFromExcel(excelFile.OpenReadStream());
+            var validUsers = new List<Lecture_web.Models.TaiKhoanModels>();
+            foreach (var row in result.Valid)
+            {
+                var query = _context.TaiKhoan.AsQueryable();
+                if (!string.IsNullOrWhiteSpace(row.email))
+                    query = query.Where(tk => tk.Email == row.email);
+                else if (!string.IsNullOrWhiteSpace(row.tenDangNhap))
+                    query = query.Where(tk => tk.TenDangNhap == row.tenDangNhap);
+                var user = await query.FirstOrDefaultAsync();
+                if (user == null || user.VaiTro != "Sinhvien" || user.TrangThai != "HoatDong")
+                    continue;
+                // Kiểm tra đã tham gia lớp chưa
+                bool alreadyInClass = await _context.LopHocPhan_SinhVien.AnyAsync(x => x.IdLopHocPhan == idLopHocPhan && x.IdTaiKhoan == user.IdTaiKhoan);
+                if (alreadyInClass)
+                    continue;
+                validUsers.Add(user);
+            }
+            if (validUsers.Count == 0)
+                return Json(new { success = false, message = "Không có sinh viên hợp lệ để mời" });
+            // Lấy thông tin lớp học phần
+            var lopHocPhan = await _context.LopHocPhan.FindAsync(idLopHocPhan);
+            if (lopHocPhan == null)
+                return Json(new { success = false, message = "Không tìm thấy lớp học phần" });
+            var successfulInvites = new List<string>();
+            var failedInvites = new List<string>();
+            foreach (var user in validUsers)
+            {
+                // KHÔNG thêm vào LopHocPhan_SinhVien ở đây!
+                // Tạo token mời
+                var inviteToken = Guid.NewGuid().ToString();
+                var inviteExpiry = DateTime.Now.AddDays(7);
+                var invitation = new Lecture_web.Models.ThongBaoModels
+                {
+                    IdTaiKhoan = user.IdTaiKhoan,
+                    IdLopHocPhan = idLopHocPhan,
+                    NoiDung = $"INVITE|{inviteToken}|{idLopHocPhan}|Lời mời tham gia lớp: {lopHocPhan.TenLop}",
+                    NgayTao = DateTime.Now,
+                    NgayCapNhat = DateTime.Now
+                };
+                _context.ThongBao.Add(invitation);
+                // Gửi email mời
+                var acceptUrl = $"{Request.Scheme}://{Request.Host}/User/ChiTietHocPhan/AcceptInvitation?token={inviteToken}";
+                var emailBody = $@"
+                    <h2>Lời mời tham gia lớp học</h2>
+                    <p>Chào {user.HoTen},</p>
+                    <p>Bạn được mời tham gia lớp học: <strong>{lopHocPhan.TenLop}</strong></p>
+                    <p>Mô tả: {lopHocPhan.MoTa ?? "Không có mô tả"}</p>
+                    <p>Vui lòng click vào link bên dưới để tham gia:</p>
+                    <a href='{acceptUrl}' style='background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;'>Tham gia lớp học</a>
+                    <p><small>Link này có hiệu lực đến {inviteExpiry:dd/MM/yyyy HH:mm}</small></p>
+                ";
+                try
+                {
+                    await _emailService.SendEmailAsync(user.Email, $"Lời mời tham gia lớp {lopHocPhan.TenLop}", emailBody);
+                    successfulInvites.Add($"{user.HoTen} ({user.Email})");
+                }
+                catch (Exception emailEx)
+                {
+                    failedInvites.Add($"{user.HoTen} ({user.Email}): {emailEx.Message}");
+                }
+            }
+            await _context.SaveChangesAsync();
+            var resultMessage = $"Đã gửi lời mời thành công cho {successfulInvites.Count} sinh viên";
+            if (failedInvites.Count > 0)
+            {
+                resultMessage += $"\nLỗi gửi email: {string.Join(", ", failedInvites)}";
+            }
+            return Json(new { success = true, message = resultMessage });
         }
     }
 } 

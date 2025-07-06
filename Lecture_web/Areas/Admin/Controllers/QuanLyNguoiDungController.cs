@@ -18,10 +18,12 @@ namespace Lecture_web.Areas.Admin.Controllers
     public class QuanLyNguoiDungController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly ExcelService _excelService;
 
         public QuanLyNguoiDungController(ApplicationDbContext context)
         {
             _context = context;
+            _excelService = new ExcelService();
         }
 
 
@@ -286,12 +288,110 @@ namespace Lecture_web.Areas.Admin.Controllers
             return PartialView("~/Views/Shared/_PaginationPartial.cshtml");
         }
 
+        // Download Excel template
+        [HttpGet]
+        public IActionResult DownloadExcelTemplate()
+        {
+            var excelBytes = _excelService.GenerateExcelTemplate();
+            return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "UserImportTemplate.xlsx");
+        }
 
+        // Preview Excel import
+        [HttpPost]
+        public IActionResult PreviewExcelImport(IFormFile excelFile)
+        {
+            if (excelFile == null || excelFile.Length == 0)
+            {
+                return Json(new { success = false, message = "Vui lòng chọn file Excel" });
+            }
 
-   
+            try
+            {
+                using (var stream = excelFile.OpenReadStream())
+                {
+                    var result = _excelService.ImportUsersFromExcel(stream);
+                    return Json(new { 
+                        success = true, 
+                        data = result,
+                        message = $"Đã đọc {result.TotalRows} dòng, {result.ValidRows} dòng hợp lệ, {result.ErrorRows} dòng có lỗi"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Lỗi đọc file: {ex.Message}" });
+            }
+        }
 
+        // Confirm and import users
+        [HttpPost]
+        public IActionResult ConfirmImportUsers([FromBody] List<ExcelService.ExcelUserData> users)
+        {
+            if (users == null || !users.Any())
+            {
+                return Json(new { success = false, message = "Không có dữ liệu để import" });
+            }
 
+            var errors = new List<string>();
+            var successCount = 0;
 
-        
+            foreach (var userData in users)
+            {
+                try
+                {
+                    // Kiểm tra trùng lặp
+                    if (_context.TaiKhoan.Any(u => u.TenDangNhap == userData.TenDangNhap))
+                    {
+                        errors.Add($"Tên đăng nhập '{userData.TenDangNhap}' đã tồn tại");
+                        continue;
+                    }
+
+                    if (_context.TaiKhoan.Any(u => u.Email == userData.Email))
+                    {
+                        errors.Add($"Email '{userData.Email}' đã tồn tại");
+                        continue;
+                    }
+
+                    if (_context.TaiKhoan.Any(u => u.SoDienThoai == userData.SoDienThoai))
+                    {
+                        errors.Add($"Số điện thoại '{userData.SoDienThoai}' đã tồn tại");
+                        continue;
+                    }
+
+                    // Tạo user mới
+                    var newUser = new TaiKhoanModels
+                    {
+                        TenDangNhap = StringHelper.NormalizeString(userData.TenDangNhap),
+                        MatKhau = userData.MatKhau,
+                        HoTen = StringHelper.NormalizeString(userData.HoTen),
+                        VaiTro = userData.VaiTro,
+                        Email = StringHelper.NormalizeString(userData.Email),
+                        SoDienThoai = StringHelper.NormalizeString(userData.SoDienThoai),
+                        TrangThai = "HoatDong",
+                        NgayTao = DateTime.Now,
+                        NgayCapNhat = DateTime.Now
+                    };
+
+                    _context.TaiKhoan.Add(newUser);
+                    successCount++;
+                }
+                catch (Exception ex)
+                {
+                    errors.Add($"Lỗi khi tạo user '{userData.TenDangNhap}': {ex.Message}");
+                }
+            }
+
+            if (successCount > 0)
+            {
+                _context.SaveChanges();
+            }
+
+            return Json(new { 
+                success = true, 
+                message = $"Import thành công {successCount} người dùng",
+                errors = errors,
+                successCount = successCount
+            });
+        }
     }
 } 

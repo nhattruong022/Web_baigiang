@@ -22,6 +22,7 @@
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Open-Xml-PowerTools" Version="4.4.0" />
+    <PackageReference Include="EPPlus" Version="7.0.9" />
   </ItemGroup>
 
   <ItemGroup>

@@ -7,6 +7,73 @@
   <link rel="stylesheet" href="~/css/user-management.css">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .import-section {
+      margin-bottom: 25px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border: 1px solid #e9ecef;
+    }
+
+    .import-section h3 {
+      margin: 0 0 10px 0;
+      color: #495057;
+      font-size: 1.1rem;
+    }
+
+    .import-section p {
+      margin: 0 0 15px 0;
+      color: #6c757d;
+      font-size: 0.95rem;
+    }
+
+    .file-upload-area {
+      border: 2px dashed #dee2e6;
+      border-radius: 8px;
+      padding: 30px;
+      text-align: center;
+      background: #fff;
+      transition: all 0.3s ease;
+    }
+
+    .file-upload-area:hover {
+      border-color: #007bff;
+      background: #f8f9fa;
+    }
+
+    .upload-placeholder {
+      cursor: pointer;
+    }
+
+    .upload-placeholder i {
+      font-size: 3rem;
+      color: #6c757d;
+      margin-bottom: 15px;
+    }
+
+    .upload-placeholder p {
+      margin: 10px 0 5px 0;
+      font-size: 1rem;
+      color: #495057;
+    }
+
+    .upload-placeholder small {
+      color: #6c757d;
+      font-size: 0.85rem;
+    }
+
+    .preview-summary,
+    .preview-errors,
+    .preview-table {
+      margin-bottom: 20px;
+    }
+
+    .modal-body {
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+  </style>
   }
 
 
@@ -42,6 +109,16 @@
               <i class="fas fa-user-plus"></i>
               Thêm người dùng mới
             </button>
+            <div style="display:flex; gap:12px;">
+              <button class="btn-secondary" onclick="downloadExcelTemplate()">
+                <i class="fas fa-download"></i>
+                Tải template Excel
+              </button>
+              <button class="btn-primary" onclick="openImportExcelModal()">
+                <i class="fas fa-file-excel"></i>
+                Import từ Excel
+              </button>
+            </div>
           </div>
           <!-- Filters -->
           <div class="filters-section" style="display:flex; align-items:center; gap:24px; justify-content:space-between;">
@@ -214,8 +291,56 @@
     </div>
   </div>
 
+  <!-- Import Excel Modal -->
+  <div class="modal" id="importExcelModal">
+    <div class="modal-content" style="max-width: 800px;">
+      <div class="modal-header">
+        <h2>Import người dùng từ Excel</h2>
+        <button class="close-modal" onclick="closeImportExcelModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="import-section">
+          <h3>Bước 1: Tải template Excel</h3>
+          <p>Nếu bạn chưa có file Excel, hãy tải template mẫu để biết định dạng dữ liệu.</p>
+          <button class="btn-secondary" onclick="downloadExcelTemplate()">
+            <i class="fas fa-download"></i>
+            Tải template Excel
+          </button>
+        </div>
 
+        <div class="import-section">
+          <h3>Bước 2: Upload file Excel</h3>
+          <div class="file-upload-area" id="fileUploadArea" onclick="document.getElementById('excelFile').click()">
+            <input type="file" id="excelFile" accept=".xlsx,.xls" style="display: none;">
+            <div class="upload-placeholder">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <p>Click để chọn file Excel hoặc kéo thả file vào đây</p>
+              <small>Hỗ trợ file .xlsx, .xls</small>
+            </div>
+            <div class="upload-info" id="uploadInfo"></div>
+          </div>
+          <button id="previewBtn" class="btn-primary" onclick="previewExcelFile()" style="margin-top: 10px; display: none;">
+            <i class="fas fa-eye"></i>
+            Xem trước dữ liệu
+          </button>
+        </div>
 
+        <div id="previewSection" style="display: none;">
+          <h3>Bước 3: Xem trước và xác nhận</h3>
+          <div id="previewSummary" class="preview-summary"></div>
+          <div id="previewErrors" class="preview-errors" style="display: none;"></div>
+          <div id="previewTable" class="preview-table"></div>
+          <button id="confirmImportBtn" class="btn-primary" onclick="confirmImportUsers()" style="margin-top: 10px;">
+            <i class="fas fa-check"></i>
+            Xác nhận import
+          </button>
+          <div id="importResult" style="margin-top: 20px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
     function toggleUserMenu() {
@@ -556,5 +681,234 @@
         passwordInput.type = 'password';
         toggleIcon.className = 'fas fa-eye';
       }
+    }
+
+    // Excel Import Functions
+    function downloadExcelTemplate() {
+      window.location.href = '/Admin/QuanLyNguoiDung/DownloadExcelTemplate';
+    }
+
+    function openImportExcelModal() {
+      document.getElementById('importExcelModal').classList.add('active');
+    }
+
+    function closeImportExcelModal() {
+      document.getElementById('importExcelModal').classList.remove('active');
+      var fileInput = document.getElementById('excelFile');
+      if (fileInput) fileInput.value = '';
+      var previewBtn = document.getElementById('previewBtn');
+      if (previewBtn) previewBtn.style.display = 'none';
+      var previewSection = document.getElementById('previewSection');
+      if (previewSection) previewSection.style.display = 'none';
+      var previewSummary = document.getElementById('previewSummary');
+      if (previewSummary) previewSummary.innerHTML = '';
+      var previewErrors = document.getElementById('previewErrors');
+      if (previewErrors) previewErrors.innerHTML = '';
+      var previewTable = document.getElementById('previewTable');
+      if (previewTable) previewTable.innerHTML = '';
+      var uploadInfo = document.getElementById('uploadInfo');
+      if (uploadInfo) uploadInfo.innerHTML = '';
+    }
+
+    // Handle file selection
+    var excelFileInput = document.getElementById('excelFile');
+    if (excelFileInput) {
+      excelFileInput.addEventListener('change', function(e) {
+        const file = e.target.files && e.target.files[0];
+        const uploadInfo = document.getElementById('uploadInfo');
+        const previewBtn = document.getElementById('previewBtn');
+        if (file) {
+          if (previewBtn) previewBtn.style.display = 'inline-block';
+          if (uploadInfo) {
+            uploadInfo.innerHTML = `<div style=\"color: #27ae60; margin-top: 10px;\"><i class=\"fas fa-check-circle\"></i> File đã chọn: ${file.name}</div><small>Click để chọn file khác</small>`;
+          }
+        } else {
+          if (previewBtn) previewBtn.style.display = 'none';
+          if (uploadInfo) uploadInfo.innerHTML = '';
+        }
+      });
+    }
+
+    function previewExcelFile() {
+      var fileInput = document.getElementById('excelFile');
+      if (!fileInput) {
+        alert('Không tìm thấy input file');
+        return;
+      }
+      var file = fileInput.files && fileInput.files[0];
+      if (!file) {
+        alert('Vui lòng chọn file Excel');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('excelFile', file);
+
+      fetch('/Admin/QuanLyNguoiDung/PreviewExcelImport', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            displayPreview(data.data);
+          } else {
+            alert(data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Có lỗi xảy ra khi đọc file Excel');
+        });
+    }
+
+    function displayPreview(result) {
+      const previewSection = document.getElementById('previewSection');
+      const previewSummary = document.getElementById('previewSummary');
+      const previewErrors = document.getElementById('previewErrors');
+      const previewTable = document.getElementById('previewTable');
+
+      // Display summary
+      previewSummary.innerHTML = `
+        <div style="background: #e6fff0; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+          <h4 style="margin: 0 0 10px 0; color: #27ae60;">
+            <i class="fas fa-info-circle"></i> Tóm tắt
+          </h4>
+          <p style="margin: 5px 0;"><strong>Tổng số dòng:</strong> ${result.totalRows}</p>
+          <p style="margin: 5px 0;"><strong>Dòng hợp lệ:</strong> ${result.validRows}</p>
+          <p style="margin: 5px 0;"><strong>Dòng có lỗi:</strong> ${result.errorRows}</p>
+        </div>
+      `;
+
+      // Display errors if any
+      if (result.errors && result.errors.length > 0) {
+        previewErrors.innerHTML = `
+          <div style="background: #ffeaea; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+            <h4 style="margin: 0 0 10px 0; color: #c0392b;">
+              <i class="fas fa-exclamation-triangle"></i> Các lỗi phát hiện
+            </h4>
+            <ul style="margin: 0; padding-left: 20px;">
+              ${result.errors.map(error => `<li>${error}</li>`).join('')}
+            </ul>
+          </div>
+        `;
+        previewErrors.style.display = 'block';
+      } else {
+        previewErrors.style.display = 'none';
+      }
+
+      // Display valid users table
+      if (result.validUsers && result.validUsers.length > 0) {
+        previewTable.innerHTML = `
+          <div style="background: #fff; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+            <h4 style="margin: 0; padding: 15px; background: #f8f9fa; border-bottom: 1px solid #ddd;">
+              <i class="fas fa-users"></i> Danh sách người dùng sẽ được import
+            </h4>
+            <div style="max-height: 300px; overflow-y: auto;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <thead style="background: #f8f9fa;">
+                  <tr>
+                    <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Tên đăng nhập</th>
+                    <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Họ và tên</th>
+                    <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Vai trò</th>
+                    <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Email</th>
+                    <th style="padding: 10px; text-align: left; border-bottom: 1px solid #ddd;">Số điện thoại</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${result.validUsers.map(user => `
+                    <tr>
+                      <td style="padding: 10px; border-bottom: 1px solid #eee;">${user.tenDangNhap}</td>
+                      <td style="padding: 10px; border-bottom: 1px solid #eee;">${user.hoTen}</td>
+                      <td style="padding: 10px; border-bottom: 1px solid #eee;">${user.vaiTro}</td>
+                      <td style="padding: 10px; border-bottom: 1px solid #eee;">${user.email}</td>
+                      <td style="padding: 10px; border-bottom: 1px solid #eee;">${user.soDienThoai}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      } else {
+        previewTable.innerHTML = `
+          <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border: 1px solid #ffeaa7;">
+            <i class="fas fa-exclamation-triangle"></i>
+            Không có dữ liệu hợp lệ để import
+          </div>
+        `;
+      }
+
+      previewSection.style.display = 'block';
+    }
+
+    function confirmImportUsers() {
+      const fileInput = document.getElementById('excelFile');
+      const file = fileInput.files[0];
+
+      if (!file) {
+        alert('Vui lòng chọn file Excel');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('excelFile', file);
+
+      fetch('/Admin/QuanLyNguoiDung/PreviewExcelImport', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success && data.data.validUsers && data.data.validUsers.length > 0) {
+            // Send valid users to confirm import
+            fetch('/Admin/QuanLyNguoiDung/ConfirmImportUsers', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data.data.validUsers)
+              })
+              .then(response => response.json())
+              .then(result => {
+                const importResult = document.getElementById('importResult');
+                if (result.success) {
+                  if (result.errors && result.errors.length > 0) {
+                    let errorMsg = result.errors.map(e => `<div style='color:#c0392b'>${e}</div>`).join('');
+                    importResult.innerHTML = `
+                      <div style=\"background:#fff3cd;padding:15px;border-radius:8px;border:1px solid #ffeaa7;\">
+                        <b>${result.message}</b><br>
+                        <div style=\"margin-top:8px;\">Các lỗi không import được:</div>
+                        ${errorMsg}
+                      </div>
+                    `;
+                  } else {
+                    importResult.innerHTML = `
+                      <div style=\"background:#e6fff0;padding:15px;border-radius:8px;border:1px solid #b7ebc6;color:#1a7f37;\">
+                        <b>${result.message}</b>
+                      </div>
+                    `;
+                  }
+                  loadUserList(1); // Reload user list
+                } else {
+                  importResult.innerHTML = `
+                    <div style=\"background:#ffeaea;padding:15px;border-radius:8px;border:1px solid #e0b4b4;color:#c0392b;\">
+                      <b>${result.message}</b>
+                    </div>
+                  `;
+                }
+              })
+              .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi import dữ liệu');
+              });
+          } else {
+            alert('Không có dữ liệu hợp lệ để import');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Có lỗi xảy ra khi đọc file Excel');
+        });
     }
   </script>
