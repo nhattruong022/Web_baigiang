@@ -148,43 +148,50 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         {
         <div class="modal" id="inviteStudentModal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100vw; height:100vh; background:rgba(44,62,80,0.18); justify-content:center; align-items:center;">
           <div class="modal-content" style="background:#fff; border-radius:14px; box-shadow:0 8px 32px rgba(52,152,219,0.18),0 1.5px 8px rgba(0,0,0,0.08); padding:0; width:420px; max-width:90vw; position:relative; overflow:hidden;">
-            <div class="modal-header" style="background:#fff; padding:20px 24px 16px 24px; border-bottom:1px solid #e5e5e5;">
+            <div class="modal-header" style="background:#fff; padding:20px 24px 16px 24px; border-bottom:1px solid #e5e5e5; display:flex; align-items:center; justify-content:space-between;">
               <h2 style="font-size:1.2rem; font-weight:600; color:#333; margin:0;">Mời học viên</h2>
               <button onclick="closeInviteStudentModal()" style="position:absolute; top:16px; right:20px; background:none; border:none; font-size:1.3rem; color:#666; cursor:pointer;"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body" style="padding:20px 24px;">
-              <div style="margin-bottom:16px;">
-                <div style="display:flex; gap:8px; margin-bottom:8px;">
-                  <select id="searchType" style="padding:12px; border:1px solid #ddd; border-radius:8px; background:white; min-width:140px;" onchange="updateSearchPlaceholder()">
-                    <option value="all">Tất cả</option>
-                    <option value="email">Email</option>
-                    <option value="name">Họ tên</option>
-                    <option value="username">Tên đăng nhập</option>
-                    <option value="phone">Số điện thoại</option>
-                  </select>
-                  <input type="text" id="searchStudentEmail" placeholder="Tìm kiếm sinh viên..." style="flex:1; padding:12px 16px; border:1px solid #ddd; border-radius:8px; font-size:1rem; outline:none;" oninput="searchStudentWithType(this.value)" onkeyup="searchStudentWithType(this.value)">
-                </div>
-                <div style="font-size:0.85rem; color:#666; margin-top:4px;">
-                  Nhập từ khóa để tìm kiếm sinh viên theo tiêu chí đã chọn
-                </div>
+              <div style="display:flex; gap:12px; margin-bottom:18px;">
+                <button class="invite-excel-btn secondary" onclick="downloadInviteExcelTemplate()"><i class="fas fa-download"></i> Tải template Excel</button>
+                <button class="invite-excel-btn" onclick="openImportInviteExcelModal()"><i class="fas fa-file-excel"></i> Import từ Excel</button>
               </div>
+              <!-- Phần chọn thủ công giữ nguyên -->
+              <div id="manualInviteSection">
+                <div style="margin-bottom:16px;">
+                  <div style="display:flex; gap:8px; margin-bottom:8px;">
+                    <select id="searchType" style="padding:12px; border:1px solid #ddd; border-radius:8px; background:white; min-width:140px;" onchange="updateSearchPlaceholder()">
+                      <option value="all">Tất cả</option>
+                      <option value="email">Email</option>
+                      <option value="name">Họ tên</option>
+                      <option value="username">Tên đăng nhập</option>
+                      <option value="phone">Số điện thoại</option>
+                    </select>
+                    <input type="text" id="searchStudentEmail" placeholder="Tìm kiếm sinh viên..." style="flex:1; padding:12px 16px; border:1px solid #ddd; border-radius:8px; font-size:1rem; outline:none;" oninput="searchStudentWithType(this.value)" onkeyup="searchStudentWithType(this.value)">
+                  </div>
+                  <div style="font-size:0.85rem; color:#666; margin-top:4px;">
+                    Nhập từ khóa để tìm kiếm sinh viên theo tiêu chí đã chọn
+                  </div>
+                </div>
 
-              <!-- Hiển thị sinh viên đã chọn -->
-              <div id="selectedStudentsContainer" style="margin-bottom:16px; display:none;">
-                <h4 style="font-size:0.9rem; color:#333; margin-bottom:8px;">Sinh viên đã chọn:</h4>
-                <div id="selectedStudentsList" style="max-height:100px; overflow-y:auto; border:1px solid #e0e0e0; border-radius:6px; padding:8px;">
-                  <!-- Selected students will be displayed here -->
+                <!-- Hiển thị sinh viên đã chọn -->
+                <div id="selectedStudentsContainer" style="margin-bottom:16px; display:none;">
+                  <h4 style="font-size:0.9rem; color:#333; margin-bottom:8px;">Sinh viên đã chọn:</h4>
+                  <div id="selectedStudentsList" style="max-height:100px; overflow-y:auto; border:1px solid #e0e0e0; border-radius:6px; padding:8px;">
+                    <!-- Selected students will be displayed here -->
+                  </div>
+                  <div style="margin-top:8px; text-align:right;">
+                    <button type="button" onclick="clearSelectedStudents()" style="background:none; border:1px solid #ddd; color:#666; padding:4px 8px; border-radius:4px; font-size:0.8rem; cursor:pointer;">Xóa tất cả chọn</button>
+                  </div>
                 </div>
-                <div style="margin-top:8px; text-align:right;">
-                  <button type="button" onclick="clearSelectedStudents()" style="background:none; border:1px solid #ddd; color:#666; padding:4px 8px; border-radius:4px; font-size:0.8rem; cursor:pointer;">Xóa tất cả chọn</button>
-                </div>
-              </div>
 
-              <div id="searchResults" style="max-height:200px; overflow-y:auto;">
-                <!-- Kết quả tìm kiếm sẽ hiển thị ở đây -->
-              </div>
-              <div style="color:#666; font-size:0.9rem; margin-top:12px; text-align:center;">
-                Tìm kiếm và chọn nhiều sinh viên để mời cùng lúc
+                <div id="searchResults" style="max-height:200px; overflow-y:auto;">
+                  <!-- Kết quả tìm kiếm sẽ hiển thị ở đây -->
+                </div>
+                <div style="color:#666; font-size:0.9rem; margin-top:12px; text-align:center;">
+                  Tìm kiếm và chọn nhiều sinh viên để mời cùng lúc
+                </div>
               </div>
             </div>
             <div class="modal-footer" style="padding:16px 24px; background:#f8f9fa; display:flex; justify-content:space-between; align-items:center;">
@@ -747,6 +754,40 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
+  }
+
+  /* ... existing styles ... */
+  .invite-excel-btn {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    padding: 10px 18px;
+    font-size: 1rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.08);
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+
+  .invite-excel-btn:hover {
+    background: #0056b3;
+    box-shadow: 0 4px 16px rgba(0, 123, 255, 0.15);
+  }
+
+  .invite-excel-btn.secondary {
+    background: #f4f8fb;
+    color: #007bff;
+    border: 1.5px solid #007bff;
+  }
+
+  .invite-excel-btn.secondary:hover {
+    background: #e6f0fa;
+    color: #0056b3;
+    border-color: #0056b3;
   }
 </style>
 
@@ -3246,6 +3287,94 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
   console.log('DEBUG processedCurrentUserAvatar:', processedCurrentUserAvatar);
 
   const container = document.getElementById('tab-notices');
+
+  function downloadInviteExcelTemplate() {
+    window.location.href = '/User/ChiTietHocPhan/DownloadInviteExcelTemplate';
+  }
+
+  function openImportInviteExcelModal() {
+    document.getElementById('importInviteExcelModal').style.display = 'flex';
+  }
+
+  function closeImportInviteExcelModal() {
+    document.getElementById('importInviteExcelModal').style.display = 'none';
+    document.getElementById('inviteExcelPreviewSection').style.display = 'none';
+    document.getElementById('inviteExcelPreviewSection').innerHTML = '';
+    document.getElementById('inviteExcelResult').innerHTML = '';
+    document.getElementById('inviteExcelFile').value = '';
+  }
+
+  function previewInviteExcelFile() {
+    var fileInput = document.getElementById('inviteExcelFile');
+    var file = fileInput.files && fileInput.files[0];
+    if (!file) {
+      alert('Vui lòng chọn file Excel');
+      return;
+    }
+    var formData = new FormData();
+    formData.append('excelFile', file);
+    formData.append('idLopHocPhan', currentLopHocPhanId);
+    fetch('/User/ChiTietHocPhan/PreviewInviteExcel', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        var previewSection = document.getElementById('inviteExcelPreviewSection');
+        var resultSection = document.getElementById('inviteExcelResult');
+        if (data.success) {
+          previewSection.style.display = 'block';
+          previewSection.innerHTML = `<div style='background:#e6fff0;padding:12px;border-radius:6px;margin-bottom:10px;'>Tìm thấy <b>${data.valid.length}</b> sinh viên hợp lệ, <b>${data.invalid.length}</b> dòng lỗi.</div>`;
+          if (data.valid.length > 0) {
+            previewSection.innerHTML += `<div style='max-height:180px;overflow:auto;'><table style='width:100%;border-collapse:collapse;'><thead><tr><th>Email</th><th>Tên đăng nhập</th><th>Họ tên</th></tr></thead><tbody>${data.valid.map(s=>`<tr><td>${s.email}</td><td>${s.tenDangNhap}</td><td>${s.hoTen}</td></tr>`).join('')}</tbody></table></div>`;
+            previewSection.innerHTML += `<button class='btn-primary' style='margin-top:10px;' onclick='confirmInviteExcelStudents()'>Xác nhận mời ${data.valid.length} sinh viên</button>`;
+          }
+          if (data.invalid.length > 0) {
+            previewSection.innerHTML += `<div style='background:#ffeaea;padding:10px;border-radius:6px;margin-top:10px;'><b>Lỗi:</b><ul>${data.invalid.map(e=>`<li>${e}</li>`).join('')}</ul></div>`;
+          }
+          resultSection.innerHTML = '';
+        } else {
+          previewSection.style.display = 'block';
+          previewSection.innerHTML = `<div style='background:#ffeaea;padding:10px;border-radius:6px;'>${data.message || 'Lỗi không xác định'}</div>`;
+          resultSection.innerHTML = '';
+        }
+      })
+      .catch(err => {
+        alert('Lỗi khi đọc file Excel: ' + err.message);
+      });
+  }
+
+  function confirmInviteExcelStudents() {
+    var fileInput = document.getElementById('inviteExcelFile');
+    var file = fileInput.files && fileInput.files[0];
+    if (!file) {
+      alert('Vui lòng chọn file Excel');
+      return;
+    }
+    var formData = new FormData();
+    formData.append('excelFile', file);
+    formData.append('idLopHocPhan', currentLopHocPhanId);
+    fetch('/User/ChiTietHocPhan/ConfirmInviteExcel', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        var resultSection = document.getElementById('inviteExcelResult');
+        if (data.success) {
+          resultSection.innerHTML = `<div style='background:#e6fff0;padding:12px;border-radius:6px;'>${data.message}</div>`;
+          setTimeout(() => {
+            closeImportInviteExcelModal();
+            refreshStudentsList();
+          }, 2000);
+        } else {
+          resultSection.innerHTML = `<div style='background:#ffeaea;padding:10px;border-radius:6px;'>${data.message || 'Lỗi không xác định'}</div>`;
+        }
+      })
+      .catch(err => {
+        alert('Lỗi khi gửi lời mời: ' + err.message);
+      });
+  }
 </script>
 
 @* Handle TempData messages *@
@@ -3296,6 +3425,28 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     <div style="margin-top:18px;">
       <button onclick="closeConfirmDeleteModal()" class="btn-cancel">Hủy</button>
       <button onclick="doDeleteComment()" class="btn-primary" style="background:#e74c3c;">Xóa</button>
+    </div>
+  </div>
+</div>
+<!-- Modal Import Excel Mời sinh viên -->
+<div class="modal" id="importInviteExcelModal" style="display:none; position:fixed; z-index:1100; left:0; top:0; width:100vw; height:100vh; background:rgba(44,62,80,0.18); justify-content:center; align-items:center;">
+  <div class="modal-content" style="background:#fff; border-radius:14px; box-shadow:0 8px 32px rgba(52,152,219,0.18),0 1.5px 8px rgba(0,0,0,0.08); padding:0; width:480px; max-width:95vw; position:relative; overflow:hidden;">
+    <div class="modal-header" style="background:#fff; padding:20px 24px 16px 24px; border-bottom:1px solid #e5e5e5; display:flex; align-items:center; justify-content:space-between;">
+      <h2 style="font-size:1.2rem; font-weight:600; color:#333; margin:0;">Import danh sách mời sinh viên</h2>
+      <button onclick="closeImportInviteExcelModal()" style="position:absolute; top:16px; right:20px; background:none; border:none; font-size:1.3rem; color:#666; cursor:pointer;"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" style="padding:20px 24px;">
+      <div style="margin-bottom:18px;">
+        <b>Bước 1: Tải template Excel</b><br>
+        <button class="btn-secondary" onclick="downloadInviteExcelTemplate()"><i class="fas fa-download"></i> Tải template Excel</button>
+      </div>
+      <div style="margin-bottom:18px;">
+        <b>Bước 2: Upload file Excel</b><br>
+        <input type="file" id="inviteExcelFile" accept=".xlsx,.xls" style="margin-top:10px;">
+        <button class="btn-primary" onclick="previewInviteExcelFile()" style="margin-top:10px;">Xem trước danh sách mời</button>
+      </div>
+      <div id="inviteExcelPreviewSection" style="display:none; margin-top:18px;"></div>
+      <div id="inviteExcelResult" style="margin-top:18px;"></div>
     </div>
   </div>
 </div>
