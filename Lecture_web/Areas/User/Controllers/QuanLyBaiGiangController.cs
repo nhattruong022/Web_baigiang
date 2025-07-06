@@ -84,6 +84,7 @@ namespace Lecture_web.Areas.User.Controllers
             return View(bg);
         }
 
+        [HttpGet]
         public async Task<IActionResult> Edit(int idbg)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
@@ -277,6 +278,12 @@ namespace Lecture_web.Areas.User.Controllers
             bool existClass = await _context.LopHocPhan.AnyAsync(lp => lp.IdBaiGiang == idbg);
             if (existClass)
                 return BadRequest(new { error = "Bài giảng đang có liên kết tới lớp học phần, không thể xóa." });
+            bool existChuong = await _context.Chuong.AnyAsync(c => c.IdBaiGiang == idbg);
+            if (existChuong)
+                return BadRequest(new
+                {
+                    error = "Cần xóa hết chương và bài của bài giảng này trước khi xóa."
+                });
             _context.BaiGiang.Remove(bg);
             await _context.SaveChangesAsync();
             return Ok(new { success = true });

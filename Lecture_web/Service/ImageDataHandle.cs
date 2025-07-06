@@ -23,13 +23,14 @@ namespace Lecture_web.Service
             string NoiDung,
             int userId,
             int idChuong,     
+            int idbai,
             bool status
         )
         {
             var userFolder = Path.Combine(_env.WebRootPath, "images", userId.ToString());
             Directory.CreateDirectory(userFolder);
 
-            string prefix = $"{idChuong}_";  
+            string prefix = $"{idChuong}_{idbai}_";  
             var allFiles = Directory.GetFiles(userFolder, $"{prefix}*")
                                     .Select(Path.GetFileName)
                                     .ToList();
@@ -71,7 +72,7 @@ namespace Lecture_web.Service
                         hash = BitConverter.ToString(md5.ComputeHash(bytes))
                                          .Replace("-", "").ToLowerInvariant();
 
-                    var fileName = $"{idChuong}_{hash}.{ext}";
+                    var fileName = $"{idChuong}_{idbai}_{hash}.{ext}";
                     var path = Path.Combine(userFolder, fileName);
                     if (!File.Exists(path))
                         await File.WriteAllBytesAsync(path, bytes);

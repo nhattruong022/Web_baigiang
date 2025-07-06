@@ -1660,6 +1660,12 @@ html {
   }
 }
 
+.lesson-desc img {
+    max-width: 100% !important;
+    height: auto;
+
+}
+
 @media (max-width: 480px) {
   .notice-card {
     padding: 12px !important;

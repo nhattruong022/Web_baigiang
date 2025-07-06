@@ -303,7 +303,15 @@
                                             {
                                                 <tr>
                                                     <td></td>
-                                                    <td class="truncate">@b.TenBai</td>
+                                                    <td class="truncate">
+                                                        <label style="user-select: none;">
+                                                            <input type="checkbox"
+                                                                   class="lesson-checkbox"
+                                                                   data-idbai="@b.IdBai"
+                                                                   style="margin-right:0.5rem; transform: scale(1.2);" />
+                                                            @b.TenBai
+                                                        </label>
+                                                    </td>
                                                     <td>@b.NgayTao</td>
                                                     <td>@b.NgayCapNhat</td>
                                                     <td class="assignment-actions-btns">
@@ -312,12 +320,6 @@
                                                                 data-idbai="@b.IdBai"
                                                                 data-idchuong="@b.IdChuong">
                                                             <i class="fas fa-edit"></i>
-                                                        </button>
-                                                        <button type="button"
-                                                        class="btn-danger delete-lesson-btn"
-                                                        data-lesson="IdBai"
-                                                        title="Xóa">
-                                                            <i class="fas fa-trash"></i>
                                                         </button>
                                                     </td>
                                                 </tr>
@@ -329,6 +331,11 @@
                                     <button type="button" class="btn btn-sm btn-primary add-lesson-btn"
                                             data-idchuong="@c.IdChuong">
                                         <i class="fas fa-plus"></i> Thêm bài học
+                                    </button>
+                                    <button type="button"
+                                            class="btn btn-sm btn-danger mul-delete-btn"
+                                            data-idchuong="@c.IdChuong">
+                                        <i class="fas fa-trash-alt"></i> Xóa nhanh
                                     </button>
                                 </div>
                             }
@@ -709,6 +716,69 @@
                 var url = '@Url.Action("AddBai", "QuanLyBai", new { area = "User" })'
                     + '?idChuong=' + encodeURIComponent(idchuong);
                 window.location.href = url;
+            });
+        });
+
+        $(function () {
+            $('.mul-delete-btn').on('click', function () {
+                var $collapse = $(this).closest('.collapse-row');
+                var muldeleurl = '@Url.Action("MultipleDelete", "QuanLyChuong")';
+                var selected = $collapse
+                    .find('.lesson-checkbox:checked')
+                    .map(function () 
+                    {
+                        return $(this).data('idbai'); 
+                    })
+                    .get();
+
+                if (!selected.length) {
+                    // Chưa chọn bài nào
+                    return Swal.fire({
+                        icon: 'warning',
+                        title: 'Chưa chọn bài',
+                        text: 'Vui lòng chọn ít nhất một bài để xóa.'
+                    });
+                }
+
+                // Xác nhận trước khi xóa
+                Swal.fire({
+                    title: `Xóa ${selected.length} bài đã chọn?`,
+                    text: 'Bài sẽ bị xóa và không thể hoàn tác, có chấp nhận xóa không',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Chấp nhận xóa',
+                    cancelButtonText: 'Không'
+                }).then((result) => {
+                    if (!result.isConfirmed) return;
+
+                    // Gọi API xóa
+                    $.ajax({
+                        url: muldeleurl,
+                        method: 'POST',
+                        contentType: 'application/json',
+                        headers: {
+                            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        data: JSON.stringify(selected),
+                    })
+                        .done(function (bai) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Xóa thành công',
+                                text: `Đã xóa ${bai.deletedCount} bài học.`
+                            }).then(() => {
+                                location.reload();
+                            });
+                        })
+                        .fail(function (xhr) {
+                            var msg = xhr.responseJSON?.message || 'Có lỗi xảy ra.';
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Không xóa được',
+                                text: msg
+                            });
+                        });
+                });
             });
         });
 </script>

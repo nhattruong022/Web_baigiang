@@ -468,6 +468,35 @@ namespace Lecture_web.Areas.User.Controllers
             await _context.SaveChangesAsync();
             return Ok(new { success = true });
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MultipleDelete([FromBody] List<int> ids)
+        {
+            if (ids == null || !ids.Any())
+            {
+                return BadRequest(new { message = "Chưa chọn bài nào để xóa." });
+            }
+
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            var bai = await _context.Bai
+                .Include(b => b.Chuong)                           
+                .ThenInclude(c => c.BaiGiang)                    
+                .Where(b => ids.Contains(b.IdBai)
+                            && b.Chuong.BaiGiang.IdTaiKhoan == userId)
+                .ToListAsync();
+
+            if (!bai.Any())
+            {
+                return BadRequest(new { message = "Không tìm thấy bài hợp lệ để xóa." });
+            }
+
+            _context.Bai.RemoveRange(bai);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { deletedCount = bai.Count });
+        }
+
 
     }
 } 
