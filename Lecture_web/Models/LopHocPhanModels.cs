@@ -11,7 +11,6 @@ namespace Lecture_web.Models
         [MaxLength(20, ErrorMessage = "Tên lớp học phần tối đa 20 ký tự")]
         public string TenLop { get; set; }
         public string? MoTa { get; set; }
-        public string TrangThai { get; set; }
         public int IdHocPhan { get; set; }
         public int IdTaiKhoan { get; set; }
         public int? IdBaiGiang { get; set; }

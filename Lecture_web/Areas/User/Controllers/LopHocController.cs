@@ -242,8 +242,7 @@ namespace Lecture_web.Areas.User.Controllers
                 TenLop = lhp.TenLop,
                 MoTa = lhp.MoTa,
                 IdHocPhan = lhp.HocPhanId.Value,
-                IdBaiGiang = lhp.BaiGiangId,      
-                TrangThai = "Hoạt động",       
+                IdBaiGiang = lhp.BaiGiangId,        
                 NgayTao = DateTime.Now,
                 NgayCapNhat = DateTime.Now,
                 IdTaiKhoan = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier))
