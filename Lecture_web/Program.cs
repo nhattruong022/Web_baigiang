@@ -25,6 +25,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 // Add custom services
 builder.Services.AddScoped<Lecture_web.Service.EmailService>();
 builder.Services.AddScoped<Lecture_web.Service.ImageDataHandle>();
+builder.Services.AddScoped<Lecture_web.Service.ConvertWordToHTML>();
+
 
 // Add SignalR (MUST be before Build())
 builder.Services.AddSignalR();
@@ -50,6 +52,7 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
 
 // Map SignalR Hub (MUST be after UseRouting and UseAuthorization)
 app.MapHub<NotificationHub>("/notificationHub");

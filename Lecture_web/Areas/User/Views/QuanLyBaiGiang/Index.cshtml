@@ -39,8 +39,21 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
         .text-danger {
             color: red !important;
         }
-
+        
         #createContentModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        #editContentModal {
             display: none;
             position: fixed;
             top: 0;
@@ -55,7 +68,14 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
 
             #createContentModal.open {
                 display: flex;
+
             }
+            #editContentModal.open
+            {
+                display: flex;
+      
+            }
+
 
             #createContentModal .lecture-modal-content {
                 background: #fff;
@@ -324,20 +344,20 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
               id="createContentForm">
             @Html.AntiForgeryToken()
             <div class="form-group">
-                <label>Tiêu đề <span class="required">*</span></label>
+                <label>Tên bài giảng<span class="required">*</span></label>
                 <input type="text" name="tieude" class="form-control" />
-                <span asp-validation-for="tieude" class="text-danger"></span>
+                <span asp-validation-for="tieude" class="text-danger invalid-feedback"></span>
             </div>
             <div class="form-group">
                 <label>Mô tả <span class="required">*</span></label>
                 <textarea name="mota" class="form-control"></textarea>
-                <span asp-validation-for="mota" class="text-danger"></span>
+                <span asp-validation-for="mota" class="text-danger invalid-feedback"></span>
             </div>
             <div class="form-group">
-                <label>Lớp học phần <span class="required">*</span></label>
+                <label>Lớp học phần</label>
                 <div id="createLopHocPhanCheckboxes"
                      style="max-height:200px;overflow-y:auto;border:1px solid #ddd;padding:0.5rem;">
-                    <!-- Render danh sách lớp hp bằng ajax->
+                    <!-- Render danh sách lớp hp bằng ajax-->
                 </div>
                 <span asp-validation-for="selectedlophocphanids" class="text-danger"></span>
             </div>
@@ -359,7 +379,7 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
     <div class="modal-header lecture-modal-header">
       <i class="fas fa-chalkboard"></i>
       <h2>Chỉnh sửa bài giảng</h2>
-      <button class="close-modal" onclick="closeEditContentModal()">
+            <button class="close-modal" onclick="closeEditModal()">
         <i class="fas fa-times"></i>
       </button>
     </div>
@@ -372,15 +392,15 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
          <input type="hidden" name="idbaigiang" id="editIdBaiGiang"/>
         <label>Tên bài giảng <span class="required">*</span></label>
         <input type="text" name ="tieude" id="editLectureTitle" placeholder="Nhập tên bài giảng">
-        <span asp-validation-for="tieude" class="text-danger"></span>
+                <span asp-validation-for="tieude" class="text-danger invalid-feedback"></span>
       </div>
       <div class="form-group">
         <label>Mô tả</label>
         <textarea rows="3" name="mota" id="editLectureDesc" placeholder="Nhập mô tả bài giảng"></textarea>
-         <span asp-validation-for="mota" class="text-danger"></span>
+                <span asp-validation-for="mota" class="text-danger invalid-feedback"></span>
       </div>
       <div class="form-group">
-        <label>Lớp học phần <span>*</span></label>
+        <label>Lớp học phần </label>
                 <input type="hidden" id="editLectureClass" placeholder="Nhập mã lớp học phần">
 @* 
                 <select id="editlecturecl" class="form-control" multiple="multiple">
@@ -392,7 +412,7 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
                 </div>
       </div>
       <div class="form-actions">
-        <button type="button" class="btn-secondary" onclick="closeEditContentModal()">Hủy</button>
+                <button type="button" class="btn-secondary" onclick="closeEditModal()">Hủy</button>
         <button type="submit" class="submitBaiGiang btn-primary">Lưu <i class="fas fa-save"></i></button>
       </div>
     </form>
@@ -492,8 +512,15 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
             });
         });
     });
-   
 
+    var $editForm = $('#editContentForm');
+
+    window.closeEditModal = function () {
+        $('#editContentModal').removeClass('open');
+        $editForm.find('.invalid-feedback').text('');
+
+
+    };
 
     //Add Bài giảng 
 
@@ -522,11 +549,15 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
       })
       .fail(function(){ alert('Không tải được danh sách lớp'); });
   };
-
+        var $create = $('#createContentModal');
   // Đóng modal
   window.closeCreateModal = function(){
     $('#createContentModal').removeClass('open');
+    $create.find('.invalid-feedback').text('');
+
   };
+
+
 
   // AJAX submit tạo mới
         $('#createContentForm').submit(function (e) {

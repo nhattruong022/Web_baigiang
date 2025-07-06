@@ -443,32 +443,32 @@ function saveEditContent() {
 }
 
 // Gắn sự kiện cho nút chỉnh sửa trong bảng bài giảng (chỉ cho bảng bài giảng)
-function bindContentTableEvents() {
-    const table = document.getElementById('contentTable');
-    if (!table) return;
-    table.onclick = function (e) {
-        const btn = e.target.closest('button');
-        if (!btn) return;
-        const row = btn.closest('tr');
-        if (!row) return;
-        // Chỉnh sửa
-        if (btn.classList.contains('btn-secondary') && btn.title === 'Chỉnh sửa') {
-            const title = row.children[0].innerText;
-            const desc = row.children[1].innerText;
-            const classCode = row.children[2].innerText;
-            document.getElementById('editLectureTitle').value = title;
-            document.getElementById('editLectureDesc').value = desc;
-            document.getElementById('editLectureClass').value = classCode;
-            document.getElementById('editContentModal').classList.add('active');
-        }
-        // Xóa
-        //if (btn.classList.contains('btn-danger') && btn.title === 'Xóa') {
-        //    contentRowToDelete = row;
-        //    document.getElementById('confirmDeleteContentModal').classList.add('active');
-        //}
-    }
-}
-document.addEventListener('DOMContentLoaded', bindContentTableEvents);
+//function bindContentTableEvents() {
+//    const table = document.getElementById('contentTable');
+//    if (!table) return;
+//    table.onclick = function (e) {
+//        const btn = e.target.closest('button');
+//        if (!btn) return;
+//        const row = btn.closest('tr');
+//        if (!row) return;
+//        // Chỉnh sửa
+//        if (btn.classList.contains('btn-secondary') && btn.title === 'Chỉnh sửa') {
+//            const title = row.children[0].innerText;
+//            const desc = row.children[1].innerText;
+//            const classCode = row.children[2].innerText;
+//            document.getElementById('editLectureTitle').value = title;
+//            document.getElementById('editLectureDesc').value = desc;
+//            document.getElementById('editLectureClass').value = classCode;
+//            document.getElementById('editContentModal').classList.add('active');
+//        }
+//        // Xóa
+//        //if (btn.classList.contains('btn-danger') && btn.title === 'Xóa') {
+//        //    contentRowToDelete = row;
+//        //    document.getElementById('confirmDeleteContentModal').classList.add('active');
+//        //}
+//    }
+//}
+//document.addEventListener('DOMContentLoaded', bindContentTableEvents);
 
 // Đóng modal xác nhận xóa
 function closeConfirmDeleteContent() {

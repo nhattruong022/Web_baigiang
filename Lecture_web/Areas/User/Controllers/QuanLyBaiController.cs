@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Lecture_web.Service;
 using Lecture_web.Models;
+using DocumentFormat.OpenXml.Math;
+using OpenXmlPowerTools;
 
 namespace Lecture_web.Areas.User.Controllers
 {
@@ -14,10 +16,12 @@ namespace Lecture_web.Areas.User.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ImageDataHandle _imgHandle;
-        public QuanLyBaiController(ApplicationDbContext context, ImageDataHandle imgHandle)
+        private readonly ConvertWordToHTML _convertWordToHTML;
+        public QuanLyBaiController(ApplicationDbContext context, ImageDataHandle imgHandle, ConvertWordToHTML convertWordToHTML)
         {
             _context = context;
             _imgHandle = imgHandle;
+            _convertWordToHTML = convertWordToHTML;
         }
         public IActionResult Index()
         {
@@ -53,13 +57,6 @@ namespace Lecture_web.Areas.User.Controllers
             public async Task<IActionResult> EditBai(EditBaiViewModel vmb)
             {
                 var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                var bai = await _context.Bai
-                    .Include(b => b.Chuong).ThenInclude(c => c.BaiGiang)
-                    .FirstOrDefaultAsync(b =>
-                        b.IdBai == vmb.IdBai &&
-                        b.Chuong.BaiGiang.IdTaiKhoan == userId);
-                if (bai == null) return NotFound();
-
                 if (!ModelState.IsValid)
                 {
                     var errors = ModelState
@@ -70,6 +67,14 @@ namespace Lecture_web.Areas.User.Controllers
                       );
                     return BadRequest(new { errors });
                 }
+                var bai = await _context.Bai
+                        .Include(b => b.Chuong).ThenInclude(c => c.BaiGiang)
+                        .FirstOrDefaultAsync(b =>
+                            b.IdBai == vmb.IdBai &&
+                            b.Chuong.BaiGiang.IdTaiKhoan == userId);
+                    if (bai == null) return NotFound();
+
+
 
 
                 var listnameb = await _context.Bai
@@ -100,7 +105,7 @@ namespace Lecture_web.Areas.User.Controllers
                     return BadRequest(new { errors });
                 }
 
-                var UpdateNoiDung = await _imgHandle.ProcessImagesAsync(vmb.NoiDung, userId, vmb.IdChuong, status: true);
+                var UpdateNoiDung = await _imgHandle.ProcessImagesAsync(vmb.NoiDung, userId, vmb.IdChuong, vmb.IdBai, status: true);
                     bai.TieuDeBai = StringHelper.NormalizeString(vmb.TieuDeBai);
                     bai.NoiDungText = UpdateNoiDung;
                     bai.NgayCapNhat = DateTime.Now;
@@ -182,16 +187,27 @@ namespace Lecture_web.Areas.User.Controllers
                     );
                 return BadRequest(new { errors });
             }
+            var bai = new BaiModels
+            {
+                IdChuong = vm.IdChuong,
+                TieuDeBai = StringHelper.NormalizeString(vm.TieuDeBai),
+                NoiDungText = "",
+                NgayTao = DateTime.Now,
+                NgayCapNhat = DateTime.Now
+            };
+            _context.Bai.Add(bai);
+            await _context.SaveChangesAsync();
 
             // Gọi service xử lý ảnh
             var addNewBai = await _imgHandle.ProcessImagesAsync(
                 NoiDung: vm.NoiDung,
                 userId: userId,
                 idChuong: vm.IdChuong,   
+                bai.IdBai,
                 status: false        
             );
 
-            var bai = new BaiModels
+            var getbai = new BaiModels
             {
                 IdChuong = vm.IdChuong,
                 TieuDeBai = StringHelper.NormalizeString(vm.TieuDeBai),
@@ -206,8 +222,6 @@ namespace Lecture_web.Areas.User.Controllers
 
             return Json(new { success = true });
         }
-
-
 
     }
 } 
