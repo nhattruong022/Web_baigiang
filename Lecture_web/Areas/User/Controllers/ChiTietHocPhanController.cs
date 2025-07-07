@@ -1298,12 +1298,30 @@ namespace Lecture_web.Areas.User.Controllers
             }
         }
 
-        [HttpGet]
         public IActionResult DownloadInviteExcelTemplate()
         {
-            var excelService = new ExcelService();
-            var bytes = excelService.GenerateInviteStudentTemplate();
-            return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "InviteStudentsTemplate.xlsx");
+            // Tạo file Excel mẫu với các trường: Email, Tên đăng nhập, Họ tên, Vai trò, Trạng thái
+            using (var package = new OfficeOpenXml.ExcelPackage())
+            {
+                var worksheet = package.Workbook.Worksheets.Add("Template");
+                worksheet.Cells[1, 1].Value = "Email";
+                worksheet.Cells[1, 2].Value = "Tên đăng nhập";
+                worksheet.Cells[1, 3].Value = "Họ tên";
+                worksheet.Cells[1, 4].Value = "Vai trò";
+                worksheet.Cells[1, 5].Value = "Trạng thái";
+                // Thêm một dòng ví dụ
+                worksheet.Cells[2, 1].Value = "sv01@example.com";
+                worksheet.Cells[2, 2].Value = "sv01";
+                worksheet.Cells[2, 3].Value = "Nguyễn Văn A";
+                worksheet.Cells[2, 4].Value = "Sinh viên";
+                worksheet.Cells[2, 5].Value = "Hoạt động";
+                worksheet.Cells.AutoFitColumns();
+                var stream = new System.IO.MemoryStream();
+                package.SaveAs(stream);
+                stream.Position = 0;
+                var fileName = "InviteStudentsTemplate.xlsx";
+                return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+            }
         }
         [HttpPost]
         public async Task<IActionResult> PreviewInviteExcel(int idLopHocPhan, IFormFile excelFile)
@@ -1312,7 +1330,7 @@ namespace Lecture_web.Areas.User.Controllers
                 return Json(new { success = false, message = "Vui lòng chọn file Excel" });
             var excelService = new ExcelService();
             var result = excelService.ImportInviteStudentsFromExcel(excelFile.OpenReadStream());
-            var valid = new List<object>();
+            var valid = new List<dynamic>();
             var invalid = new List<string>(result.Invalid);
             foreach (var row in result.Valid)
             {

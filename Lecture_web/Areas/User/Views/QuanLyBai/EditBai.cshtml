@@ -1,45 +1,51 @@
-@model Lecture_web.Models.ViewModels.EditBaiViewModel    
+@model Lecture_web.Models.ViewModels.EditBaiViewModel
 @{
-    ViewData["Title"] = "Chỉnh sửa bài";
-    Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
-    }
+ViewData["Title"] = "Chỉnh sửa bài";
+Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+}
 
 @section style {
-    <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/45.2.1/ckeditor5.css" />
+<link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/45.2.1/ckeditor5.css" />
 
-        <style>
-        .main-content {
-            flex: 1;
-            padding: 20px;
-            margin-left: 140px;
-            min-height: 100vh;
-        }
-            .bai-modal-form textarea {
-                min-height: 400px;
-                height: auto;
+<style>
+  .main-content {
+    flex: 1;
+    padding: 20px;
+    margin-left: 140px;
+    min-height: 100vh;
+  }
 
-            }
+  .bai-modal-form textarea {
+    min-height: 400px;
+    height: auto;
 
-            .bai-modal-form{
-                max-width: 1200px !important;
-                margin:0px 0px !important;
-                width:auto;
-            }
+  }
 
-            .text-danger {
-                color: red !important;
-                width: 100%;
-            }
+  .bai-modal-form {
+    max-width: 1200px !important;
+    margin: 0px 0px !important;
+    width: auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(52, 152, 219, 0.08);
+    padding: 32px 36px;
+  }
 
-        .ck-editor__main, .ck-editor__editable_inline {
-                height: 400px;
-                max-height: 400px;
-                overflow-y: auto;
-                resize: none;
-        
-            }
+  .text-danger {
+    color: red !important;
+    width: 100%;
+  }
 
-/*         .ck-content iframe {
+  .ck-editor__main,
+  .ck-editor__editable_inline {
+    height: 400px;
+    max-height: 400px;
+    overflow-y: auto;
+    resize: none;
+
+  }
+
+  /*         .ck-content iframe {
             pointer-events: auto;
         }
 
@@ -73,116 +79,216 @@
             pointer-events: auto !important;
         } */
 
-        .cke_notification_message, .cke_notification_close, .cke_notification_warning {
-            display: none !important;
-        }
+  .cke_notification_message,
+  .cke_notification_close,
+  .cke_notification_warning {
+    display: none !important;
+  }
 
+  .form-group label {
+    font-weight: 500;
+    margin-bottom: 6px;
+    display: block;
+  }
 
- 
-        </style>
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 1.08rem;
+    margin-top: 2px;
+  }
 
+  .form-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: flex-end;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    font-size: 1.08rem;
+    padding: 0.5rem 1.1rem;
+    border-radius: 6px;
+    min-width: 110px;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s;
+  }
+
+  .btn-primary {
+    background: #2585e8;
+    color: #fff;
+  }
+
+  .btn-secondary {
+    background: #f0f0f0;
+    color: #333;
+  }
+
+  @@media (max-width: 900px) {
+    .main-content {
+      margin-left: 0;
+      padding: 12px;
     }
 
-    <main class="main-content">
-        <div class="assignment-management-container">
-            <div class="assignment-header">
-                <h2>Chỉnh sửa bài</h2>
-            </div>
-            <form asp-area="User"
-                  asp-controller="QuanLyBai"
-                  asp-action="EditBai"
-                  id="editBaiForm"
-                  method="post"
-                  class="bai-modal-form"
-                  style="max-width:800px;margin:30px auto;">
-                @Html.AntiForgeryToken()
+    .bai-modal-form {
+      padding: 18px 8px;
+    }
+  }
 
-                <input asp-for="IdBai" type="hidden" />
-                <input asp-for="IdChuong" type="hidden" />
+  @@media (max-width: 700px) {
+    .main-content {
+      margin-left: 0;
+      padding: 6px;
+    }
 
-                <div class="form-group">
-                    <label asp-for="TieuDeBai">Tiêu đề</label>
-                <input asp-for="TieuDeBai" class="form-control" maxlength="" />
-                    <span asp-validation-for="TieuDeBai" class="text-danger"></span>
-                </div>
+    .bai-modal-form {
+      max-width: 100vw;
+      margin: 10px 0;
+      padding: 10px 2vw;
+      border-radius: 0;
+    }
 
-                <div class="form-group">
-                    <label asp-for="NoiDung"> Nội dung</label>
-                    
-                    <textarea asp-for="NoiDung" 
-                    class="form-control" 
-                    rows="6"
-                    id="NoiDungEditor">
+    .form-group input,
+    .form-group textarea {
+      font-size: 1rem;
+      padding: 0.5rem 0.7rem;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+      font-size: 1rem;
+      padding: 0.5rem 0.7rem;
+      min-width: 0;
+    }
+
+    .form-actions {
+      flex-direction: column;
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .form-actions>* {
+      width: 100%;
+    }
+  }
+
+  @@media (max-width: 500px) {
+    .main-content {
+      padding: 2px;
+    }
+
+    .bai-modal-form {
+      padding: 4px 0;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      font-size: 0.98rem;
+      padding: 0.45rem 0.5rem;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+      font-size: 0.98rem;
+      padding: 0.45rem 0.5rem;
+      min-width: 0;
+    }
+  }
+</style>
+
+}
+
+<main class="main-content">
+  <div class="assignment-management-container">
+    <div class="assignment-header">
+      <h2>Chỉnh sửa bài</h2>
+    </div>
+    <form asp-area="User" asp-controller="QuanLyBai" asp-action="EditBai" id="editBaiForm" method="post" class="bai-modal-form" style="max-width:800px;margin:30px auto;">
+      @Html.AntiForgeryToken()
+
+      <input asp-for="IdBai" type="hidden" />
+      <input asp-for="IdChuong" type="hidden" />
+
+      <div class="form-group">
+        <label asp-for="TieuDeBai">Tiêu đề</label>
+        <input asp-for="TieuDeBai" class="form-control" maxlength="" />
+        <span asp-validation-for="TieuDeBai" class="text-danger"></span>
+      </div>
+
+      <div class="form-group">
+        <label asp-for="NoiDung"> Nội dung</label>
+
+        <textarea asp-for="NoiDung" class="form-control" rows="6" id="NoiDungEditor">
 
                          @Html.Raw(Model.NoiDung)
 
                     </textarea>
-                    <span asp-validation-for="NoiDung" class="text-danger"></span>
-                </div>
-                <div class="form-actions" style="text-align:right">
-                    <a asp-area="User"
-                       asp-controller="QuanLyChuong"
-                       asp-action="Index"
-                       asp-route-idbg="@Model.IdBaiGiang"
-                       class="btn-secondary">Hủy</a>
-                    <button type="submit" class="btn-primary">
-                        Lưu <i class="fas fa-save"></i>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </main>
+        <span asp-validation-for="NoiDung" class="text-danger"></span>
+      </div>
+      <div class="form-actions" style="text-align:right">
+        <a asp-area="User" asp-controller="QuanLyChuong" asp-action="Index" asp-route-idbg="@Model.IdBaiGiang" class="btn-secondary">Hủy</a>
+        <button type="submit" class="btn-primary">
+          Lưu <i class="fas fa-save"></i>
+        </button>
+      </div>
+    </form>
+  </div>
+</main>
 
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-@*     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.0/classic/ckeditor.js"></script> *@
-    <script src="~/js/mammoth.browser.js"></script>
-    <script src="https://cdn.ckeditor.com/4.22.1/standard-all/ckeditor.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+@* <script src="https://cdn.ckeditor.com/ckeditor5/39.0.0/classic/ckeditor.js"></script> *@
+<script src="~/js/mammoth.browser.js"></script>
+<script src="https://cdn.ckeditor.com/4.22.1/standard-all/ckeditor.js"></script>
 
-  <script>
-      // ClassicEditor
-      //     .create(document.querySelector('#NoiDungEditor'), {
-      //         toolbar: [
-      //             'heading', '|', 'bold', 'italic', 'link', 'blockQuote', 'insertTable',
-      //             '|', 'bulletedList', 'numberedList',
-      //             '|', 'mediaEmbed', 'undo', 'redo',
-      //         ],
-      //         mediaEmbed: {
-      //             previewsInData: true,
-      //             extraProviders: [
-      //                 {
-      //                     name: 'drive',
-      //                     url: [/https:\/\/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)\/view/],
-      //                     html: match => {
-      //                         const id = match[1];
-      //                         return (
-      //                             '<div style="position:relative;padding-bottom:56.25%;height:0;">' +
-      //                             `<iframe src="https://drive.google.com/file/d/${id}/preview" ` +
-      //                             'style="position:absolute;top:0;left:0;width:100%;height:100%;" ' +
-      //                             'frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>' +
-      //                             '</iframe>' +
-      //                             '</div>'
-      //                         );
-      //                     }
-      //                 }
-      //             ]
-      //         },
-      //         link: {
-      //             decorators: {
-      //                 addTargetBlank: {
-      //                     mode: 'automatic',
-      //                     callback: () => true,
-      //                     attributes: { target: '_blank', rel: 'noopener noreferrer' }
-      //                 }
-      //             }
-      //         }
-      //     })
-      //       .then(editor => createEditor = editor)
-      //       .catch(console.error);
-        CKEDITOR.addCss(`
+<script>
+  // ClassicEditor
+  //     .create(document.querySelector('#NoiDungEditor'), {
+  //         toolbar: [
+  //             'heading', '|', 'bold', 'italic', 'link', 'blockQuote', 'insertTable',
+  //             '|', 'bulletedList', 'numberedList',
+  //             '|', 'mediaEmbed', 'undo', 'redo',
+  //         ],
+  //         mediaEmbed: {
+  //             previewsInData: true,
+  //             extraProviders: [
+  //                 {
+  //                     name: 'drive',
+  //                     url: [/https:\/\/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)\/view/],
+  //                     html: match => {
+  //                         const id = match[1];
+  //                         return (
+  //                             '<div style="position:relative;padding-bottom:56.25%;height:0;">' +
+  //                             `<iframe src="https://drive.google.com/file/d/${id}/preview" ` +
+  //                             'style="position:absolute;top:0;left:0;width:100%;height:100%;" ' +
+  //                             'frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>' +
+  //                             '</iframe>' +
+  //                             '</div>'
+  //                         );
+  //                     }
+  //                 }
+  //             ]
+  //         },
+  //         link: {
+  //             decorators: {
+  //                 addTargetBlank: {
+  //                     mode: 'automatic',
+  //                     callback: () => true,
+  //                     attributes: { target: '_blank', rel: 'noopener noreferrer' }
+  //                 }
+  //             }
+  //         }
+  //     })
+  //       .then(editor => createEditor = editor)
+  //       .catch(console.error);
+  CKEDITOR.addCss(`
           /* Paragraph mặc định */
           .cke_editable p {
             font-family: "Times New Roman", serif;
@@ -228,213 +334,288 @@
           }
         `);
 
-        // 3) Định nghĩa plugin importDocx
-        // CKEDITOR.plugins.add('importDocx', {
-        //     init: function (editor) {
-        //         editor.addCommand('importDocxCommand', {
-        //             exec: function (editor) {
-        //                 var input = document.createElement('input');
-        //                 input.type = 'file';
-        //                 input.accept = '.docx';
-        //                 input.style.display = 'none';
-        //                 document.body.appendChild(input);
+  // 3) Định nghĩa plugin importDocx
+  // CKEDITOR.plugins.add('importDocx', {
+  //     init: function (editor) {
+  //         editor.addCommand('importDocxCommand', {
+  //             exec: function (editor) {
+  //                 var input = document.createElement('input');
+  //                 input.type = 'file';
+  //                 input.accept = '.docx';
+  //                 input.style.display = 'none';
+  //                 document.body.appendChild(input);
 
-        //                 input.addEventListener('change', function (evt) {
-        //                     var file = evt.target.files[0];
-        //                     if (!file) return;
-        //                     var reader = new FileReader();
-        //                     reader.onload = function (e) {
-        //                         // Convert .docx → semantic HTML
-        //                         mammoth.convertToHtml({ arrayBuffer: e.target.result })
-        //                             .then(function (result) {
-        //                                 // Chèn semantic HTML vào vị trí con trỏ
-        //                                 editor.insertHtml(result.value);
-        //                                 editor.focus();
-        //                             })
-        //                             .catch(function (err) {
-        //                                 console.error(err);
-        //                                 alert('Không thể đọc file Word: ' + err.message);
-        //                             });
-        //                     };
-        //                     reader.readAsArrayBuffer(file);
-        //                     document.body.removeChild(input);
-        //                 });
+  //                 input.addEventListener('change', function (evt) {
+  //                     var file = evt.target.files[0];
+  //                     if (!file) return;
+  //                     var reader = new FileReader();
+  //                     reader.onload = function (e) {
+  //                         // Convert .docx → semantic HTML
+  //                         mammoth.convertToHtml({ arrayBuffer: e.target.result })
+  //                             .then(function (result) {
+  //                                 // Chèn semantic HTML vào vị trí con trỏ
+  //                                 editor.insertHtml(result.value);
+  //                                 editor.focus();
+  //                             })
+  //                             .catch(function (err) {
+  //                                 console.error(err);
+  //                                 alert('Không thể đọc file Word: ' + err.message);
+  //                             });
+  //                     };
+  //                     reader.readAsArrayBuffer(file);
+  //                     document.body.removeChild(input);
+  //                 });
 
-        //                 input.click();
-        //             }
-        //         });
+  //                 input.click();
+  //             }
+  //         });
 
-        //         // Thêm nút Nhập Word vào toolbar
-        //         editor.ui.addButton('ImportDocx', {
-        //             label: 'Nhập Word',
-        //             command: 'importDocxCommand',
-        //             toolbar: 'insert',
-        //             icon: false    // nếu có icon, thay bằng đường dẫn: this.path + 'icons/importDocx.png'
-        //         });
-        //     }
-        // });
+  //         // Thêm nút Nhập Word vào toolbar
+  //         editor.ui.addButton('ImportDocx', {
+  //             label: 'Nhập Word',
+  //             command: 'importDocxCommand',
+  //             toolbar: 'insert',
+  //             icon: false    // nếu có icon, thay bằng đường dẫn: this.path + 'icons/importDocx.png'
+  //         });
+  //     }
+  // });
 
-        CKEDITOR.plugins.add('importDocx', {
-            init: function (editor) {
-                editor.addCommand('importDocxCommand', {
-                    exec: function () {
-                        var input = document.createElement('input');
-                        input.type = 'file';
-                        input.accept = '.docx';
-                        input.style.display = 'none';
-                        document.body.appendChild(input);
+  CKEDITOR.plugins.add('importDocx', {
+    init: function(editor) {
+      editor.addCommand('importDocxCommand', {
+        exec: function() {
+          var input = document.createElement('input');
+          input.type = 'file';
+          input.accept = '.docx';
+          input.style.display = 'none';
+          document.body.appendChild(input);
 
-                        input.onchange = async function () {
-                            var file = input.files[0];
-                            if (!file) {
-                                document.body.removeChild(input);
-                                return;
-                            }
-                            var form = new FormData();
-                            form.append('file', file);
-
-                            try {
-                                let response = await fetch('/api/docx/convert', {
-                                    method: 'POST',
-                                    body: form
-                                });
-                                if (!response.ok) {
-                                    let errText = await response.text(); 
-                                    throw new Error(errText);            
-                                }
-                                let result = await response.json();
-                                if (!response.ok) throw new Error(result);
-                                // Thay toàn bộ nội dung editor bằng HTML từ server
-                                const combined = result.styleBlock + result.html;
-
-                          
-                                editor.setData(combined, {
-                                    callback: function () {
-                                        this.fire('change');
-                                        var range = this.createRange();
-                                        range.moveToElementEditEnd(this.editable());
-                                        this.getSelection().selectRanges([range]);
-                                        this.focus();
-                                    }
-                                });
-                            } catch (err) {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Lỗi convert: ',
-                                    text:err.message,
-                                    timer: 2000,
-                                    showConfirmButton: true
-                                });
-                                console.error(err);
-                            }
-                            document.body.removeChild(input);
-                        };
-
-                        input.click();
-                    }
-                });
-
-                editor.ui.addButton('ImportDocx', {
-                    label: 'Nhập Word',
-                    command: 'importDocxCommand',
-                    toolbar: 'insert',
-                    icon: false
-                });
+          input.onchange = async function() {
+            var file = input.files[0];
+            if (!file) {
+              document.body.removeChild(input);
+              return;
             }
+            var form = new FormData();
+            form.append('file', file);
+
+            try {
+              let response = await fetch('/api/docx/convert', {
+                method: 'POST',
+                body: form
+              });
+              if (!response.ok) {
+                let errText = await response.text();
+                throw new Error(errText);
+              }
+              let result = await response.json();
+              if (!response.ok) throw new Error(result);
+              // Thay toàn bộ nội dung editor bằng HTML từ server
+              const combined = result.styleBlock + result.html;
+
+
+              editor.setData(combined, {
+                callback: function() {
+                  this.fire('change');
+                  var range = this.createRange();
+                  range.moveToElementEditEnd(this.editable());
+                  this.getSelection().selectRanges([range]);
+                  this.focus();
+                }
+              });
+            } catch (err) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Lỗi convert: ',
+                text: err.message,
+                timer: 2000,
+                showConfirmButton: true
+              });
+              console.error(err);
+            }
+            document.body.removeChild(input);
+          };
+
+          input.click();
+        }
+      });
+
+
+      editor.ui.addButton('ImportDocx', {
+        label: 'Nhập Word',
+        command: 'importDocxCommand',
+        toolbar: 'insert',
+        icon: false
+      });
+    }
+  });
+
+
+  CKEDITOR.replace('NoiDungEditor', {
+    language: 'vi',
+    allowedContent: true,
+    extraAllowedContent: 'style; *(*); *{*}[*]',
+
+    extraPlugins: 'importDocx,image,image2,pastefromword,stylescombo,font,colorbutton',
+    removePlugins: 'notificationaggregator,tabletools,tablecells,tableproperties,tableresize',
+    format_tags: 'p;h1;h2;h3;h4;h5;h6',
+    format_p_label: 'Bình thường',
+    toolbar: [{
+        name: 'clipboard',
+        items: ['Undo', 'Redo']
+      },
+      {
+        name: 'styles',
+        items: ['Format']
+      },
+      {
+        name: 'basicstyles',
+        items: ['Bold', 'Italic', 'Underline', 'Strike', 'RemoveFormat']
+      },
+      {
+        name: 'colors',
+        items: ['TextColor', 'BGColor']
+      },
+      {
+        name: 'font',
+        items: ['Font', 'FontSize']
+      },
+      {
+        name: 'paragraph',
+        items: ['NumberedList', 'BulletedList', 'Blockquote']
+      },
+      {
+        name: 'links',
+        items: ['Link', 'Unlink']
+      },
+      {
+        name: 'insert',
+        items: ['ImportDocx']
+      },
+      {
+        name: 'tools',
+        items: ['Maximize']
+      }
+    ],
+    stylesSet: [
+      // Thụt lề
+      {
+        name: 'Thụt lề 1',
+        element: 'p',
+        attributes: {
+          'class': 'indent-1'
+        }
+      },
+      {
+        name: 'Thụt lề 2',
+        element: 'p',
+        attributes: {
+          'class': 'indent-2'
+        }
+      },
+      {
+        name: 'Thụt lề 3',
+        element: 'p',
+        attributes: {
+          'class': 'indent-3'
+        }
+      },
+      {
+        name: 'Bỏ thụt lề',
+        element: 'p',
+        attributes: {
+          'class': 'outdent'
+        }
+      },
+
+      // Danh sách có thứ tự / không thứ tự
+      {
+        name: 'Danh sách số',
+        element: 'ol',
+        attributes: {
+          'class': 'list-ordered'
+        }
+      },
+      {
+        name: 'Danh sách chấm',
+        element: 'ul',
+        attributes: {
+          'class': 'list-unordered'
+        }
+      },
+
+
+      // Giữ các style Word import 
+      {
+        name: 'Bình thường',
+        element: 'p',
+        attributes: {
+          'class': 'pt-Normal'
+        }
+      },
+      {
+        name: 'Tiêu đề chính',
+        element: 'h1'
+      },
+      {
+        name: 'Tiêu đề phụ',
+        element: 'h2'
+      },
+      // … thêm nếu cần …
+    ],
+    removeDialogTabs: 'link:target;link:advanced',
+    image2_disableResizer: false,
+
+    image2_maxWidth: 800,
+    image2_maxHeight: 600
+  });
+
+
+  $('#editBaiForm').on('submit', function(e) {
+    var $f = $(this),
+      url = $f.attr('action'),
+      token = $f.find('input[name="__RequestVerificationToken"]').val();
+
+
+    $f.find('span.text-danger').text('');
+    $('#NoiDungEditor').val(CKEDITOR.instances.NoiDungEditor.getData());
+    data = $f.serialize();
+
+
+
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: data,
+        headers: {
+          'RequestVerificationToken': token
+        }
+      })
+      .done(function(resp) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Đã cập nhật bài',
+          timer: 1200,
+          showConfirmButton: false
+        }).then(function() {
+          window.location.href = '@Url.Action("Index", "QuanLyChuong", new { area = "User", idbg = Model.IdBaiGiang })';
         });
-
- 
-        CKEDITOR.replace('NoiDungEditor', {
-            language: 'vi',
-            allowedContent: true,
-            extraAllowedContent: 'style; *(*); *{*}[*]',
-     
-            extraPlugins: 'importDocx,image,image2,pastefromword,stylescombo,font,colorbutton',
-            removePlugins: 'notificationaggregator,tabletools,tablecells,tableproperties,tableresize',
-            format_tags: 'p;h1;h2;h3;h4;h5;h6',
-            format_p_label: 'Bình thường',
-            toolbar: [
-                { name: 'clipboard', items: ['Undo', 'Redo'] },
-                { name: 'styles', items: ['Format'] },
-                { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'RemoveFormat'] },
-                { name: 'colors', items: ['TextColor', 'BGColor'] },
-                { name: 'font', items: ['Font', 'FontSize'] },
-                { name: 'paragraph', items: ['NumberedList', 'BulletedList', 'Blockquote'] },
-                { name: 'links', items: ['Link', 'Unlink'] },
-                { name: 'insert', items: ['ImportDocx']},
-                { name: 'tools', items: ['Maximize']}
-            ],
-            stylesSet: [
-                // Thụt lề
-                { name: 'Thụt lề 1', element: 'p', attributes: { 'class': 'indent-1' } },
-                { name: 'Thụt lề 2', element: 'p', attributes: { 'class': 'indent-2' } },
-                { name: 'Thụt lề 3', element: 'p', attributes: { 'class': 'indent-3' } },
-                { name: 'Bỏ thụt lề', element: 'p', attributes: { 'class': 'outdent' } },
-
-                // Danh sách có thứ tự / không thứ tự
-                { name: 'Danh sách số', element: 'ol', attributes: { 'class': 'list-ordered' } },
-                { name: 'Danh sách chấm', element: 'ul', attributes: { 'class': 'list-unordered' } },
- 
-
-                // Giữ các style Word import 
-                { name: 'Bình thường', element: 'p', attributes: { 'class': 'pt-Normal' } },
-                { name: 'Tiêu đề chính', element: 'h1' },
-                { name: 'Tiêu đề phụ', element: 'h2' },
-                // … thêm nếu cần …
-            ],
-            removeDialogTabs: 'link:target;link:advanced',
-            image2_disableResizer: false,
-
-            image2_maxWidth: 800,
-            image2_maxHeight: 600
-        });
-
-
-        $('#editBaiForm').on('submit', function (e) {
-            var $f = $(this),
-                url = $f.attr('action'),
-                token = $f.find('input[name="__RequestVerificationToken"]').val();
-
- 
-            $f.find('span.text-danger').text('');
-            $('#NoiDungEditor').val(CKEDITOR.instances.NoiDungEditor.getData());
-            data = $f.serialize();
-
-
-
-            $.ajax({
-                url: url,
-                type: 'POST',
-                data: data,
-                headers: { 'RequestVerificationToken': token }
-            })
-                .done(function (resp) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Đã cập nhật bài',
-                        timer: 1200,
-                        showConfirmButton: false
-                    }).then(function () {
-                        window.location.href = '@Url.Action("Index", "QuanLyChuong", new { area = "User", idbg = Model.IdBaiGiang })';
-                    });
-                })
-                .fail(function (xhr) {
-                    if (xhr.status === 400 && xhr.responseJSON.errors) {
-                        var errs = xhr.responseJSON.errors;
-                        $f.find('.is-invalid').removeClass('is-invalid');
-                        $f.find('span[data-valmsg-for]').text('');
-                        $.each(errs, function (field, messages) {
-                            var $msg = $f.find('span.text-danger[data-valmsg-for="' + field + '"]');
-                            $msg.text(messages[0]);
-                        });
-                    } else {
-                        alert('Lỗi server, thử lại');
-                    }
-                });
-        });
-
-
-    </script>
+      })
+      .fail(function(xhr) {
+        if (xhr.status === 400 && xhr.responseJSON.errors) {
+          var errs = xhr.responseJSON.errors;
+          $f.find('.is-invalid').removeClass('is-invalid');
+          $f.find('span[data-valmsg-for]').text('');
+          $.each(errs, function(field, messages) {
+            var $msg = $f.find('span.text-danger[data-valmsg-for="' + field + '"]');
+            $msg.text(messages[0]);
+          });
+        } else {
+          alert('Lỗi server, thử lại');
+        }
+      });
+  });
+</script>
 
 
 

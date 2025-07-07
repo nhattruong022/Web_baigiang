@@ -582,9 +582,7 @@ th {
   background-color: #3498db;
 }
 
-.tab-content {
-  position: relative;
-}
+
 
 .tab-pane {
   display: none;
