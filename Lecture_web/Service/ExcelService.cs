@@ -255,6 +255,9 @@ namespace Lecture_web.Service
                         var trangThai = worksheet.Dimension.Columns >= 5 ? GetCellValue(worksheet, row, 5) : "";
                         if (string.IsNullOrWhiteSpace(email) && string.IsNullOrWhiteSpace(tenDangNhap))
                         {
+                            // Nếu tất cả các cột đều trống thì bỏ qua, không báo lỗi
+                            if (string.IsNullOrWhiteSpace(hoTen) && string.IsNullOrWhiteSpace(vaiTro) && string.IsNullOrWhiteSpace(trangThai))
+                                continue;
                             result.Invalid.Add($"Dòng {row}: Email hoặc Tên đăng nhập không được để trống");
                             continue;
                         }
@@ -272,7 +275,7 @@ namespace Lecture_web.Service
                         if (!string.IsNullOrWhiteSpace(trangThai))
                         {
                             var status = trangThai.Trim().ToLowerInvariant().Replace(" ", "");
-                            if (status != "HoatDong")
+                            if (status != "hoatdong")
                             {
                                 result.Invalid.Add($"Dòng {row}: Trạng thái phải là 'HoatDong'");
                                 continue;
