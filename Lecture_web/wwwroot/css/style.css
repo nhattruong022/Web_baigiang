@@ -151,6 +151,15 @@ body {
     text-decoration: none;
 }
 
+/* Field Error Styles */
+.field-error {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 5px;
+    display: block;
+    min-height: 16px;
+}
+
 /* Student Dashboard Styles */
 .app-container {
     display: flex;
