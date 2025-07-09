@@ -151,6 +151,15 @@ body {
     text-decoration: none;
 }
 
+/* Field Error Styles */
+.field-error {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 5px;
+    display: block;
+    min-height: 16px;
+}
+
 /* Student Dashboard Styles */
 .app-container {
     display: flex;
@@ -1908,6 +1917,20 @@ body {
     }
 }
 
+.container {
+    max-width: 1400px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+    padding: 32px;
+    overflow: hidden;
+  }
+
+  .container .tab-content {
+    position: relative;
+    overflow-x: auto;
+  }
 @media (max-width: 480px) {
     .content-header {
         flex-direction: column;

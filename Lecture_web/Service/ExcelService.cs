@@ -250,12 +250,38 @@ namespace Lecture_web.Service
                     {
                         var email = GetCellValue(worksheet, row, 1);
                         var tenDangNhap = GetCellValue(worksheet, row, 2);
+                        var hoTen = GetCellValue(worksheet, row, 3);
+                        var vaiTro = worksheet.Dimension.Columns >= 4 ? GetCellValue(worksheet, row, 4) : "";
+                        var trangThai = worksheet.Dimension.Columns >= 5 ? GetCellValue(worksheet, row, 5) : "";
                         if (string.IsNullOrWhiteSpace(email) && string.IsNullOrWhiteSpace(tenDangNhap))
                         {
+                            // Nếu tất cả các cột đều trống thì bỏ qua, không báo lỗi
+                            if (string.IsNullOrWhiteSpace(hoTen) && string.IsNullOrWhiteSpace(vaiTro) && string.IsNullOrWhiteSpace(trangThai))
+                                continue;
                             result.Invalid.Add($"Dòng {row}: Email hoặc Tên đăng nhập không được để trống");
                             continue;
                         }
-                        result.Valid.Add((email, tenDangNhap, "")); // hoTen sẽ được tra ở controller
+                        // Kiểm tra vai trò
+                        if (!string.IsNullOrWhiteSpace(vaiTro))
+                        {
+                            var role = vaiTro.Trim().ToLowerInvariant().Replace(" ", "");
+                            if (role != "sinhvien")
+                            {
+                                result.Invalid.Add($"Dòng {row}: Vai trò phải là 'Sinhvien'");
+                                continue;
+                            }
+                        }
+                        // Kiểm tra trạng thái
+                        if (!string.IsNullOrWhiteSpace(trangThai))
+                        {
+                            var status = trangThai.Trim().ToLowerInvariant().Replace(" ", "");
+                            if (status != "hoatdong")
+                            {
+                                result.Invalid.Add($"Dòng {row}: Trạng thái phải là 'HoatDong'");
+                                continue;
+                            }
+                        }
+                        result.Valid.Add((email, tenDangNhap, hoTen));
                     }
                 }
             }

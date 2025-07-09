@@ -1,10 +1,11 @@
-@model Lecture_web.Models.ViewModels.EditBaiViewModel    
+@model Lecture_web.Models.ViewModels.EditBaiViewModel
 @{
-    ViewData["Title"] = "Chỉnh sửa bài";
-    Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
-    }
+ViewData["Title"] = "Chỉnh sửa bài";
+Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+}
 
 @section style {
+
     <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/45.2.1/ckeditor5.css" />
 
     <style>
@@ -36,6 +37,7 @@
             max-height: 400px;
             overflow-y: auto;
             resize: none;
+
         }
 
 
@@ -102,6 +104,7 @@
             visibility: visible !important;
         }
 
+
         .cke_dialog .cke_dialog_ui_checkbox {
             display: none !important;
         }
@@ -112,59 +115,63 @@
 
     </style>
 
+
+    .form-group input,
+    .form-group textarea {
+      font-size: 0.98rem;
+      padding: 0.45rem 0.5rem;
     }
 
-    <main class="main-content">
-        <div class="assignment-management-container">
-            <div class="assignment-header">
-                <h2>Chỉnh sửa bài</h2>
-            </div>
-            <form asp-area="User"
-                  asp-controller="QuanLyBai"
-                  asp-action="EditBai"
-                  id="editBaiForm"
-                  method="post"
-                  class="bai-modal-form"
-                  style="max-width:800px;margin:30px auto;">
-                @Html.AntiForgeryToken()
+    .btn-primary,
+    .btn-secondary {
+      font-size: 0.98rem;
+      padding: 0.45rem 0.5rem;
+      min-width: 0;
+    }
+  }
+</style>
 
-                <input asp-for="IdBai" type="hidden" />
-                <input asp-for="IdChuong" type="hidden" />
+}
 
-                <div class="form-group">
-                    <label asp-for="TieuDeBai">Tiêu đề</label>
-                <input asp-for="TieuDeBai" class="form-control" maxlength="" />
-                    <span asp-validation-for="TieuDeBai" class="text-danger"></span>
-                </div>
+<main class="main-content">
+  <div class="assignment-management-container">
+    <div class="assignment-header">
+      <h2>Chỉnh sửa bài</h2>
+    </div>
+    <form asp-area="User" asp-controller="QuanLyBai" asp-action="EditBai" id="editBaiForm" method="post" class="bai-modal-form" style="max-width:800px;margin:30px auto;">
+      @Html.AntiForgeryToken()
 
-                <div class="form-group">
-                    <label asp-for="NoiDung"> Nội dung</label>
-                    
-                    <textarea asp-for="NoiDung" 
-                    class="form-control" 
-                    rows="6"
-                    id="NoiDungEditor">
+      <input asp-for="IdBai" type="hidden" />
+      <input asp-for="IdChuong" type="hidden" />
+
+      <div class="form-group">
+        <label asp-for="TieuDeBai">Tiêu đề</label>
+        <input asp-for="TieuDeBai" class="form-control" maxlength="" />
+        <span asp-validation-for="TieuDeBai" class="text-danger"></span>
+      </div>
+
+      <div class="form-group">
+        <label asp-for="NoiDung"> Nội dung</label>
+
+        <textarea asp-for="NoiDung" class="form-control" rows="6" id="NoiDungEditor">
 
                          @Html.Raw(Model.NoiDung)
 
                     </textarea>
-                    <span asp-validation-for="NoiDung" class="text-danger"></span>
-                </div>
-                <div class="form-actions" style="text-align:right">
-                    <a asp-area="User"
-                       asp-controller="QuanLyChuong"
-                       asp-action="Index"
-                       asp-route-idbg="@Model.IdBaiGiang"
-                       class="btn-secondary">Hủy</a>
-                    <button type="submit" class="btn-primary">
-                        Lưu <i class="fas fa-save"></i>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </main>
+        <span asp-validation-for="NoiDung" class="text-danger"></span>
+      </div>
+      <div class="form-actions" style="text-align:right">
+        <a asp-area="User" asp-controller="QuanLyChuong" asp-action="Index" asp-route-idbg="@Model.IdBaiGiang" class="btn-secondary">Hủy</a>
+        <button type="submit" class="btn-primary">
+          Lưu <i class="fas fa-save"></i>
+        </button>
+      </div>
+    </form>
+  </div>
+</main>
 
 @section Scripts {
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -177,6 +184,7 @@
 
   <script>
         CKEDITOR.addCss(`
+
           /* Paragraph mặc định */
           .cke_editable p {
             font-family: "Times New Roman", serif;
@@ -221,6 +229,7 @@
             word-wrap: break-word !important;
           }
         `);
+
 
 
 
@@ -292,8 +301,48 @@
                     toolbar: 'insert',
                     icon: '/ckeditor/plugins/videoembed/icons/wordbigicon.png'
                 });
+
             }
-        });
+            var form = new FormData();
+            form.append('file', file);
+
+            try {
+              let response = await fetch('/api/docx/convert', {
+                method: 'POST',
+                body: form
+              });
+              if (!response.ok) {
+                let errText = await response.text();
+                throw new Error(errText);
+              }
+              let result = await response.json();
+              if (!response.ok) throw new Error(result);
+              // Thay toàn bộ nội dung editor bằng HTML từ server
+              const combined = result.styleBlock + result.html;
+
+
+              editor.setData(combined, {
+                callback: function() {
+                  this.fire('change');
+                  var range = this.createRange();
+                  range.moveToElementEditEnd(this.editable());
+                  this.getSelection().selectRanges([range]);
+                  this.focus();
+                }
+              });
+            } catch (err) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Lỗi convert: ',
+                text: err.message,
+                timer: 2000,
+                showConfirmButton: true
+              });
+              console.error(err);
+            }
+            document.body.removeChild(input);
+          };
+
 
         CKEDITOR.on('dialogDefinition', function (ev) {
             var dialogName = ev.data.name;
@@ -390,7 +439,78 @@
         });
 
 
-    </script>
+
+      // Giữ các style Word import 
+      {
+        name: 'Bình thường',
+        element: 'p',
+        attributes: {
+          'class': 'pt-Normal'
+        }
+      },
+      {
+        name: 'Tiêu đề chính',
+        element: 'h1'
+      },
+      {
+        name: 'Tiêu đề phụ',
+        element: 'h2'
+      },
+      // … thêm nếu cần …
+    ],
+    removeDialogTabs: 'link:target;link:advanced',
+    image2_disableResizer: false,
+
+    image2_maxWidth: 800,
+    image2_maxHeight: 600
+  });
+
+
+  $('#editBaiForm').on('submit', function(e) {
+    var $f = $(this),
+      url = $f.attr('action'),
+      token = $f.find('input[name="__RequestVerificationToken"]').val();
+
+
+    $f.find('span.text-danger').text('');
+    $('#NoiDungEditor').val(CKEDITOR.instances.NoiDungEditor.getData());
+    data = $f.serialize();
+
+
+
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: data,
+        headers: {
+          'RequestVerificationToken': token
+        }
+      })
+      .done(function(resp) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Đã cập nhật bài',
+          timer: 1200,
+          showConfirmButton: false
+        }).then(function() {
+          window.location.href = '@Url.Action("Index", "QuanLyChuong", new { area = "User", idbg = Model.IdBaiGiang })';
+        });
+      })
+      .fail(function(xhr) {
+        if (xhr.status === 400 && xhr.responseJSON.errors) {
+          var errs = xhr.responseJSON.errors;
+          $f.find('.is-invalid').removeClass('is-invalid');
+          $f.find('span[data-valmsg-for]').text('');
+          $.each(errs, function(field, messages) {
+            var $msg = $f.find('span.text-danger[data-valmsg-for="' + field + '"]');
+            $msg.text(messages[0]);
+          });
+        } else {
+          alert('Lỗi server, thử lại');
+        }
+      });
+  });
+</script>
 
 
 
