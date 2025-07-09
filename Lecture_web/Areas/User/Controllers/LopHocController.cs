@@ -23,7 +23,7 @@ namespace Lecture_web.Areas.User.Controllers
         [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
         public async Task<IActionResult> Index(string search, int page = 1, int? idHocPhan = null)
         {
-            const int pageSize = 4;
+            const int pageSize = 6;
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
             var role = User.FindFirst(ClaimTypes.Role)?.Value;
 

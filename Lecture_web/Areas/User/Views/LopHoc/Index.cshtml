@@ -144,7 +144,7 @@
       <h2>Quản lý lớp học</h2>
       <form id="searchForm" method="get" action='@Url.Action("Index","LopHoc", new { area = "User" })' class="search-form" style="display:flex; align-items:center; gap:0.5rem;">
         <input type="hidden" name="page" value="1" />
-        <input type="text" name="search" value="@Model.SearchTerm" placeholder="Nhập tên bài giảng..." style="flex:1; padding:0.5rem; border:1px solid #ccc; border-radius:4px;" />
+        <input type="text" name="search" value="@Model.SearchTerm" placeholder="Nhập tên lớp..." style="flex:1; padding:0.5rem; border:1px solid #ccc; border-radius:4px;" />
 
         <button class="btn btn-primary" type="submit" style="border:none; background:; cursor:pointer; font-size:0.8rem;">
           <i class="fas fa-search"></i>

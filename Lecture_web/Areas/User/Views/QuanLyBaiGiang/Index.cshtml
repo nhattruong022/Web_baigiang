@@ -5,6 +5,7 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
 
 }
 
+
 @section style
 {
 
@@ -270,8 +271,13 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
             <td>@l.NgayTao</td>
             <td>@l.NgayCapNhat</td>
             <td class="content-actions-btns">
+  
+                       @await Html.PartialAsync("DetailBai/_DetailBai", l.IdBaiGiang)
+
                 <button data-idbg ="@l.IdBaiGiang" class="btn-secondary editbutton" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
                 <button data-idbg ="@l.IdBaiGiang" class="btn-danger deletebutton" title="Xóa"><i class="fas fa-trash"></i></button>
+
+
             </td>
         </tr>          
         }

@@ -1,0 +1,45 @@
+﻿@model IEnumerable<Lecture_web.Models.ViewModels.ListLopViewModel>
+@using System.Security.Claims
+@{var Role = User.FindFirst(ClaimTypes.Role).Value;}
+<style>
+    .link-lh {
+        display: inline-block; 
+        max-width: 200px; 
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        vertical-align: middle;
+    }
+
+
+    .link-lh i {
+            margin-right: 4px;
+        }
+
+</style>
+
+<li class="menu-khoa">
+    <a href="#" onclick="toggleSubMenu(event, this)">
+        <i class="fas fa-university"></i>
+        @if(Role == "Giangvien")
+        {
+            <span>Lớp học đã tạo</span>
+        }
+        @if (Role == "Sinhvien")
+        {
+            <span>Lớp học đã tham gia</span>
+        }
+        <i class="fas fa-chevron-down submenu-arrow"></i>
+    </a>
+    <ul class="submenu">
+        @foreach (var l in Model)
+        {
+            <li class="menu-khoa-cntt">
+                <a class="link-lh" href="~/User/ChiTietHocPhan/Index?idLopHocPhan=@l.idLopHocPhan" title="@l.Name">
+                    <i class="fas fa-layer-group"></i>
+                    @l.Name 
+                </a>
+            </li>
+        }
+    </ul>
+</li>
