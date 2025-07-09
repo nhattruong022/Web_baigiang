@@ -7,7 +7,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\ckeditor\NewFolder\**" />
+    <Content Remove="wwwroot\ckeditor\NewFolder\**" />
+    <EmbeddedResource Remove="wwwroot\ckeditor\NewFolder\**" />
+    <None Remove="wwwroot\ckeditor\NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Areas\User\Views\QuanLyBaiGiang\_DetailBai.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <_ContentIncludedByDefault Remove="appsettings.json" />
+    <_ContentIncludedByDefault Remove="Areas\User\Views\QuanLyBaiGiang\_DetailBai.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +42,14 @@
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Areas\User\Views\QuanLyBaiGiang\_DetailBai.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Areas\User\Views\QuanLyBaiGiang\DetailBai\_DetailBai.cshtml" />
   </ItemGroup>
 
 </Project>

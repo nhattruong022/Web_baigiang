@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Lecture_web.Models;
+using DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace Lecture_web.Areas.User.Controllers
 {
@@ -15,9 +16,12 @@ namespace Lecture_web.Areas.User.Controllers
     public class QuanLyChuongController : Controller
     {
         private readonly ApplicationDbContext _context;
-        public QuanLyChuongController(ApplicationDbContext context)
+        private readonly IWebHostEnvironment _environment;
+        public QuanLyChuongController(ApplicationDbContext context, IWebHostEnvironment environment)
         {
             _context = context;
+            _environment = environment;
+
         }
 
         [HttpGet]
@@ -476,23 +480,49 @@ namespace Lecture_web.Areas.User.Controllers
             {
                 return BadRequest(new { message = "Chưa chọn bài nào để xóa." });
             }
-
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-
             var bai = await _context.Bai
                 .Include(b => b.Chuong)                           
                 .ThenInclude(c => c.BaiGiang)                    
                 .Where(b => ids.Contains(b.IdBai)
                             && b.Chuong.BaiGiang.IdTaiKhoan == userId)
                 .ToListAsync();
-
             if (!bai.Any())
             {
                 return BadRequest(new { message = "Không tìm thấy bài hợp lệ để xóa." });
             }
+            var ImageDrop = bai
+                .Select(b => new {
+                    IdChuong = b.IdChuong,
+                    IdBai = b.IdBai
+                })
+                .ToList();
 
             _context.Bai.RemoveRange(bai);
             await _context.SaveChangesAsync();
+
+            var userFolder = Path.Combine(_environment.WebRootPath, "images", userId.ToString());
+
+     
+            foreach (var item in ImageDrop)
+            {
+                var prefix = $"{item.IdChuong}_{item.IdBai}_";
+                if (Directory.Exists(userFolder))
+                {
+                    var files = Directory.GetFiles(userFolder, prefix + "*.*");
+                    foreach (var file in files)
+                    {
+                        try
+                        {
+                            System.IO.File.Delete(file);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Không thể xóa file: {file}. Lỗi: {ex.Message}");
+                        }
+                    }
+                }
+            }
 
             return Ok(new { deletedCount = bai.Count });
         }

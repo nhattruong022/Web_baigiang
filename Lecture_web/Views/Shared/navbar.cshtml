@@ -17,23 +17,29 @@ var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
     <li><a href="@Url.Action("Index", "QuanLyKhoa" , new { area="Admin" })"><i class="fas fa-university"></i><span>Quản lý khoa</span></a></li>
     <li><a href="@Url.Action("Index", "QuanLyBoMon" , new { area="Admin" })"><i class="fas fa-sitemap"></i><span>Quản lý bộ môn</span></a></li>
     }
-    else if (userRole == "Giangvien" || userRole == "Sinhvien")
+    else if (userRole == "Giangvien" )
     {
     <li>
       <a href="/User/LopHoc/Index">
         <i class="fas fa-home"></i>
-        <span>Trang chủ</span>
+        <span>Quản lý lớp học phần</span>
       </a>
     </li>
-
-
-    @await Component.InvokeAsync("KhoaListMenu")
-
+     }
+    else if (userRole == "Sinhvien")
+    {
+            <li>
+                <a href="/User/LopHoc/Index">
+                    <i class="fas fa-home"></i>
+                    <span>Lớp học của tôi</span>
+                </a>
+            </li>
+            @await Component.InvokeAsync("ListLopHocListMenu")
     }
-    @if (userRole == "Giangvien")
+        @if (userRole == "Giangvien")
     {
     <li><a href="/User/QuanLyBaiGiang/Index"><i class="fas fa-book"></i><span>Quản lý bài giảng</span></a></li>
-    @await Component.InvokeAsync("BaiGiangListMenu")
+            @await Component.InvokeAsync("ListLopHocListMenu")
     @* <li><a href="/User/QuanLyChuong/Index"><i class="fas fa-book"></i><span>Quản lý chương</span></a></li>
     <li><a href="/User/QuanLyBai/Index"><i class="fas fa-book"></i><span>Quản lý bài</span></a></li> *@
     }

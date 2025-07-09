@@ -215,9 +215,9 @@ namespace Lecture_web.Areas.User.Controllers
                 NgayTao = DateTime.Now,
                 NgayCapNhat = DateTime.Now
             };
-            _context.Bai.Add(bai);
 
- 
+            bai.NoiDungText = addNewBai;
+            bai.NgayCapNhat = DateTime.Now;
             await _context.SaveChangesAsync();
 
             return Json(new { success = true });

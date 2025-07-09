@@ -5,38 +5,32 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
 }
 
 @section style {
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
-<style>
-  .main-content {
-    margin-left: 140px;
-    padding: 20px;
-    flex: 1;
-  }
 
-  .bai-modal-form {
-    max-width: 1200px;
-    margin: 30px auto;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(52, 152, 219, 0.08);
-    padding: 32px 36px;
-  }
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
 
-  .form-group label {
-    font-weight: 500;
-    margin-bottom: 6px;
-    display: block;
-  }
 
-  .form-group input,
-  .form-group textarea {
-    width: 100%;
-    padding: 0.6rem 1rem;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    font-size: 1.08rem;
-    margin-top: 2px;
-  }
+    <style>
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            margin-left: 140px;
+            min-height: 100vh;
+        }
+
+        .bai-modal-form textarea {
+            min-height: 400px;
+            height: auto;
+        }
+         .nav-links {
+            padding-left:0px;
+        }
+
+        .bai-modal-form {
+            max-width: 1200px !important;
+            margin: 0px 0px !important;
+            width: auto;
+        }
+
 
   .d-flex.gap-2 {
     gap: 16px;
@@ -53,71 +47,34 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
     transition: background 0.2s;
   }
 
-  .btn-primary {
-    background: #2585e8;
-    color: #fff;
-  }
 
-  .btn-secondary {
-    background: #f0f0f0;
-    color: #333;
-  }
+        .cke_notification_message, .cke_notification_close, .cke_notification_warning {
+            display: none !important;
+        }
 
-  @@media (max-width: 900px) {
-    .main-content {
-      margin-left: 0;
-      padding: 12px;
-    }
+        .cke_dialog .cke_dialog_ui_vbox[name="info"] > table > tbody > tr:nth-child(2) {
+            display: none !important;
+        }
 
-    .bai-modal-form {
-      padding: 18px 8px;
-    }
-  }
+        .cke_dialog .cke_dialog_ui_vbox[name="info"] > table > tbody > tr:nth-child(3) {
+            display: none !important;
+        }
 
-  @@media (max-width: 700px) {
-    .main-content {
-      margin-left: 0;
-      padding: 6px;
-    }
+        .my-link-dialog .cke_dialog_ui_vbox[name="info"] > table > tbody > tr:nth-child(1) {
+            display: block !important;
+            visibility: visible !important;
+        }
 
-    .bai-modal-form {
-      max-width: 100vw;
-      margin: 10px 0;
-      padding: 10px 2vw;
-      border-radius: 0;
-    }
+        .my-link-dialog .cke_dialog_ui_vbox[name="info"] > table > tbody > tr:nth-child(2) {
+            display: block !important;
+            visibility: visible !important;
+        }
 
-    .form-group input,
-    .form-group textarea {
-      font-size: 1rem;
-      padding: 0.5rem 0.7rem;
-    }
+        .my-link-dialog .cke_dialog_ui_vbox[name="info"] > table > tbody > tr:nth-child(3) {
+            display: block !important;
+            visibility: visible !important;
+        }
 
-    .btn-primary,
-    .btn-secondary {
-      font-size: 1rem;
-      padding: 0.5rem 0.7rem;
-      min-width: 0;
-    }
-
-    .d-flex.gap-2 {
-      flex-direction: column !important;
-      gap: 10px;
-    }
-
-    .d-flex.gap-2>* {
-      width: 100%;
-    }
-  }
-
-  @@media (max-width: 500px) {
-    .main-content {
-      padding: 2px;
-    }
-
-    .bai-modal-form {
-      padding: 4px 0;
-    }
 
     .form-group input,
     .form-group textarea {
@@ -125,186 +82,256 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
       padding: 0.45rem 0.5rem;
     }
 
-    .btn-primary,
-    .btn-secondary {
-      font-size: 0.98rem;
-      padding: 0.45rem 0.5rem;
-      min-width: 0;
-    }
-  }
 
-  .text-danger {
-    color: red !important;
-    width: 100%;
-  }
+        .cke_dialog_ui_vbox cke_dialog_page_contents {
+            display: block !important;
+        }
 
-  .ck-editor__editable_inline {
-    min-height: 400px;
-  }
-
-  .ck-editor__main,
-  .ck-editor__editable_inline {
-    height: 400px;
-    max-height: 400px;
-    overflow-y: auto;
-    resize: none;
-  }
-
-  .ck-content iframe {
-    pointer-events: auto;
-  }
-
-
-  .ck-content .ck-media .ck-widget__wrapper {
-    padding-bottom: 56.25% !important;
-  }
-
-  .ck-editor__editable.ck-content ol {
-    list-style-type: decimal;
-    margin-left: 1.5em;
-    padding-left: 0;
-  }
-
-  .ck-editor__editable.ck-content ul {
-    list-style-type: disc;
-    margin-left: 1.5em;
-    padding-left: 0;
-  }
-
-  .ck-editor__editable.ck-content li {
-    margin: 0.5em 0;
-  }
-
-  .ck-editor__editable.ck-content iframe {
-    pointer-events: auto;
-  }
-
-
-
-  .ck-content figure.image.image-style-side {
-    float: right;
-    margin: 0 1em 1em 0;
-  }
-
-
-  .ck-content p>img {
-    display: inline;
-    vertical-align: middle;
-    margin: 0 .2em;
-  }
-
-
-  .ck-content figure.image {
-    display: block;
-    margin: 1em auto;
-  }
-
-
-  .ck-content figure.image {
-    clear: both;
-  }
-</style>
+        .cke_dialog .cke_dialog_ui_checkbox {
+            display: none !important;
+        }
+    </style>
 }
 
 <main class="main-content">
-  <div class="assignment-management-container">
-    <h2>thêm bài mới</h2>
-    <form asp-area="User" asp-controller="QuanLyBai" asp-action="AddBai" id="createBaiForm" method="post" class="bai-modal-form">
-      @Html.AntiForgeryToken()
-      <input type="hidden" asp-for="IdChuong" />
-      <div class="form-group mb-3">
-        <label asp-for="TieuDeBai" class="form-label">tiêu đề <span class="required">*</span></label>
-        <input asp-for="TieuDeBai" class="form-control" maxlength="" />
-        <span asp-validation-for="TieuDeBai" class="text-danger" data-valmsg-for="TieuDeBai"></span>
-      </div>
-      <div class="form-group mb-3">
-        <label asp-for="NoiDung" class="form-label">nội dung</label>
-        <textarea asp-for="NoiDung" id="NoiDungEditor" class="form-control"></textarea>
-        <span asp-validation-for="NoiDung" class="text-danger" data-valmsg-for="NoiDung"></span>
-      </div>
-      <div class="d-flex justify-content-end gap-2 mb-3">
-        <a asp-area="User" asp-controller="QuanLyChuong" asp-action="Index" asp-route-idbg="@Model.IdBaiGiang" class="btn-secondary">Hủy</a>
-        <button type="submit" class="btn btn-primary">Thêm mới</button>
-      </div>
-    </form>
-  </div>
+    <div class="assignment-management-container">
+        <h2>thêm bài mới</h2>
+        <form asp-area="User"
+              asp-controller="QuanLyBai"
+              asp-action="AddBai"
+              id="createBaiForm"
+              method="post"
+              class="bai-modal-form"
+              style="max-width:800px;margin:30px auto;">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="IdChuong" />
+            <div class="form-group mb-3">
+                <label asp-for="TieuDeBai" class="form-label">tiêu đề <span class="required">*</span></label>
+                <input asp-for="TieuDeBai" class="form-control" maxlength=""/>
+                <span asp-validation-for="TieuDeBai" class="text-danger" data-valmsg-for="TieuDeBai"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="NoiDung" class="form-label">nội dung</label>
+                <textarea asp-for="NoiDung" id="NoiDungEditor" class="form-control"></textarea>
+                <span asp-validation-for="NoiDung" class="text-danger" data-valmsg-for="NoiDung"></span>
+            </div>
+            <div class="d-flex justify-content-end gap-2 mb-3">
+                <a asp-area="User"
+                   asp-controller="QuanLyChuong"
+                   asp-action="Index"
+                   asp-route-idbg="@Model.IdBaiGiang"
+                   class="btn-secondary">Hủy</a>
+                <button type="submit" class="btn btn-primary">Thêm mới</button>
+            </div>
+        </form>
+    </div>
 </main>
 
 @section scripts {
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdn.ckeditor.com/ckeditor5/39.0.0/classic/ckeditor.js"></script>
-<script>
-  let createEditor;
-  ClassicEditor
-    .create(document.querySelector('#NoiDungEditor'), {
-      toolbar: [
-        'heading', '|', 'bold', 'italic', 'underline', 'strikethrough', 'link', 'blockQuote', 'insertTable',
-        '|', 'bulletedList', 'numberedList',
-        '|', 'mediaEmbed', 'undo', 'redo',
-      ],
-      mediaEmbed: {
-        previewsInData: true,
-        extraProviders: [{
-          name: 'drive',
-          url: [/https:\/\/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)\/view/],
-          html: match => {
-            const id = match[1];
-            return (
-              '<div style="position:relative;padding-bottom:56.25%;height:0;">' +
-              `<iframe src="https://drive.google.com/file/d/${id}/preview" ` +
-              'style="position:absolute;top:0;left:0;width:100%;height:100%;" ' +
-              'frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>' +
-              '</iframe>' +
-              '</div>'
-            );
-          }
-        }]
-      },
-      link: {
-        decorators: {
-          addTargetBlank: {
-            mode: 'automatic',
-            callback: () => true,
-            attributes: {
-              target: '_blank',
-              rel: 'noopener noreferrer'
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.ckeditor.com/4.22.1/standard-all/ckeditor.js"></script>
+    <script src="/ckeditor/plugins/videoembed/plugin.js"></script>
+    <script src="/ckeditor/plugins/videoembed/lang/en.js"></script>
+    <script src="/ckeditor/plugins/videoembed/dialogs/videoembedDialog.js"></script>
+    <script>
+        CKEDITOR.addCss(`
+                  /* Paragraph mặc định */
+                  .cke_editable p {
+                    font-family: "Times New Roman", serif;
+                    font-size: 14px;
+                    margin: 0 0 1em;
+                  }
+                  /* Heading */
+                  .cke_editable h1 {
+                    font-family: Arial, sans-serif;
+                    font-size: 24px;
+                    font-weight: bold;
+                    margin: 1em 0;
+                  }
+                  .cke_editable h2 {
+                    font-family: Arial, sans-serif;
+                    font-size: 20px;
+                    margin: 0.75em 0;
+                  }
+                  /* Danh sách */
+                  .cke_editable ul, .cke_editable ol {
+                    margin: 0 0 1em 1.5em;
+                  }
+                  /* Table */
+                  .cke_editable table {
+                    width: 100% !important;
+                    table-layout: fixed !important;
+                    border-collapse: collapse;
+                    margin: 1em 0;
+                  }
+                  .cke_editable th, .cke_editable td {
+                    border: 1px solid #ccc;
+                    padding: 4px;
+                    word-wrap: break-word;
+                    white-space: normal;
+                  }
+                  /* Ép ảnh và mọi phần tử con không vượt khung */
+                  .cke_editable img,
+                  .cke_editable table,
+                  .cke_editable * {
+                    max-width: 100% !important;
+                    box-sizing: border-box;
+                    word-wrap: break-word !important;
+                  }
+                `);
+
+        CKEDITOR.plugins.add('importDocx', {
+            init: function (editor) {
+                editor.addCommand('importDocxCommand', {
+                    exec: function () {
+                        var input = document.createElement('input');
+                        input.type = 'file';
+                        input.accept = '.docx';
+                        input.style.display = 'none';
+                        document.body.appendChild(input);
+
+                        input.onchange = async function () {
+                            var file = input.files[0];
+                            if (!file) {
+                                document.body.removeChild(input);
+                                return;
+                            }
+                            var form = new FormData();
+                            form.append('file', file);
+
+                            try {
+                                let response = await fetch('/api/docx/convert', {
+                                    method: 'POST',
+                                    body: form
+                                });
+                                if (!response.ok) {
+                                    let errText = await response.text();
+                                    throw new Error(errText);
+                                }
+                                let result = await response.json();
+                                if (!response.ok) throw new Error(result);
+              
+                                const combined = result.styleBlock + result.html;
+
+                                editor.setData(combined, {
+                                    callback: function () {
+                                        this.fire('change');
+                                        var range = this.createRange();
+                                        range.moveToElementEditEnd(this.editable());
+                                        this.getSelection().selectRanges([range]);
+                                        this.focus();
+                                    }
+                                });
+                            } catch (err) {
+                                let invalidlink = err.message;
+                                if (invalidlink.includes('Invalid Hyperlink')) {
+                                    invalidlink = 'Có đường link không tồn tại hoặc bị lỗi trong bài vừa import, vui lòng sửa lại.';
+                                }
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Lỗi convert: ',
+                                    text: invalidlink,
+                                    showConfirmButton: true
+                                });
+                                console.error(err);
+                            }
+                            document.body.removeChild(input);
+                        };
+
+                        input.click();
+                    }
+                });
+
+                editor.ui.addButton('ImportDocx', {
+                    label: 'Nhập Word',
+                    command: 'importDocxCommand',
+                    toolbar: 'insert',
+                    icon: '/ckeditor/plugins/videoembed/icons/wordbigicon.png'
+                });
             }
-          }
-        }
-      }
-    })
-    .then(editor => createEditor = editor)
-    .catch(console.error);
+        });
 
-  // 2) AJAX submit
-  $('#createBaiForm').on('submit', function(e) {
-    e.preventDefault();
-    var $f = $(this);
-    var url = $f.attr('action'),
-      data = $f.serialize(),
-      token = $f.find('input[name="__RequestVerificationToken"]').val();
+        CKEDITOR.on('dialogDefinition', function (ev) {
+            var dialogName = ev.data.name;
+            var dialogDefinition = ev.data.definition;
 
-    $f.find('span.text-danger').text('');
+            // Chỉ với dialog 'link'
+            if (dialogName === 'link') {
+                // Giữ lại onLoad gốc (nếu có)
+                var originalOnLoad = dialogDefinition.onLoad;
 
+                // Override onLoad để thêm class
+                dialogDefinition.onLoad = function () {
+                    // Gọi onLoad gốc trước
+                    if (originalOnLoad) {
+                        originalOnLoad.apply(this, arguments);
+                    }
+                    // this.getElement() là DOM element của dialog
+                    this.getElement().addClass('my-link-dialog');
+                };
+            }
+        });
 
-    $.ajax({
-        url: url,
-        type: 'POST',
-        data: data,
-        headers: {
-          'RequestVerificationToken': token
-        }
-      })
-      .done(function() {
-        Swal.fire({
-          icon: 'success',
-          title: 'Đã thêm bài',
-          timer: 1200,
-          showConfirmButton: false
-        }).then(function() {
-          window.location.href = '@Url.Action("Index", "QuanLyChuong", new { area = "User", idbg = Model.IdBaiGiang })';
+        CKEDITOR.replace('NoiDungEditor', {
+            language: 'vi',
+            allowedContent: true,
+            extraAllowedContent: 'style; *(*); *{*}[*]',
+            extraPlugins: 'indent,indentblock,importDocx,image2,pastefromword,stylescombo,font,colorbutton,videoembed',
+            removePlugins: 'tableselection,"uploadimage",image,tablecells,tableproperties,tableresize',
+            format_tags: 'p;h1;h2;h3;h4;h5;h6',
+            format_p_label: 'Bình thường',
+            toolbar: [
+                { name: 'clipboard', items: ['Undo', 'Redo'] },
+                { name: 'styles', items: ['Format'] },
+                { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'RemoveFormat'] },
+                { name: 'colors', items: ['TextColor', 'BGColor'] },
+                { name: 'paragraph', items: ['NumberedList', 'BulletedList', 'Blockquote', 'Indent', 'Outdent'] },
+                { name: 'links', items: ['Link', 'Unlink'] },
+                { name: 'insert', items: ['ImportDocx', 'VideoEmbed'] },
+                { name: 'tools', items: ['Maximize'] }
+            ],
+
+            removeDialogTabs: 'link:target;link:advanced',
+            image2_disableResizer: false,
+
+            image2_maxWidth: 800,
+            image2_maxHeight: 600
+        });
+
+        $('#createBaiForm').on('submit', function (e) {
+            e.preventDefault();
+            var $f = $(this),
+                url = $f.attr('action'),
+                token = $f.find('input[name="__RequestVerificationToken"]').val();
+            $f.find('span.text-danger').text('');
+            $('#NoiDungEditor').val(CKEDITOR.instances.NoiDungEditor.getData());
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: $f.serialize(),
+                headers: { 'RequestVerificationToken': token }
+            })
+                .done(function () {
+                    Swal.fire({ icon: 'success', title: 'Đã thêm bài', timer: 1200, showConfirmButton: false })
+                        .then(() => {
+                            window.location.href = '@Url.Action("Index", "QuanLyChuong", new { area = "User", idbg = Model.IdBaiGiang })';
+                        });
+                })
+                .fail(function (xhr) {
+                    if (xhr.status === 400 && xhr.responseJSON.errors) {
+                        var errs = xhr.responseJSON.errors;
+                        $.each(errs, function (field, msg) {
+                            $f.find('span[data-valmsg-for="' + field + '"]').text(msg[0]);
+                        });
+                    } else {
+                        alert('Lỗi server, thử lại');
+                    }
+                });
+
         });
       })
       .fail(function(xhr) {
