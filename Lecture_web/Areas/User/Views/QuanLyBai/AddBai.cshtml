@@ -7,9 +7,7 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
 @section style {
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
-
-
-    <style>
+  <style>
         .main-content {
             flex: 1;
             padding: 20px;
@@ -31,21 +29,24 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
             width: auto;
         }
 
+        .btn-secondary {
+            text-decoration: none;
+        }
 
-  .d-flex.gap-2 {
-    gap: 16px;
-  }
+      .d-flex.gap-2 {
+        gap: 16px;
+      }
 
-  .btn-primary,
-  .btn-secondary {
-    font-size: 1.08rem;
-    padding: 0.5rem 1.1rem;
-    border-radius: 6px;
-    min-width: 110px;
-    cursor: pointer;
-    border: none;
-    transition: background 0.2s;
-  }
+      .btn-primary,
+      .btn-secondary {
+        font-size: 1.08rem;
+        padding: 0.5rem 1.1rem;
+        border-radius: 6px;
+        min-width: 110px;
+        cursor: pointer;
+        border: none;
+        transition: background 0.2s;
+      }
 
 
         .cke_notification_message, .cke_notification_close, .cke_notification_warning {
@@ -76,11 +77,11 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
         }
 
 
-    .form-group input,
-    .form-group textarea {
-      font-size: 0.98rem;
-      padding: 0.45rem 0.5rem;
-    }
+        .form-group input,
+        .form-group textarea {
+          font-size: 0.98rem;
+          padding: 0.45rem 0.5rem;
+        }
 
 
         .cke_dialog_ui_vbox cke_dialog_page_contents {
@@ -333,20 +334,6 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
                 });
 
         });
-      })
-      .fail(function(xhr) {
-        if (xhr.status === 400 && xhr.responseJSON.errors) {
-          var errs = xhr.responseJSON.errors;
-          $f.find('.is-invalid').removeClass('is-invalid');
-          $f.find('span[data-valmsg-for]').text('');
-          $.each(errs, function(field, messages) {
-            var $msg = $f.find('span.text-danger[data-valmsg-for="' + field + '"]');
-            $msg.text(messages[0]);
-          });
-        } else {
-          alert('Lỗi server, thử lại');
-        }
-      });
-  });
+   
 </script>
 }

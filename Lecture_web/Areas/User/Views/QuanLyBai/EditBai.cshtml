@@ -39,6 +39,10 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
             resize: none;
 
         }
+        .btn-secondary {
+            text-decoration:none;
+        }
+
 
 
 
@@ -113,7 +117,7 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
             display:block !important;
         }
 
-    </style>
+
 
 
     .form-group input,
@@ -128,7 +132,7 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
       padding: 0.45rem 0.5rem;
       min-width: 0;
     }
-  }
+  
 </style>
 
 }
@@ -170,7 +174,7 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
   </div>
 </main>
 
-@section Scripts {
+@section scripts {
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
@@ -235,113 +239,75 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
 
 
 
-        CKEDITOR.plugins.add('importDocx', {
-            init: function (editor) {
-                editor.addCommand('importDocxCommand', {
-                    exec: function () {
-                        var input = document.createElement('input');
-                        input.type = 'file';
-                        input.accept = '.docx';
-                        input.style.display = 'none';
-                        document.body.appendChild(input);
+      CKEDITOR.plugins.add('importDocx', {
+          init: function (editor) {
+              editor.addCommand('importDocxCommand', {
+                  exec: function () {
+                      var input = document.createElement('input');
+                      input.type = 'file';
+                      input.accept = '.docx';
+                      input.style.display = 'none';
+                      document.body.appendChild(input);
 
-                        input.onchange = async function () {
-                            var file = input.files[0];
-                            if (!file) {
-                                document.body.removeChild(input);
-                                return;
-                            }
-                            var form = new FormData();
-                            form.append('file', file);
+                      input.onchange = async function () {
+                          var file = input.files[0];
+                          if (!file) {
+                              document.body.removeChild(input);
+                              return;
+                          }
+                          var form = new FormData();
+                          form.append('file', file);
 
-                            try {
-                                let response = await fetch('/api/docx/convert', {
-                                    method: 'POST',
-                                    body: form
-                                });
-                                if (!response.ok) {
-                                    let errText = await response.text(); 
-                                    throw new Error(errText);            
-                                }
-                                let result = await response.json();
-                                if (!response.ok) throw new Error(result);
-                                const combined = result.styleBlock + result.html;
-                                editor.setData(combined, {
-                                    callback: function () {
-                                        this.fire('change');
-                                        var range = this.createRange();
-                                        range.moveToElementEditEnd(this.editable());
-                                        this.getSelection().selectRanges([range]);
-                                        this.focus();
-                                    }
-                                });
-                            } catch (err) {
-                                let invalidlink = err.message;
-                                if (invalidlink.includes('Invalid Hyperlink')) {
-                                    invalidlink = 'Có đường link không tồn tại hoặc bị lỗi trong bài vừa import, vui lòng sửa lại.';
-                                }
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Lỗi convert: ',
-                                    text: invalidlink,
-                                    showConfirmButton: true
-                                });
-                                console.error(err);
-                            }
-                            document.body.removeChild(input);
-                        };
+                          try {
+                              let response = await fetch('/api/docx/convert', {
+                                  method: 'POST',
+                                  body: form
+                              });
+                              if (!response.ok) {
+                                  let errText = await response.text();
+                                  throw new Error(errText);
+                              }
+                              let result = await response.json();
+                              if (!response.ok) throw new Error(result);
+                              const combined = result.styleBlock + result.html;
+                              editor.setData(combined, {
+                                  callback: function () {
+                                      this.fire('change');
+                                      var range = this.createRange();
+                                      range.moveToElementEditEnd(this.editable());
+                                      this.getSelection().selectRanges([range]);
+                                      this.focus();
+                                  }
+                              });
+                          } catch (err) {
+                              let invalidlink = err.message;
+                              if (invalidlink.includes('Invalid Hyperlink')) {
+                                  invalidlink = 'Có đường link không tồn tại hoặc bị lỗi trong bài vừa import, vui lòng sửa lại.';
+                              }
+                              Swal.fire({
+                                  icon: 'error',
+                                  title: 'Lỗi convert: ',
+                                  text: invalidlink,
+                                  showConfirmButton: true
+                              });
+                              console.error(err);
+                          }
+                          document.body.removeChild(input);
+                      };
 
-                        input.click();
-                    }
-                });
-
-                editor.ui.addButton('ImportDocx', {
-                    label: 'Nhập Word',
-                    command: 'importDocxCommand',
-                    toolbar: 'insert',
-                    icon: '/ckeditor/plugins/videoembed/icons/wordbigicon.png'
-                });
-
-            }
-            var form = new FormData();
-            form.append('file', file);
-
-            try {
-              let response = await fetch('/api/docx/convert', {
-                method: 'POST',
-                body: form
+                      input.click();
+                  }
               });
-              if (!response.ok) {
-                let errText = await response.text();
-                throw new Error(errText);
-              }
-              let result = await response.json();
-              if (!response.ok) throw new Error(result);
-              // Thay toàn bộ nội dung editor bằng HTML từ server
-              const combined = result.styleBlock + result.html;
 
+              editor.ui.addButton('ImportDocx', {
+                  label: 'Nhập Word',
+                  command: 'importDocxCommand',
+                  toolbar: 'insert',
+                  icon: '/ckeditor/plugins/videoembed/icons/wordbigicon.png'
+              });
 
-              editor.setData(combined, {
-                callback: function() {
-                  this.fire('change');
-                  var range = this.createRange();
-                  range.moveToElementEditEnd(this.editable());
-                  this.getSelection().selectRanges([range]);
-                  this.focus();
-                }
-              });
-            } catch (err) {
-              Swal.fire({
-                icon: 'error',
-                title: 'Lỗi convert: ',
-                text: err.message,
-                timer: 2000,
-                showConfirmButton: true
-              });
-              console.error(err);
-            }
-            document.body.removeChild(input);
-          };
+          }
+      });
 
 
         CKEDITOR.on('dialogDefinition', function (ev) {
@@ -440,31 +406,6 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
 
 
 
-      // Giữ các style Word import 
-      {
-        name: 'Bình thường',
-        element: 'p',
-        attributes: {
-          'class': 'pt-Normal'
-        }
-      },
-      {
-        name: 'Tiêu đề chính',
-        element: 'h1'
-      },
-      {
-        name: 'Tiêu đề phụ',
-        element: 'h2'
-      },
-      // … thêm nếu cần …
-    ],
-    removeDialogTabs: 'link:target;link:advanced',
-    image2_disableResizer: false,
-
-    image2_maxWidth: 800,
-    image2_maxHeight: 600
-  });
-
 
   $('#editBaiForm').on('submit', function(e) {
     var $f = $(this),
@@ -511,8 +452,4 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
       });
   });
 </script>
-
-
-
-
 }
