@@ -118,7 +118,9 @@ namespace Lecture_web.Areas.User.Controllers
                         "Bạn chưa tạo lớp học nào. Vui lòng tạo lớp học trước." :
                         "Bạn chưa tham gia lớp học nào. Vui lòng liên hệ giảng viên để được mời vào lớp.";
                     ViewBag.AllLopHocPhan = allLopHocPhan;
-                    return View("NoAccess");
+                    // Sửa: trả về view mặc định với dữ liệu rỗng
+                    ViewBag.Chuongs = new List<object>();
+                    return View();
                 }
                 
                 Console.WriteLine($"Target LopHocPhan ID determined: {targetLopHocPhanId} (from parameter: {idLopHocPhan})");
@@ -368,11 +370,12 @@ namespace Lecture_web.Areas.User.Controllers
                 Console.WriteLine($"ERROR in Index: {ex.Message}");
                 Console.WriteLine($"StackTrace: {ex.StackTrace}");
                 
-                // Trả về thông báo lỗi chi tiết
+                // Trả về view mặc định với thông báo lỗi
                 ViewBag.ErrorMessage = $"Lỗi hệ thống: {ex.Message}";
                 ViewBag.UserRole = userRole;
                 ViewBag.AllLopHocPhan = new List<object>();
-                return View("NoAccess");
+                ViewBag.Chuongs = new List<object>();
+                return View();
             }
         }
 
