@@ -140,10 +140,10 @@ namespace Lecture_web.Areas.User.Controllers
             if (!ModelState.IsValid)
             {
                 var errors = ModelState
-                    .Where(kvp => kvp.Value.Errors.Count > 0)
+                    .Where(lister => lister.Value.Errors.Count > 0)
                     .ToDictionary(
-                        kvp => kvp.Key,
-                        kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                        lister => lister.Key,
+                        lister => lister.Value.Errors.Select(e => e.ErrorMessage).ToArray()
                     );
                 return BadRequest(new { errors });
             }
