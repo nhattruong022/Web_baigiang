@@ -8,12 +8,12 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
-        /* .main-content {
+        .main-content {
             flex: 1;
             padding: 20px;
             margin-left: 140px;
             min-height: 100vh;
-        } */
+        }
 
         .bai-modal-form textarea {
             min-height: 400px;
@@ -76,6 +76,9 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
             visibility: visible !important;
         }
 
+        .my-video-dialog .cke_dialog_ui_vbox.cke_dialog_page_contents[name="tab-basic"] > table > tbody > tr:nth-child(3) {
+            display: none !important;
+        }
 
         .form-group input,
         .form-group textarea {
@@ -272,6 +275,13 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
                     }
                     // this.getElement() là DOM element của dialog
                     this.getElement().addClass('my-link-dialog');
+                };
+            }
+            if (dialogName === 'videoembedDialog') {
+                var originalOnLoadVid = dialogDefinition.onLoad;
+                dialogDefinition.onLoad = function () {
+                    if (originalOnLoadVid) originalOnLoadVid.apply(this, arguments);
+                    this.getElement().addClass('my-video-dialog');
                 };
             }
         });
