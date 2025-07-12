@@ -64,7 +64,7 @@ namespace Lecture_web.Service
                     if (parts.Length != 2) continue;
                     var mime = parts[0].Substring(5).TrimEnd(';');   
                     var ext = mime.Split('/')[1];                  
-
+                    //convert base thành mảng byte 
                     var bytes = Convert.FromBase64String(parts[1]);
                     // hash nội dung
                     string hash;

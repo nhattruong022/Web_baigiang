@@ -110,6 +110,10 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
     visibility: visible !important;
   }
 
+        .my-video-dialog .cke_dialog_ui_vbox.cke_dialog_page_contents[name="tab-basic"] > table > tbody > tr:nth-child(3) {
+            display: none !important;
+        }
+
 
   .cke_dialog .cke_dialog_ui_checkbox {
     display: none !important;
@@ -311,22 +315,32 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
     var dialogName = ev.data.name;
     var dialogDefinition = ev.data.definition;
 
-    // Chỉ với dialog 'link'
+
     if (dialogName === 'link') {
-      // Giữ lại onLoad gốc (nếu có)
+
       var originalOnLoad = dialogDefinition.onLoad;
 
-      // Override onLoad để thêm class
+
       dialogDefinition.onLoad = function() {
-        // Gọi onLoad gốc trước
+ 
         if (originalOnLoad) {
           originalOnLoad.apply(this, arguments);
         }
-        // this.getElement() là DOM element của dialog
+
         this.getElement().addClass('my-link-dialog');
       };
     }
+        if (dialogName === 'videoembedDialog') {
+        var originalOnLoadVid = dialogDefinition.onLoad;
+        dialogDefinition.onLoad = function() {
+            if (originalOnLoadVid) originalOnLoadVid.apply(this, arguments);
+            this.getElement().addClass('my-video-dialog');
+        };
+    }
   });
+
+
+
 
   CKEDITOR.replace('NoiDungEditor', {
     language: 'vi',
@@ -375,54 +389,6 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
 
     image2_maxWidth: 800,
     image2_maxHeight: 600
-  });
-
-
-
-
-  $('#editBaiForm').on('submit', function(e) {
-    var $f = $(this),
-      url = $f.attr('action'),
-      token = $f.find('input[name="__RequestVerificationToken"]').val();
-
-
-    $f.find('span.text-danger').text('');
-    $('#NoiDungEditor').val(CKEDITOR.instances.NoiDungEditor.getData());
-    data = $f.serialize();
-
-
-
-    $.ajax({
-        url: url,
-        type: 'POST',
-        data: data,
-        headers: {
-          'RequestVerificationToken': token
-        }
-      })
-      .done(function(resp) {
-        Swal.fire({
-          icon: 'success',
-          title: 'Đã cập nhật bài',
-          timer: 1200,
-          showConfirmButton: false
-        }).then(function() {
-          window.location.href = '@Url.Action("Index", "QuanLyChuong", new { area = "User", idbg = Model.IdBaiGiang })';
-        });
-      })
-      .fail(function(xhr) {
-        if (xhr.status === 400 && xhr.responseJSON.errors) {
-          var errs = xhr.responseJSON.errors;
-          $f.find('.is-invalid').removeClass('is-invalid');
-          $f.find('span[data-valmsg-for]').text('');
-          $.each(errs, function(field, messages) {
-            var $msg = $f.find('span.text-danger[data-valmsg-for="' + field + '"]');
-            $msg.text(messages[0]);
-          });
-        } else {
-          alert('Lỗi server, thử lại');
-        }
-      });
   });
 
 
