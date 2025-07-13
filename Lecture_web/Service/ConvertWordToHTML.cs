@@ -11,15 +11,15 @@ namespace Lecture_web.Service
     {
         public async Task<string> ConvertAsync(Stream docxStream)
         {
-            // 1) Đọc vào MemoryStream để có thể mở lại nhiều lần nếu cần
+           //Đọc vào MemoryStream để có thể mở lại nhiều lần nếu cần
             using var mem = new MemoryStream();
             await docxStream.CopyToAsync(mem);
             mem.Position = 0;
 
-            // 2) Mở WordprocessingDocument ở chế độ Read/Write
+            // Mở Word ở chế độ Read/Write
             using var wordDoc = WordprocessingDocument.Open(mem, true);
 
-            // 3) Cấu hình HtmlConverter để xuất HTML với inline CSS và ảnh base64
+            //Cấu hình HtmlConverter để xuất HTML với inline CSS và ảnh base64
             var settings = new HtmlConverterSettings
             {
                 FabricateCssClasses = true,
@@ -40,11 +40,11 @@ namespace Lecture_web.Service
                 }
             };
 
-            // 4) Thực thi convert
+            //convert
             XElement htmlElement = HtmlConverter.ConvertToHtml(wordDoc, settings);
 
 
-            // 5) Trả về HTML dưới dạng string (không định dạng thêm)
+            //Trả về HTML dưới dạng string (không định dạng thêm)
             return htmlElement.ToString(SaveOptions.DisableFormatting);
         }
     }
