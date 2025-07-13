@@ -102,7 +102,7 @@ namespace Lecture_web.Controllers
 
 
             [HttpPost]
-        public IActionResult EditProfilAjax(string HoTen, string Email, string SDT)
+        public IActionResult EditProfilAjax(string HoTen, string SDT)
             {
                 var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
@@ -115,15 +115,9 @@ namespace Lecture_web.Controllers
                 var errors = new List<string>();
                 if (string.IsNullOrWhiteSpace(HoTen) || HoTen.Length > 30)
                     errors.Add("Họ tên không được để trống và tối đa 30 ký tự");
-                if (string.IsNullOrWhiteSpace(Email) || !new EmailAddressAttribute().IsValid(Email) || Email.Length > 30)
-                    errors.Add("Email không hợp lệ hoặc quá 30 ký tự");
                 if (string.IsNullOrWhiteSpace(SDT) || !System.Text.RegularExpressions.Regex.IsMatch(SDT, @"^(0[0-9]{9,10})$") || SDT.Length > 20)
                     errors.Add("Số điện thoại không hợp lệ hoặc quá 20 ký tự");
 
-                // Kiểm tra trùng email
-                var emailExists = _context.TaiKhoan.Any(u => u.Email == Email && u.IdTaiKhoan != userId);
-                if (emailExists)
-                    errors.Add("Email đã được sử dụng bởi tài khoản khác");
                 // Kiểm tra trùng số điện thoại
                 var phoneExists = _context.TaiKhoan.Any(u => u.SoDienThoai == SDT && u.IdTaiKhoan != userId);
                 if (phoneExists)
@@ -133,7 +127,6 @@ namespace Lecture_web.Controllers
                     return Json(new { success = false, errors });
 
                 user.HoTen = HoTen;
-                user.Email = Email;
                 user.SoDienThoai = SDT;
                 user.NgayCapNhat = DateTime.Now;
                 _context.TaiKhoan.Update(user);

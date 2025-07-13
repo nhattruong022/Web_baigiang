@@ -22,4 +22,6 @@ namespace Lecture_web.Models
 
         public ICollection<BinhLuanModels> BinhLuans { get; set; }
     }
+
+
 }

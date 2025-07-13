@@ -17,6 +17,16 @@ namespace Lecture_web.Hubs
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"Class_{classId}");
         }
 
+        public async Task JoinUserGroup(string userId)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, $"User_{userId}");
+        }
+
+        public async Task LeaveUserGroup(string userId)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"User_{userId}");
+        }
+
         public override async Task OnConnectedAsync()
         {
             var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -51,6 +61,19 @@ namespace Lecture_web.Hubs
         public async Task DeleteComment(string classId, int commentId)
         {
             await Clients.Group($"Class_{classId}").SendAsync("DeleteComment", commentId);
+        }
+
+        // --- NOTIFICATION REALTIME ---
+        public async Task SendNotificationToStudents(string classId, object notification)
+        {
+            // Gửi thông báo cho tất cả sinh viên trong lớp học phần
+            await Clients.Group($"Class_{classId}").SendAsync("NewNotification", notification);
+        }
+
+        public async Task SendNotificationToUser(string userId, object notification)
+        {
+            // Gửi thông báo cho user cụ thể
+            await Clients.Group($"User_{userId}").SendAsync("NewNotification", notification);
         }
     }
 } 

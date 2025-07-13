@@ -3,13 +3,13 @@
 @{
 
 var userName = "Guest";
-string avatar = null;
+string? avatar = null;
 bool hasAvatar = false; // Thêm flag để track có avatar hay không
 
 Console.WriteLine("=== TOP BAR DEBUG START ===");
-Console.WriteLine($"User authenticated: {User.Identity.IsAuthenticated}");
+Console.WriteLine($"User authenticated: {User.Identity?.IsAuthenticated}");
 
-if (User.Identity.IsAuthenticated)
+if (User.Identity?.IsAuthenticated == true)
 {
 try
 {
@@ -138,6 +138,30 @@ Console.WriteLine($"=== TOP BAR DEBUG END ===");
 }
 <header class="top-bar">
 
+  <!-- Notification Icon - Chỉ hiển thị cho sinh viên -->
+  @if (User.Identity.IsAuthenticated && User.FindFirstValue(ClaimTypes.Role) == "Sinhvien")
+  {
+  <div class="notification-icon" onclick="toggleNotificationDropdown()">
+    <i class="fas fa-bell"></i>
+    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+    <div class="notification-dropdown" id="notificationDropdown" style="display: none;">
+      <div class="notification-header">
+        <h3>Thông báo từ giảng viên</h3>
+        <button onclick="markAllAsRead()" class="mark-all-read-btn">
+          <i class="fas fa-check-double"></i> Đánh dấu đã đọc
+        </button>
+      </div>
+      <div class="notification-list" id="notificationList">
+        <div class="loading-notifications">
+          <i class="fas fa-spinner fa-spin"></i>
+          Đang tải thông báo...
+        </div>
+      </div>
+
+    </div>
+  </div>
+  }
+
   <div class="user-menu">
     <div class="user-profile" onclick="toggleUserMenu()">
       @if (hasAvatar && !string.IsNullOrEmpty(avatar))
@@ -199,6 +223,189 @@ Console.WriteLine($"=== TOP BAR DEBUG END ===");
     visibility: visible !important;
     opacity: 1 !important;
   }
+
+  /* Notification Icon Styles */
+  .notification-icon {
+    position: relative;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+    margin-right: 15px;
+  }
+
+  .notification-icon:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  .notification-icon i {
+    font-size: 20px;
+    color: #666;
+  }
+
+  .notification-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #e74c3c;
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+    line-height: 14px;
+    border: 2px solid white;
+    animation: pulse 2s infinite;
+  }
+
+  .notification-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 350px;
+    max-height: 400px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    margin-top: 10px;
+    overflow: hidden;
+  }
+
+  .notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    background: #f8f9fa;
+  }
+
+  .notification-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .mark-all-read-btn {
+    background: none;
+    border: none;
+    color: #007bff;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+
+  .mark-all-read-btn:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+  }
+
+  .notification-list {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .loading-notifications {
+    padding: 20px;
+    text-align: center;
+    color: #666;
+  }
+
+  .notification-item {
+    padding: 12px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .notification-item:hover {
+    background-color: #f8f9fa;
+  }
+
+  .notification-item.unread {
+    background-color: #f0f8ff;
+  }
+
+  .notification-item.unread:hover {
+    background-color: #e6f3ff;
+  }
+
+  .notification-content {
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #333;
+    line-height: 1.4;
+  }
+
+  .notification-time {
+    font-size: 12px;
+    color: #999;
+  }
+
+  .notification-footer {
+    padding: 12px 20px;
+    border-top: 1px solid #eee;
+    text-align: center;
+  }
+
+  .notification-footer a {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 14px;
+  }
+
+  .notification-footer a:hover {
+    text-decoration: underline;
+  }
+
+  .no-notifications {
+    padding: 20px;
+    text-align: center;
+    color: #666;
+  }
+
+  .no-notifications i {
+    font-size: 24px;
+    margin-bottom: 8px;
+    color: #ddd;
+  }
+</style>
+
+<style>
+  /* Keyframes animation */
+  @@keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(1.1);
+    }
+
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  /* Responsive */
+  @@media (max-width: 768px) {
+    .notification-dropdown {
+      width: 300px;
+      right: -50px;
+    }
+  }
+
+  @@media (max-width: 480px) {
+    .notification-dropdown {
+      width: 280px;
+      right: -80px;
+    }
+  }
 </style>
 
 <script>
@@ -222,6 +429,276 @@ Console.WriteLine($"=== TOP BAR DEBUG END ===");
         window.location.reload(true);
       }, 500);
     }
+  }
+
+  // Notification functions - Chỉ cho sinh viên
+  let notificationDropdownOpen = false;
+  let notificationCount = 0;
+  let notificationHubConnection = null;
+
+  function toggleNotificationDropdown() {
+    const dropdown = document.getElementById('notificationDropdown');
+    const badge = document.getElementById('notificationBadge');
+
+    if (!dropdown || !badge) {
+      console.log('Notification elements not found - user might not be a student');
+      return;
+    }
+
+    if (notificationDropdownOpen) {
+      dropdown.style.display = 'none';
+      notificationDropdownOpen = false;
+    } else {
+      dropdown.style.display = 'block';
+      notificationDropdownOpen = true;
+      loadNotifications();
+    }
+  }
+
+  function loadNotifications() {
+    const notificationList = document.getElementById('notificationList');
+
+    if (!notificationList) {
+      console.log('Notification list not found');
+      return;
+    }
+
+    // Hiển thị loading
+    notificationList.innerHTML = `
+      <div class="loading-notifications">
+        <i class="fas fa-spinner fa-spin"></i>
+        Đang tải thông báo...
+      </div>
+    `;
+
+    // Gọi API để lấy danh sách thông báo
+    fetch('/User/ThongBao/GetRecentNotifications?limit=5')
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          if (data.notifications && data.notifications.length > 0) {
+            const notificationsHtml = data.notifications.map(notification => `
+              <div class="notification-item" onclick="viewNotification(${notification.idThongBao}, ${notification.idLopHocPhan})">
+                <div class="notification-content">
+                  <div style="font-weight: 500; margin-bottom: 4px; color: #007bff;">
+                    ${notification.tenGiangVien} - ${notification.tenLopHocPhan}
+                  </div>
+                  <div style="font-size: 13px; color: #666; line-height: 1.3;">
+                    ${notification.noiDung.length > 100 ? notification.noiDung.substring(0, 100) + '...' : notification.noiDung}
+                  </div>
+                </div>
+                <div class="notification-time">${notification.timeAgo}</div>
+              </div>
+            `).join('');
+
+            notificationList.innerHTML = notificationsHtml;
+          } else {
+            notificationList.innerHTML = `
+              <div class="no-notifications">
+                <i class="fas fa-bell-slash"></i>
+                <div>Không có thông báo mới từ giảng viên</div>
+              </div>
+            `;
+          }
+        } else {
+          notificationList.innerHTML = `
+            <div class="no-notifications">
+              <i class="fas fa-exclamation-triangle"></i>
+              <div>Không thể tải thông báo</div>
+            </div>
+          `;
+        }
+      })
+      .catch(error => {
+        console.error('Error loading notifications:', error);
+        notificationList.innerHTML = `
+          <div class="no-notifications">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div>Lỗi kết nối</div>
+          </div>
+        `;
+      });
+  }
+
+  function updateNotificationBadge(count) {
+    const badge = document.getElementById('notificationBadge');
+    if (badge) {
+      badge.textContent = count;
+      badge.style.display = count > 0 ? 'block' : 'none';
+    }
+  }
+
+  function markAllAsRead() {
+    fetch('/User/ThongBao/MarkAllAsRead', {
+        method: 'POST'
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          updateNotificationBadge(0);
+          loadNotifications();
+        } else {
+          alert(data.message || 'Lỗi khi đánh dấu đã đọc');
+        }
+      });
+  }
+
+  function viewNotification(notificationId, idLopHocPhan) {
+    // Đánh dấu đã đọc thông báo này
+    fetch('/User/ThongBao/MarkAsRead?id=' + notificationId, {
+        method: 'POST'
+      })
+      .then(res => res.json())
+      .then(data => {
+        loadNotificationCount();
+        // Đóng dropdown và chuyển trang
+        toggleNotificationDropdown();
+        if (idLopHocPhan) {
+          window.location.href = `/User/ChiTietHocPhan/Index/${idLopHocPhan}?tab=thongbao`;
+        } else {
+          alert('Không tìm thấy lớp học phần của thông báo này!');
+        }
+      })
+      .catch(() => {
+        // Nếu lỗi vẫn chuyển trang
+        toggleNotificationDropdown();
+        if (idLopHocPhan) {
+          window.location.href = `/User/ChiTietHocPhan/Index/${idLopHocPhan}?tab=thongbao`;
+        } else {
+          alert('Không tìm thấy lớp học phần của thông báo này!');
+        }
+      });
+  }
+
+  function viewAllNotifications() {
+    window.location.href = '/User/ChiTietHocPhan/Index/${idLopHocPhan}?tab=thongbao';
+  }
+
+  // Đóng dropdown khi click bên ngoài
+  document.addEventListener('click', function(event) {
+    const notificationIcon = document.querySelector('.notification-icon');
+    const dropdown = document.getElementById('notificationDropdown');
+
+    if (notificationIcon && dropdown && !notificationIcon.contains(event.target) && !dropdown.contains(event.target)) {
+      dropdown.style.display = 'none';
+      notificationDropdownOpen = false;
+    }
+  });
+
+  function getUserClasses() {
+    // Có thể implement để lấy danh sách lớp học phần từ server
+    // Tạm thời return empty array, sẽ được cập nhật sau
+    return [];
+  }
+
+  async function loadUserClasses() {
+    try {
+      const response = await fetch('/User/ThongBao/GetUserClasses');
+      const data = await response.json();
+
+      if (data.success && data.classes) {
+        return data.classes.map(cls => cls.IdLopHocPhan);
+      }
+    } catch (error) {
+      console.error('Error loading user classes:', error);
+    }
+    return [];
+  }
+
+  // SignalR connection for real-time notifications
+  async function connectNotificationHub() {
+    if (typeof signalR !== 'undefined') {
+      notificationHubConnection = new signalR.HubConnectionBuilder()
+        .withUrl("/notificationHub")
+        .build();
+
+      notificationHubConnection.on("NewNotification", function(notification) {
+        fetch('/User/ThongBao/ClearReadSession', {
+            method: 'POST'
+          })
+          .then(res => res.json())
+          .then(data => {
+            loadNotificationCount();
+          })
+          .catch(() => {
+            loadNotificationCount();
+          });
+        showToastNotification(notification);
+      });
+
+      notificationHubConnection.start().then(async function() {
+        console.log('Notification hub connected');
+
+        // Kết nối với các lớp học phần mà sinh viên tham gia
+        const userClasses = await loadUserClasses();
+        userClasses.forEach(classId => {
+          notificationHubConnection.invoke("JoinClass", classId.toString());
+          console.log('Joined class:', classId);
+        });
+      }).catch(function(err) {
+        console.error('Error connecting to notification hub:', err);
+      });
+    }
+  }
+
+  function showToastNotification(notification) {
+    // Tạo toast notification
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #007bff;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 10000;
+      max-width: 300px;
+      font-size: 14px;
+      line-height: 1.4;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+    `;
+
+    toast.innerHTML = `
+      <div style="font-weight: 500; margin-bottom: 5px;">
+        ${notification.TenGiangVien || 'Giảng viên'} - ${notification.TenLopHocPhan || 'Lớp học'}
+      </div>
+      <div style="font-size: 13px; opacity: 0.9;">
+        ${notification.TieuDe || 'Thông báo mới'}
+      </div>
+    `;
+
+    document.body.appendChild(toast);
+
+    // Hiển thị toast
+    setTimeout(() => {
+      toast.style.transform = 'translateX(0)';
+    }, 100);
+
+    // Tự động ẩn sau 5 giây
+    setTimeout(() => {
+      toast.style.transform = 'translateX(100%)';
+      setTimeout(() => {
+        if (document.body.contains(toast)) {
+          document.body.removeChild(toast);
+        }
+      }, 300);
+    }, 5000);
+  }
+
+  function loadNotificationCount() {
+    fetch('/User/ThongBao/GetUnreadCount')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          updateNotificationBadge(data.count);
+        }
+      })
+      .catch(err => {
+        console.error('Lỗi khi tải số lượng thông báo:', err);
+      });
   }
 
   // Load trang và kiểm tra avatar
@@ -275,6 +752,16 @@ Console.WriteLine($"=== TOP BAR DEBUG END ===");
       console.log('No avatar element found');
     }
 
+    // Load notification count chỉ cho sinh viên
+    const notificationBadge = document.getElementById('notificationBadge');
+    if (notificationBadge) {
+      console.log('Student detected, loading notification count');
+      loadNotificationCount();
+      connectNotificationHub();
+    } else {
+      console.log('Not a student, skipping notification features');
+    }
+
     console.log('=== TOP BAR JAVASCRIPT END ===');
   });
 
@@ -320,4 +807,12 @@ Console.WriteLine($"=== TOP BAR DEBUG END ===");
     console.log('User info update event received');
     refreshUserInfo();
   });
+
+  // Auto refresh notification count every 30 seconds (chỉ cho sinh viên)
+  setInterval(function() {
+    const notificationBadge = document.getElementById('notificationBadge');
+    if (notificationBadge) {
+      loadNotificationCount();
+    }
+  }, 30000);
 </script>

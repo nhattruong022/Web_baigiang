@@ -83,8 +83,22 @@ namespace Lecture_web.Areas.User.Controllers
                         Avatar = ProcessAvatarPath(thongBaoDetail.TaiKhoan.AnhDaiDien)
                     };
 
+                    // Gửi thông báo cho tất cả sinh viên trong lớp học phần
                     await _hubContext.Clients.Group($"Class_{request.IdLopHocPhan}")
                         .SendAsync("NewNotification", notificationData);
+
+                    // Lấy danh sách sinh viên trong lớp để gửi thông báo riêng
+                    var studentsInClass = await _context.LopHocPhan_SinhVien
+                        .Where(lhps => lhps.IdLopHocPhan == request.IdLopHocPhan)
+                        .Select(lhps => lhps.IdTaiKhoan.ToString())
+                        .ToListAsync();
+
+                    // Gửi thông báo cho từng sinh viên
+                    foreach (var studentId in studentsInClass)
+                    {
+                        await _hubContext.Clients.Group($"User_{studentId}")
+                            .SendAsync("NewNotification", notificationData);
+                    }
                 }
 
                 return Json(new { 
@@ -414,7 +428,236 @@ namespace Lecture_web.Areas.User.Controllers
             }
         }
 
-        private string ProcessAvatarPath(string rawAvatar)
+        [HttpGet]
+        public async Task<IActionResult> GetUnreadCount()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Json(new { success = false, message = "Không thể xác định người dùng" });
+            }
+            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            if (userRole != "Sinhvien")
+            {
+                return Json(new { success = false, message = "Chỉ sinh viên mới có thể xem thông báo" });
+            }
+            try
+            {
+                var userClasses = await _context.LopHocPhan_SinhVien
+                    .Where(lhs => lhs.IdTaiKhoan == userId)
+                    .Select(lhs => lhs.IdLopHocPhan)
+                    .ToListAsync();
+                if (!userClasses.Any())
+                {
+                    return Json(new { success = true, count = 0 });
+                }
+                var allNotifications = await _context.ThongBao
+                    .Where(tb => userClasses.Contains(tb.IdLopHocPhan) &&
+                                !tb.NoiDung.StartsWith("USED|") &&
+                                !tb.NoiDung.StartsWith("INVITE|") &&
+                                !string.IsNullOrEmpty(tb.NoiDung) &&
+                                tb.NoiDung.Length > 5)
+                    .Select(tb => tb.IdThongBao)
+                    .ToListAsync();
+                var readIds = await _context.ThongBaoDaDoc
+                    .Where(x => x.IdTaiKhoan == userId)
+                    .Select(x => x.IdThongBao)
+                    .ToListAsync();
+                var unreadCount = allNotifications.Count(id => !readIds.Contains(id));
+                return Json(new { success = true, count = unreadCount });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Lỗi: {ex.Message}" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> MarkAllAsRead()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Json(new { success = false, message = "Không thể xác định người dùng" });
+            }
+            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            if (userRole != "Sinhvien")
+            {
+                return Json(new { success = false, message = "Chỉ sinh viên mới có thể đánh dấu đã đọc" });
+            }
+            try
+            {
+                var userClasses = await _context.LopHocPhan_SinhVien
+                    .Where(lhs => lhs.IdTaiKhoan == userId)
+                    .Select(lhs => lhs.IdLopHocPhan)
+                    .ToListAsync();
+                if (!userClasses.Any())
+                {
+                    return Json(new { success = true, message = "Không có lớp học phần nào" });
+                }
+                var allNotificationIds = await _context.ThongBao
+                    .Where(tb => userClasses.Contains(tb.IdLopHocPhan) &&
+                                !tb.NoiDung.StartsWith("USED|") &&
+                                !tb.NoiDung.StartsWith("INVITE|") &&
+                                !string.IsNullOrEmpty(tb.NoiDung) &&
+                                tb.NoiDung.Length > 5)
+                    .Select(tb => tb.IdThongBao)
+                    .ToListAsync();
+                var readIds = await _context.ThongBaoDaDoc
+                    .Where(x => x.IdTaiKhoan == userId)
+                    .Select(x => x.IdThongBao)
+                    .ToListAsync();
+                var unreadIds = allNotificationIds.Except(readIds).ToList();
+                foreach (var id in unreadIds)
+                {
+                    _context.ThongBaoDaDoc.Add(new Lecture_web.Models.ThongBaoDaDocModels
+                    {
+                        IdThongBao = id,
+                        IdTaiKhoan = userId,
+                        NgayDoc = DateTime.Now
+                    });
+                }
+                await _context.SaveChangesAsync();
+                return Json(new { success = true, message = "Đã đánh dấu tất cả thông báo là đã đọc" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Lỗi: {ex.Message}" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> MarkAsRead(int id)
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId)) return Json(new { success = false });
+            var exists = await _context.ThongBaoDaDoc.AnyAsync(x => x.IdThongBao == id && x.IdTaiKhoan == userId);
+            if (!exists)
+            {
+                _context.ThongBaoDaDoc.Add(new Lecture_web.Models.ThongBaoDaDocModels
+                {
+                    IdThongBao = id,
+                    IdTaiKhoan = userId,
+                    NgayDoc = DateTime.Now
+                });
+                await _context.SaveChangesAsync();
+            }
+            return Json(new { success = true });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetRecentNotifications(int limit = 10)
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+                {
+                    return Json(new { success = false, message = "Không thể xác định người dùng" });
+                }
+
+                // Chỉ sinh viên mới có notification list
+                var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+                if (userRole != "Sinhvien")
+                {
+                    return Json(new { success = true, notifications = new List<object>(), message = "Chỉ sinh viên mới có thông báo" });
+                }
+
+                // Lấy tất cả lớp học phần mà sinh viên tham gia
+                var userClasses = await _context.LopHocPhan_SinhVien
+                    .Where(lhps => lhps.IdTaiKhoan == userId)
+                    .Select(lhps => lhps.IdLopHocPhan)
+                    .ToListAsync();
+
+                // Lấy thông báo mới nhất từ giảng viên
+                var recentNotifications = await _context.ThongBao
+                    .Include(tb => tb.TaiKhoan)
+                    .Include(tb => tb.LopHocPhan)
+                    .Where(tb => userClasses.Contains(tb.IdLopHocPhan) &&
+                                !tb.NoiDung.StartsWith("USED|") &&
+                                !tb.NoiDung.StartsWith("INVITE|") &&
+                                !string.IsNullOrEmpty(tb.NoiDung) &&
+                                tb.NoiDung.Length > 5)
+                    .OrderByDescending(tb => tb.NgayTao)
+                    .Take(limit)
+                    .Select(tb => new
+                    {
+                        IdThongBao = tb.IdThongBao,
+                        NoiDung = tb.NoiDung,
+                        NgayTao = tb.NgayTao,
+                        TenGiangVien = tb.TaiKhoan.HoTen,
+                        TenLopHocPhan = tb.LopHocPhan.TenLop,
+                        IdLopHocPhan = tb.IdLopHocPhan,
+                        RawAvatar = tb.TaiKhoan.AnhDaiDien // Lấy raw avatar, không gọi hàm C#
+                    })
+                    .ToListAsync();
+
+                var processedNotifications = recentNotifications.Select(n => new
+                {
+                    idThongBao = n.IdThongBao,
+                    noiDung = n.NoiDung,
+                    ngayTao = n.NgayTao.ToString("dd/MM/yyyy HH:mm"),
+                    tenGiangVien = n.TenGiangVien,
+                    tenLopHocPhan = n.TenLopHocPhan,
+                    idLopHocPhan = n.IdLopHocPhan,
+                    avatar = ProcessAvatarPath(n.RawAvatar), // Gọi hàm C# ở đây
+                    timeAgo = GetTimeAgo(n.NgayTao)
+                }).ToList();
+
+                return Json(new { 
+                    success = true, 
+                    notifications = processedNotifications,
+                    message = "Lấy danh sách thông báo thành công"
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Lỗi khi lấy danh sách thông báo: {ex.Message}" });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUserClasses()
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+                {
+                    return Json(new { success = false, message = "Không thể xác định người dùng" });
+                }
+
+                // Chỉ sinh viên mới có danh sách lớp học phần
+                var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+                if (userRole != "Sinhvien")
+                {
+                    return Json(new { success = true, classes = new List<object>(), message = "Chỉ sinh viên mới có danh sách lớp" });
+                }
+
+                // Lấy tất cả lớp học phần mà sinh viên tham gia
+                var userClasses = await _context.LopHocPhan_SinhVien
+                    .Include(lhps => lhps.LopHocPhan)
+                    .Where(lhps => lhps.IdTaiKhoan == userId)
+                    .Select(lhps => new
+                    {
+                        IdLopHocPhan = lhps.IdLopHocPhan,
+                        TenLop = lhps.LopHocPhan.TenLop
+                    })
+                    .ToListAsync();
+
+                return Json(new { 
+                    success = true, 
+                    classes = userClasses,
+                    message = "Lấy danh sách lớp học phần thành công"
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Lỗi khi lấy danh sách lớp: {ex.Message}" });
+            }
+        }
+
+        private string ProcessAvatarPath(string? rawAvatar)
         {
             if (string.IsNullOrEmpty(rawAvatar))
             {
@@ -437,20 +680,42 @@ namespace Lecture_web.Areas.User.Controllers
                 return "/images/avatars/" + rawAvatar;
             }
         }
+
+        private string GetTimeAgo(DateTime dateTime)
+        {
+            var timeSpan = DateTime.Now - dateTime;
+            
+            if (timeSpan.TotalDays >= 1)
+            {
+                return $"{(int)timeSpan.TotalDays} ngày trước";
+            }
+            else if (timeSpan.TotalHours >= 1)
+            {
+                return $"{(int)timeSpan.TotalHours} giờ trước";
+            }
+            else if (timeSpan.TotalMinutes >= 1)
+            {
+                return $"{(int)timeSpan.TotalMinutes} phút trước";
+            }
+            else
+            {
+                return "Vừa xong";
+            }
+        }
     }
 
     public class AddNotificationRequest
     {
-        public string TieuDe { get; set; }
-        public string NoiDung { get; set; }
+        public string TieuDe { get; set; } = string.Empty;
+        public string NoiDung { get; set; } = string.Empty;
         public int IdLopHocPhan { get; set; }
     }
 
     public class EditNotificationRequest
     {
         public int IdThongBao { get; set; }
-        public string TieuDe { get; set; }
-        public string NoiDung { get; set; }
+        public string TieuDe { get; set; } = string.Empty;
+        public string NoiDung { get; set; } = string.Empty;
     }
 
     public class DeleteNotificationRequest
