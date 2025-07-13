@@ -479,12 +479,15 @@ Console.WriteLine($"=== TOP BAR DEBUG END ===");
           if (data.notifications && data.notifications.length > 0) {
             const notificationsHtml = data.notifications.map(notification => `
               <div class="notification-item" onclick="viewNotification(${notification.idThongBao}, ${notification.idLopHocPhan})">
-                <div class="notification-content">
-                  <div style="font-weight: 500; margin-bottom: 4px; color: #007bff;">
-                    ${notification.tenGiangVien} - ${notification.tenLopHocPhan}
-                  </div>
-                  <div style="font-size: 13px; color: #666; line-height: 1.3;">
-                    ${notification.noiDung.length > 100 ? notification.noiDung.substring(0, 100) + '...' : notification.noiDung}
+                <div style="display: flex; align-items: flex-start; gap: 10px;">
+                  <img src="${notification.avatar}" alt="GV" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;" onerror="this.src='/images/avatars/avatar.jpg'">
+                  <div class="notification-content" style="flex:1;">
+                    <div style="font-weight: 500; margin-bottom: 4px; color: #007bff;">
+                      ${notification.tenGiangVien} - ${notification.tenLopHocPhan} <span style='color:#888;font-size:12px;'>(${notification.tenHocPhan || ''})</span>
+                    </div>
+                    <div style="font-size: 13px; color: #666; line-height: 1.3;">
+                      ${notification.noiDung.length > 100 ? notification.noiDung.substring(0, 100) + '...' : notification.noiDung}
+                    </div>
                   </div>
                 </div>
                 <div class="notification-time">${notification.timeAgo}</div>

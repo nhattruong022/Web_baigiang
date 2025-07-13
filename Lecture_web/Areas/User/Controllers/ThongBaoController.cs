@@ -655,6 +655,7 @@ namespace Lecture_web.Areas.User.Controllers
                 var recentNotifications = await _context.ThongBao
                     .Include(tb => tb.TaiKhoan)
                     .Include(tb => tb.LopHocPhan)
+                        .ThenInclude(lhp => lhp.HocPhan)
                     .Where(tb => userClasses.Contains(tb.IdLopHocPhan) &&
                                 !tb.NoiDung.StartsWith("USED|") &&
                                 !tb.NoiDung.StartsWith("INVITE|") &&
@@ -669,6 +670,7 @@ namespace Lecture_web.Areas.User.Controllers
                         NgayTao = tb.NgayTao,
                         TenGiangVien = tb.TaiKhoan.HoTen,
                         TenLopHocPhan = tb.LopHocPhan.TenLop,
+                        TenHocPhan = tb.LopHocPhan.HocPhan.TenHocPhan, // Lấy tên học phần từ bảng HocPhan
                         IdLopHocPhan = tb.IdLopHocPhan,
                         RawAvatar = tb.TaiKhoan.AnhDaiDien // Lấy raw avatar, không gọi hàm C#
                     })
@@ -681,6 +683,7 @@ namespace Lecture_web.Areas.User.Controllers
                     ngayTao = n.NgayTao.ToString("dd/MM/yyyy HH:mm"),
                     tenGiangVien = n.TenGiangVien,
                     tenLopHocPhan = n.TenLopHocPhan,
+                    tenHocPhan = n.TenHocPhan, // Thêm tên học phần
                     idLopHocPhan = n.IdLopHocPhan,
                     avatar = ProcessAvatarPath(n.RawAvatar), // Gọi hàm C# ở đây
                     timeAgo = GetTimeAgo(n.NgayTao)
