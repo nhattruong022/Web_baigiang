@@ -1313,12 +1313,12 @@ namespace Lecture_web.Areas.User.Controllers
                 worksheet.Cells[1, 3].Value = "Họ tên";
                 worksheet.Cells[1, 4].Value = "Vai trò";
                 worksheet.Cells[1, 5].Value = "Trạng thái";
-                // Thêm một dòng ví dụ
+                // Thêm một dòng ví dụ ĐÚNG CHUẨN
                 worksheet.Cells[2, 1].Value = "sv01@example.com";
                 worksheet.Cells[2, 2].Value = "sv01";
                 worksheet.Cells[2, 3].Value = "Nguyễn Văn A";
-                worksheet.Cells[2, 4].Value = "Sinh viên";
-                worksheet.Cells[2, 5].Value = "Hoạt động";
+                worksheet.Cells[2, 4].Value = "Sinhvien"; // ĐÚNG CHUẨN
+                worksheet.Cells[2, 5].Value = "HoatDong"; // ĐÚNG CHUẨN
                 worksheet.Cells.AutoFitColumns();
                 var stream = new System.IO.MemoryStream();
                 package.SaveAs(stream);

@@ -111,7 +111,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
                   @if (userRole != "Sinhvien")
                   {
                   <td>
-                    <button class="btn-icon" onclick="openEditStudentModal(this)"><i class="fas fa-edit"></i></button>
+
                     <button class="btn-icon" onclick="openConfirmDeleteStudentModal(this)"><i class="fas fa-trash"></i></button>
                   </td>
                   }
@@ -1261,7 +1261,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         <td><span class="status-badge ${student.trangThai === 'HoatDong' ? 'hoatdong' : ''}">${student.trangThai === 'HoatDong' ? 'Hoạt động' : (student.trangThai || 'Chưa cập nhật')}</span></td>
         ${userRole !== "Sinhvien" ? `
           <td>
-            <button class="btn-icon" onclick="openEditStudentModal(this)"><i class="fas fa-edit"></i></button>
+            
             <button class="btn-icon" onclick="openConfirmDeleteStudentModal(this)"><i class="fas fa-trash"></i></button>
           </td>
         ` : ''}
@@ -3839,3 +3839,18 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('tab') === 'thongbao') {
+      // Tìm nút tab Thông báo và click
+      const tabBtns = document.querySelectorAll('.course-tab-btn');
+      tabBtns.forEach(btn => {
+        if (btn.textContent.includes('Thông báo')) {
+          btn.click();
+        }
+      });
+    }
+  });
+</script>

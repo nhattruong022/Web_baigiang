@@ -22,6 +22,7 @@ namespace Lecture_web
         public DbSet<LopHocPhan_SinhVienModels> LopHocPhan_SinhVien { get; set; }
         public DbSet<ThongBaoModels> ThongBao { get; set; }
         public DbSet<BinhLuanModels> BinhLuan { get; set; }
+        
     }
 
 
