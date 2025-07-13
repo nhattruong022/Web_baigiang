@@ -1303,6 +1303,7 @@ namespace Lecture_web.Areas.User.Controllers
 
         public IActionResult DownloadInviteExcelTemplate()
         {
+            OfficeOpenXml.ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
             // Tạo file Excel mẫu với các trường: Email, Tên đăng nhập, Họ tên, Vai trò, Trạng thái
             using (var package = new OfficeOpenXml.ExcelPackage())
             {

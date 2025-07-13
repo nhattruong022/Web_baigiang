@@ -21,7 +21,7 @@ namespace Lecture_web.Areas.User.Controllers
             _convertWordToHTML = wordToHtml;
         }
         [HttpPost("convert")]
-        [RequestSizeLimit(50_000_000)]
+        [RequestSizeLimit(6_000_000)]
         public async Task<IActionResult> Convert([FromForm] IFormFile file)
         {
             if (file == null || !file.FileName.EndsWith(".docx"))

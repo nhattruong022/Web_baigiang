@@ -80,7 +80,7 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
                     display: inline-block !important;
                     pointer-events: auto !important;
                 } */
-
+                 
   .cke_notification_message,
   .cke_notification_close,
   .cke_notification_warning {
@@ -256,6 +256,22 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
               document.body.removeChild(input);
               return;
             }
+            Swal.fire({
+                title: 'Đang import…',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+            const maxSize = 6 * 1024 * 1024;
+            if (file.size > maxSize) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'File quá lớn',
+                    text: `Vui lòng chọn file nhỏ hơn ${maxSize / 1024 / 1024} MB.`,
+                });
+                document.body.removeChild(input);
+                return;
+            }
+
             var form = new FormData();
             form.append('file', file);
 
@@ -271,6 +287,7 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
               let result = await response.json();
               if (!response.ok) throw new Error(result);
               const combined = result.styleBlock + result.html;
+              Swal.close();
               editor.setData(combined, {
                 callback: function() {
                   this.fire('change');
@@ -281,6 +298,7 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
                 }
               });
             } catch (err) {
+                Swal.close();
               let invalidlink = err.message;
               if (invalidlink.includes('Invalid Hyperlink')) {
                 invalidlink = 'Có đường link không tồn tại hoặc bị lỗi trong bài vừa import, vui lòng sửa lại.';
@@ -425,7 +443,14 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
         });
       })
       .fail(function(xhr) {
-        if (xhr.status === 400 && xhr.responseJSON.errors) {
+         if (xhr.status === 400 && (xhr.responseText || '').includes('Request body too large')) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Nội dung quá lớn',
+                text: 'Nội dung bạn nhập (kể cả file import) đang vượt quá giới hạn cho phép (6 MB). Vui lòng giảm bớt hình ảnh hoặc chia nhỏ nội dung rồi thử lại.',
+            });
+        }
+        else if (xhr.status === 400 && xhr.responseJSON.errors) {
           var errs = xhr.responseJSON.errors;
           $f.find('.is-invalid').removeClass('is-invalid');
           $f.find('span[data-valmsg-for]').text('');
@@ -433,7 +458,8 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
             var $msg = $f.find('span.text-danger[data-valmsg-for="' + field + '"]');
             $msg.text(messages[0]);
           });
-        } else {
+            } 
+         else {
           alert('Lỗi server, thử lại');
         }
       });

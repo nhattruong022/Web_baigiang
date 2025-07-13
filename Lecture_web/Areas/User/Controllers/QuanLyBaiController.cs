@@ -51,7 +51,7 @@ namespace Lecture_web.Areas.User.Controllers
             return View(vmb);
         }
 
-            [RequestSizeLimit(50_000_000)]
+            [RequestSizeLimit(6_000_000)]
             [RequestFormLimits(ValueLengthLimit = int.MaxValue)]
             [HttpPost, ValidateAntiForgeryToken]
             public async Task<IActionResult> EditBai(EditBaiViewModel vmb)
@@ -134,7 +134,7 @@ namespace Lecture_web.Areas.User.Controllers
             return View(vm);
         }
 
-        [RequestSizeLimit(50_000_000)]
+        [RequestSizeLimit(6_000_000)]
         [RequestFormLimits(ValueLengthLimit = int.MaxValue)]
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> AddBai(CreateBaiViewModel vm)
