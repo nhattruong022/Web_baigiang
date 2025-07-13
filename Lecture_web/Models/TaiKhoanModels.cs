@@ -25,17 +25,17 @@ namespace Lecture_web.Models
 
         [Required(ErrorMessage = "Email không được để trống"), MaxLength(30)]
         [EmailAddress(ErrorMessage = "Email không hợp lệ")]
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
         [Required(ErrorMessage = "Số điện thoại không được để trống"), MaxLength(20)]
         [RegularExpression(@"^(0[0-9]{9,10})$", ErrorMessage = "Số điện thoại không hợp lệ")]
-        public string SoDienThoai { get; set; }
+        public string? SoDienThoai { get; set; }
 
         [MaxLength(255)]
         public string? AnhDaiDien { get; set; }
 
         [MaxLength(20)]
-        public string TrangThai { get; set; }
+        public string? TrangThai { get; set; }
 
         public DateTime? NgayTao { get; set; }
 
