@@ -1006,7 +1006,6 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
 
 <script>
   let selectedStudentsForInvite = []; // Thay đổi từ single student thành array
-  let currentLopHocPhanId = @(ViewBag.IdLopHocPhan ?? 1);
   let currentStudentPage = @(ViewBag.CurrentPage ?? 1);
   let totalStudentPages = @(ViewBag.TotalPages ?? 1);
   let totalStudents = @(ViewBag.TotalStudents ?? 0);
@@ -1072,8 +1071,6 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
 
   // Hiển thị bài đầu tiên mặc định
   window.onload = function() {
-    // Update currentLopHocPhanId from ViewBag
-    currentLopHocPhanId = @(ViewBag.IdLopHocPhan ?? 1);
 
     // Render sidebar trước
     renderChaptersList();
@@ -1438,6 +1435,7 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         break;
       case 'notices':
         setTimeout(() => {
+          currentLopHocPhanId = getLopHocPhanIdFromUrl();
           loadNotifications(currentLopHocPhanId);
         }, 50);
         break;
@@ -3764,6 +3762,18 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
         });
     };
   })();
+
+  function getLopHocPhanIdFromUrl() {
+    // Ưu tiên lấy từ path /Index/1
+    const match = window.location.pathname.match(/\/Index\/(\d+)/);
+    if (match && match[1]) return parseInt(match[1]);
+    // Nếu không có, lấy từ query string
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('idLopHocPhan')) return parseInt(urlParams.get('idLopHocPhan'));
+    // Fallback về ViewBag
+    return @(ViewBag.IdLopHocPhan ?? 1);
+  }
+  let currentLopHocPhanId = getLopHocPhanIdFromUrl();
 </script>
 
 @* Handle TempData messages *@
@@ -3844,11 +3854,11 @@ var currentUserName = currentUser?.HoTen ?? "Người dùng";
   document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('tab') === 'thongbao') {
-      // Tìm nút tab Thông báo và click
+      // Gọi trực tiếp hàm showTab để đảm bảo tab Thông báo được mở đúng
       const tabBtns = document.querySelectorAll('.course-tab-btn');
       tabBtns.forEach(btn => {
         if (btn.textContent.includes('Thông báo')) {
-          btn.click();
+          showTab('notices', btn);
         }
       });
     }
