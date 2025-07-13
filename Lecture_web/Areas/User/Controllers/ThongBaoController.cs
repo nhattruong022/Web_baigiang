@@ -431,43 +431,63 @@ namespace Lecture_web.Areas.User.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUnreadCount()
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
-            {
-                return Json(new { success = false, message = "Không thể xác định người dùng" });
-            }
-            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
-            if (userRole != "Sinhvien")
-            {
-                return Json(new { success = false, message = "Chỉ sinh viên mới có thể xem thông báo" });
-            }
             try
             {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+                {
+                    return Json(new { success = false, message = "Không thể xác định người dùng" });
+                }
+                var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+                if (userRole != "Sinhvien")
+                {
+                    return Json(new { success = false, message = "Chỉ sinh viên mới có thể xem thông báo" });
+                }
+                
                 var userClasses = await _context.LopHocPhan_SinhVien
                     .Where(lhs => lhs.IdTaiKhoan == userId)
-                    .Select(lhs => lhs.IdLopHocPhan)
                     .ToListAsync();
+                    
                 if (!userClasses.Any())
                 {
+                    Console.WriteLine($"DEBUG: User {userId} has no classes");
                     return Json(new { success = true, count = 0 });
                 }
+                
                 var allNotifications = await _context.ThongBao
-                    .Where(tb => userClasses.Contains(tb.IdLopHocPhan) &&
+                    .Where(tb => userClasses.Select(x => x.IdLopHocPhan).Contains(tb.IdLopHocPhan) &&
                                 !tb.NoiDung.StartsWith("USED|") &&
                                 !tb.NoiDung.StartsWith("INVITE|") &&
                                 !string.IsNullOrEmpty(tb.NoiDung) &&
                                 tb.NoiDung.Length > 5)
-                    .Select(tb => tb.IdThongBao)
+                    .Select(tb => new { tb.IdThongBao, tb.IdLopHocPhan })
                     .ToListAsync();
-                var readIds = await _context.ThongBaoDaDoc
-                    .Where(x => x.IdTaiKhoan == userId)
-                    .Select(x => x.IdThongBao)
-                    .ToListAsync();
-                var unreadCount = allNotifications.Count(id => !readIds.Contains(id));
+                    
+                int unreadCount = 0;
+                foreach (var tb in allNotifications)
+                {
+                    var userClass = userClasses.FirstOrDefault(x => x.IdLopHocPhan == tb.IdLopHocPhan);
+                    if (userClass == null) continue;
+                    
+                    // Đảm bảo ThongBaoDaDocIds không null
+                    var currentReadIds = userClass.ThongBaoDaDocIds ?? "";
+                    var readIds = currentReadIds.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(s => s.Trim())
+                        .Where(s => !string.IsNullOrEmpty(s))
+                        .ToList();
+                        
+                    if (!readIds.Contains(tb.IdThongBao.ToString())) 
+                    {
+                        unreadCount++;
+                    }
+                }
+                
+                Console.WriteLine($"DEBUG: User {userId} has {unreadCount} unread notifications out of {allNotifications.Count} total");
                 return Json(new { success = true, count = unreadCount });
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"ERROR in GetUnreadCount: {ex.Message}");
                 return Json(new { success = false, message = $"Lỗi: {ex.Message}" });
             }
         }
@@ -475,53 +495,72 @@ namespace Lecture_web.Areas.User.Controllers
         [HttpPost]
         public async Task<IActionResult> MarkAllAsRead()
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
-            {
-                return Json(new { success = false, message = "Không thể xác định người dùng" });
-            }
-            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
-            if (userRole != "Sinhvien")
-            {
-                return Json(new { success = false, message = "Chỉ sinh viên mới có thể đánh dấu đã đọc" });
-            }
             try
             {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+                {
+                    return Json(new { success = false, message = "Không thể xác định người dùng" });
+                }
+                var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+                if (userRole != "Sinhvien")
+                {
+                    return Json(new { success = false, message = "Chỉ sinh viên mới có thể đánh dấu đã đọc" });
+                }
+                
                 var userClasses = await _context.LopHocPhan_SinhVien
                     .Where(lhs => lhs.IdTaiKhoan == userId)
-                    .Select(lhs => lhs.IdLopHocPhan)
                     .ToListAsync();
+                    
                 if (!userClasses.Any())
                 {
                     return Json(new { success = true, message = "Không có lớp học phần nào" });
                 }
+                
                 var allNotificationIds = await _context.ThongBao
-                    .Where(tb => userClasses.Contains(tb.IdLopHocPhan) &&
+                    .Where(tb => userClasses.Select(x => x.IdLopHocPhan).Contains(tb.IdLopHocPhan) &&
                                 !tb.NoiDung.StartsWith("USED|") &&
                                 !tb.NoiDung.StartsWith("INVITE|") &&
                                 !string.IsNullOrEmpty(tb.NoiDung) &&
                                 tb.NoiDung.Length > 5)
-                    .Select(tb => tb.IdThongBao)
+                    .Select(tb => new { tb.IdThongBao, tb.IdLopHocPhan })
                     .ToListAsync();
-                var readIds = await _context.ThongBaoDaDoc
-                    .Where(x => x.IdTaiKhoan == userId)
-                    .Select(x => x.IdThongBao)
-                    .ToListAsync();
-                var unreadIds = allNotificationIds.Except(readIds).ToList();
-                foreach (var id in unreadIds)
+                    
+                int totalMarked = 0;
+                foreach (var userClass in userClasses)
                 {
-                    _context.ThongBaoDaDoc.Add(new Lecture_web.Models.ThongBaoDaDocModels
+                    // Đảm bảo ThongBaoDaDocIds không null
+                    var currentReadIds = userClass.ThongBaoDaDocIds ?? "";
+                    var ids = currentReadIds.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(s => s.Trim())
+                        .Where(s => !string.IsNullOrEmpty(s))
+                        .ToHashSet();
+                        
+                    var classNotificationIds = allNotificationIds
+                        .Where(x => x.IdLopHocPhan == userClass.IdLopHocPhan)
+                        .Select(x => x.IdThongBao.ToString());
+                        
+                    foreach (var id in classNotificationIds)
                     {
-                        IdThongBao = id,
-                        IdTaiKhoan = userId,
-                        NgayDoc = DateTime.Now
-                    });
+                        if (!ids.Contains(id))
+                        {
+                            ids.Add(id);
+                            totalMarked++;
+                        }
+                    }
+                    
+                    userClass.ThongBaoDaDocIds = string.Join(",", ids);
+                    Console.WriteLine($"DEBUG: Updated class {userClass.IdLopHocPhan} with {ids.Count} read notifications");
                 }
+                
                 await _context.SaveChangesAsync();
-                return Json(new { success = true, message = "Đã đánh dấu tất cả thông báo là đã đọc" });
+                Console.WriteLine($"DEBUG: Marked {totalMarked} notifications as read for user {userId}");
+                
+                return Json(new { success = true, message = $"Đã đánh dấu {totalMarked} thông báo là đã đọc" });
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"ERROR in MarkAllAsRead: {ex.Message}");
                 return Json(new { success = false, message = $"Lỗi: {ex.Message}" });
             }
         }
@@ -529,20 +568,63 @@ namespace Lecture_web.Areas.User.Controllers
         [HttpPost]
         public async Task<IActionResult> MarkAsRead(int id)
         {
-            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId)) return Json(new { success = false });
-            var exists = await _context.ThongBaoDaDoc.AnyAsync(x => x.IdThongBao == id && x.IdTaiKhoan == userId);
-            if (!exists)
+            try
             {
-                _context.ThongBaoDaDoc.Add(new Lecture_web.Models.ThongBaoDaDocModels
+                var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId)) 
                 {
-                    IdThongBao = id,
-                    IdTaiKhoan = userId,
-                    NgayDoc = DateTime.Now
-                });
-                await _context.SaveChangesAsync();
+                    return Json(new { success = false, message = "Không thể xác định người dùng" });
+                }
+
+                var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+                if (userRole != "Sinhvien")
+                {
+                    return Json(new { success = false, message = "Chỉ sinh viên mới có thể đánh dấu đã đọc" });
+                }
+
+                var userClasses = await _context.LopHocPhan_SinhVien
+                    .Where(x => x.IdTaiKhoan == userId)
+                    .ToListAsync();
+
+                bool updated = false;
+                foreach (var userClass in userClasses)
+                {
+                    var notification = await _context.ThongBao
+                        .FirstOrDefaultAsync(tb => tb.IdThongBao == id && tb.IdLopHocPhan == userClass.IdLopHocPhan);
+                    
+                    if (notification != null)
+                    {
+                        // Đảm bảo ThongBaoDaDocIds không null
+                        var currentReadIds = userClass.ThongBaoDaDocIds ?? "";
+                        var ids = currentReadIds.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                            .Select(s => s.Trim())
+                            .Where(s => !string.IsNullOrEmpty(s))
+                            .ToHashSet();
+                        
+                        if (!ids.Contains(id.ToString()))
+                        {
+                            ids.Add(id.ToString());
+                            userClass.ThongBaoDaDocIds = string.Join(",", ids);
+                            updated = true;
+                            
+                            Console.WriteLine($"DEBUG: Marked notification {id} as read for user {userId} in class {userClass.IdLopHocPhan}");
+                        }
+                    }
+                }
+                
+                if (updated) 
+                {
+                    await _context.SaveChangesAsync();
+                    Console.WriteLine($"DEBUG: Saved changes to database for user {userId}");
+                }
+                
+                return Json(new { success = true, message = "Đã đánh dấu thông báo là đã đọc" });
             }
-            return Json(new { success = true });
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERROR in MarkAsRead: {ex.Message}");
+                return Json(new { success = false, message = $"Lỗi: {ex.Message}" });
+            }
         }
 
         [HttpGet]
@@ -573,6 +655,7 @@ namespace Lecture_web.Areas.User.Controllers
                 var recentNotifications = await _context.ThongBao
                     .Include(tb => tb.TaiKhoan)
                     .Include(tb => tb.LopHocPhan)
+                        .ThenInclude(lhp => lhp.HocPhan)
                     .Where(tb => userClasses.Contains(tb.IdLopHocPhan) &&
                                 !tb.NoiDung.StartsWith("USED|") &&
                                 !tb.NoiDung.StartsWith("INVITE|") &&
@@ -587,6 +670,7 @@ namespace Lecture_web.Areas.User.Controllers
                         NgayTao = tb.NgayTao,
                         TenGiangVien = tb.TaiKhoan.HoTen,
                         TenLopHocPhan = tb.LopHocPhan.TenLop,
+                        TenHocPhan = tb.LopHocPhan.HocPhan.TenHocPhan, // Lấy tên học phần từ bảng HocPhan
                         IdLopHocPhan = tb.IdLopHocPhan,
                         RawAvatar = tb.TaiKhoan.AnhDaiDien // Lấy raw avatar, không gọi hàm C#
                     })
@@ -599,6 +683,7 @@ namespace Lecture_web.Areas.User.Controllers
                     ngayTao = n.NgayTao.ToString("dd/MM/yyyy HH:mm"),
                     tenGiangVien = n.TenGiangVien,
                     tenLopHocPhan = n.TenLopHocPhan,
+                    tenHocPhan = n.TenHocPhan, // Thêm tên học phần
                     idLopHocPhan = n.IdLopHocPhan,
                     avatar = ProcessAvatarPath(n.RawAvatar), // Gọi hàm C# ở đây
                     timeAgo = GetTimeAgo(n.NgayTao)

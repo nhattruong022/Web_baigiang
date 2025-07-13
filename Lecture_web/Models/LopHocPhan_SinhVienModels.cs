@@ -11,6 +11,8 @@ namespace Lecture_web.Models
         public int IdLopHocPhan { get; set; }
         public int IdTaiKhoan { get; set; }
 
+        public string ThongBaoDaDocIds { get; set; } = ""; // Lưu danh sách ID thông báo đã đọc, phân tách bằng dấu phẩy, mặc định rỗng
+
         [ForeignKey(nameof(IdLopHocPhan))]
         public LopHocPhanModels LopHocPhan { get; set; }
 
