@@ -529,27 +529,37 @@ Console.WriteLine($"=== TOP BAR DEBUG END ===");
   }
 
   function markAllAsRead() {
+    console.log('Marking all notifications as read...');
     fetch('/User/ThongBao/MarkAllAsRead', {
         method: 'POST'
       })
       .then(res => res.json())
       .then(data => {
+        console.log('Mark all as read response:', data);
         if (data.success) {
           updateNotificationBadge(0);
           loadNotifications();
+          console.log('Successfully marked all as read');
         } else {
+          console.error('Failed to mark all as read:', data.message);
           alert(data.message || 'Lỗi khi đánh dấu đã đọc');
         }
+      })
+      .catch(err => {
+        console.error('Error marking all as read:', err);
+        alert('Lỗi kết nối khi đánh dấu đã đọc');
       });
   }
 
   function viewNotification(notificationId, idLopHocPhan) {
+    console.log('Viewing notification:', notificationId, 'for class:', idLopHocPhan);
     // Đánh dấu đã đọc thông báo này
     fetch('/User/ThongBao/MarkAsRead?id=' + notificationId, {
         method: 'POST'
       })
       .then(res => res.json())
       .then(data => {
+        console.log('Mark as read response:', data);
         loadNotificationCount();
         // Đóng dropdown và chuyển trang
         toggleNotificationDropdown();
@@ -559,7 +569,8 @@ Console.WriteLine($"=== TOP BAR DEBUG END ===");
           alert('Không tìm thấy lớp học phần của thông báo này!');
         }
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error('Error marking notification as read:', err);
         // Nếu lỗi vẫn chuyển trang
         toggleNotificationDropdown();
         if (idLopHocPhan) {
@@ -689,11 +700,16 @@ Console.WriteLine($"=== TOP BAR DEBUG END ===");
   }
 
   function loadNotificationCount() {
+    console.log('Loading notification count...');
     fetch('/User/ThongBao/GetUnreadCount')
       .then(res => res.json())
       .then(data => {
+        console.log('Notification count response:', data);
         if (data.success) {
           updateNotificationBadge(data.count);
+          console.log('Updated badge with count:', data.count);
+        } else {
+          console.error('Failed to load notification count:', data.message);
         }
       })
       .catch(err => {
