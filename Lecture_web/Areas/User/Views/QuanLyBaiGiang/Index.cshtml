@@ -575,7 +575,7 @@
              <i class="fas fa-times"></i>
            </button>
          </div>
-         <form method="post" action="@Url.Action(" CreateBaiGiang","QuanLyBaiGiang", new { area="User" })" class="modal-form lecture-modal-form" id="createContentForm">
+         <form method="post" action="@Url.Action("CreateBaiGiang","QuanLyBaiGiang", new { area="User" })" class="modal-form lecture-modal-form" id="createContentForm">
            @Html.AntiForgeryToken()
            <div class="form-group">
              <label>Tên bài giảng<span class="required">*</span></label>
@@ -616,7 +616,7 @@
              <i class="fas fa-times"></i>
            </button>
          </div>
-         <form method="post" action="@Url.Action(" LuuBaiGiang","QuanLyBaiGiang", new {area="User" })" class="modal-form lecture-modal-form" id="editContentForm">
+         <form method="post" action="@Url.Action("LuuBaiGiang","QuanLyBaiGiang", new {area="User" })" class="modal-form lecture-modal-form" id="editContentForm">
            @Html.AntiForgeryToken()
            <div class="form-group">
              <input type="hidden" name="idbaigiang" id="editIdBaiGiang" />
