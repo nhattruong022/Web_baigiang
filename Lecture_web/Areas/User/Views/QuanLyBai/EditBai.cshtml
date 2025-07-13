@@ -257,12 +257,13 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
               return;
             }
             Swal.fire({
-                title: 'Đang import…',
+                title: 'Đang tải file…',
                 allowOutsideClick: false,
                 didOpen: () => Swal.showLoading()
             });
             const maxSize = 6 * 1024 * 1024;
             if (file.size > maxSize) {
+                Swal.close();
                 Swal.fire({
                     icon: 'warning',
                     title: 'File quá lớn',
@@ -281,11 +282,15 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
                 body: form
               });
               if (!response.ok) {
+                  Swal.close();
                 let errText = await response.text();
                 throw new Error(errText);
               }
               let result = await response.json();
-              if (!response.ok) throw new Error(result);
+                if (!response.ok) {
+                     Swal.close();
+                    throw new Error(result);
+                }
               const combined = result.styleBlock + result.html;
               Swal.close();
               editor.setData(combined, {
