@@ -169,6 +169,9 @@ namespace Lecture_web.Areas.Admin.Controllers
         {
             // Bỏ validate field file nếu không bắt buộc
             ModelState.Remove("AnhDaiDien");
+            // Bỏ validate email và password vì không cho edit
+            ModelState.Remove("Email");
+            ModelState.Remove("MatKhau");
 
             if (string.IsNullOrEmpty(model.TrangThai))
                 model.TrangThai = "HoatDong";
@@ -180,12 +183,6 @@ namespace Lecture_web.Areas.Admin.Controllers
             if (_context.TaiKhoan.Any(u => u.TenDangNhap == model.TenDangNhap && u.IdTaiKhoan != model.IdTaiKhoan))
             {
                 errors.Add("tenDangNhap", "Tên đăng nhập đã tồn tại!");
-            }
-
-            // Kiểm tra trùng email
-            if (_context.TaiKhoan.Any(u => u.Email == model.Email && u.IdTaiKhoan != model.IdTaiKhoan))
-            {
-                errors.Add("email", "Email đã tồn tại!");
             }
 
             // Kiểm tra trùng số điện thoại
@@ -209,12 +206,10 @@ namespace Lecture_web.Areas.Admin.Controllers
                     return Json(new { success = false, errors = errors });
                 }
 
-                // Cập nhật thông tin
+                // Cập nhật thông tin (không cập nhật email và password)
                 user.TenDangNhap = StringHelper.NormalizeString(model.TenDangNhap);
-                user.MatKhau = model.MatKhau;
                 user.HoTen = StringHelper.NormalizeString(model.HoTen);
                 user.VaiTro = model.VaiTro;
-                user.Email = StringHelper.NormalizeString(model.Email);
                 user.SoDienThoai = StringHelper.NormalizeString(model.SoDienThoai);
                 user.TrangThai = model.TrangThai?.Trim();
                 user.NgayCapNhat = DateTime.Now;

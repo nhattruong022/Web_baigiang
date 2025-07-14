@@ -7,16 +7,6 @@
     <span class="field-error" id="error-tenDangNhap" style="display:block;color:#c0392b;font-size:0.95em;margin-top:5px;"></span>
   </div>
   <div class="form-group">
-    <label>Mật khẩu</label>
-    <div style="position: relative; display: inline-block; width: 100%;">
-      <input type="password" name="MatKhau" id="editMatKhau" value="@Model.MatKhau" class="form-control" required style="padding-right: 40px;" />
-      <button type="button" onclick="togglePassword('editMatKhau')" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #666; cursor: pointer; padding: 5px;" title="Hiện/Ẩn mật khẩu">
-        <i class="fas fa-eye" id="toggleIcon-editMatKhau"></i>
-      </button>
-    </div>
-    <span class="field-error" id="error-matKhau" style="display:block;color:#c0392b;font-size:0.95em;margin-top:5px;"></span>
-  </div>
-  <div class="form-group">
     <label>Họ và tên</label>
     <input type="text" name="HoTen" value="@Model.HoTen" class="form-control" required />
     <span class="field-error" id="error-hoTen" style="display:block;color:#c0392b;font-size:0.95em;margin-top:5px;"></span>
@@ -28,11 +18,6 @@
       <option value="Giangvien" @(Model.VaiTro=="Giangvien" ? "selected" : "" )>Giảng viên</option>
       <option value="Sinhvien" @(Model.VaiTro=="Sinhvien" ? "selected" : "" )>Sinh viên</option>
     </select>
-  </div>
-  <div class="form-group">
-    <label>Email</label>
-    <input type="email" name="Email" value="@Model.Email" class="form-control" required />
-    <span class="field-error" id="error-email" style="display:block;color:#c0392b;font-size:0.95em;margin-top:5px;"></span>
   </div>
   <div class="form-group">
     <label>Số điện thoại</label>
@@ -51,18 +36,3 @@
     <button type="submit" class="btn-primary">Lưu</button>
   </div>
 </form>
-
-<script>
-  function togglePassword(inputId) {
-    const passwordInput = document.getElementById(inputId);
-    const toggleIcon = document.getElementById('toggleIcon-' + inputId);
-
-    if (passwordInput.type === 'password') {
-      passwordInput.type = 'text';
-      toggleIcon.className = 'fas fa-eye-slash';
-    } else {
-      passwordInput.type = 'password';
-      toggleIcon.className = 'fas fa-eye';
-    }
-  }
-</script>
