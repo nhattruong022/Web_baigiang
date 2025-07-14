@@ -13,8 +13,8 @@ namespace Lecture_web.Controllers
     {
 
         private readonly ApplicationDbContext _context;
-        private readonly EmailService _emailService;
-        public AccountController(ApplicationDbContext context, EmailService emailService)
+        private readonly IEmailService _emailService;
+        public AccountController(ApplicationDbContext context, IEmailService emailService)
         {
             _context = context;
             _emailService = emailService;

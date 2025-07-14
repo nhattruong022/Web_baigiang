@@ -23,7 +23,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     });
 
 // Add custom services
-builder.Services.AddScoped<Lecture_web.Service.EmailService>();
+builder.Services.AddScoped<Lecture_web.Service.IEmailService, Lecture_web.Service.EmailService>();
 builder.Services.AddScoped<Lecture_web.Service.ImageDataHandle>();
 builder.Services.AddScoped<Lecture_web.Service.ConvertWordToHTML>();
 
