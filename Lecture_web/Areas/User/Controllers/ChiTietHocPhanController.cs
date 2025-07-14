@@ -20,10 +20,10 @@ namespace Lecture_web.Areas.User.Controllers
     public class ChiTietHocPhanController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly EmailService _emailService;
+        private readonly IEmailService _emailService;
         private readonly IHubContext<NotificationHub> _hubContext;
 
-        public ChiTietHocPhanController(ApplicationDbContext context, EmailService emailService, IHubContext<NotificationHub> hubContext)
+        public ChiTietHocPhanController(ApplicationDbContext context, IEmailService emailService, IHubContext<NotificationHub> hubContext)
         {
             _context = context;
             _emailService = emailService;

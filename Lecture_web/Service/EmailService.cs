@@ -80,7 +80,7 @@ namespace Lecture_web.Service
                     
                     <div style='text-align: center; color: #6c757d; font-size: 14px;'>
                         <p>Email này được gửi tự động từ hệ thống. Vui lòng không trả lời email này.</p>
-                        <p>© 2024 Hệ thống Quản lý Bài giảng. All rights reserved.</p>
+                        <p>© 2025 Hệ thống Quản lý Bài giảng. All rights reserved.</p>
                     </div>
                 </div>";
 
