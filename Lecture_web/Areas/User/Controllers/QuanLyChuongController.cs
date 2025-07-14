@@ -97,7 +97,7 @@ namespace Lecture_web.Areas.User.Controllers
                     return NotFound();
             }
             var items = await q
-                            .OrderByDescending(x => x.NgayTao)
+                            .OrderBy(x => x.NgayTao)
                             .Skip((page - 1) * pageSize)
                             .Take(pageSize)
                             .ToListAsync();
