@@ -256,14 +256,9 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
               document.body.removeChild(input);
               return;
             }
-            Swal.fire({
-                title: 'Đang tải file…',
-                allowOutsideClick: false,
-                didOpen: () => Swal.showLoading()
-            });
+
             const maxSize = 6 * 1024 * 1024;
             if (file.size > maxSize) {
-                Swal.close();
                 Swal.fire({
                     icon: 'warning',
                     title: 'File quá lớn',
@@ -272,6 +267,11 @@ Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
                 document.body.removeChild(input);
                 return;
             }
+                Swal.fire({
+                    title: 'Đang tải file…',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
 
             var form = new FormData();
             form.append('file', file);
