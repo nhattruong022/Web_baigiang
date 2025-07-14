@@ -1,0 +1,127 @@
+-- 1. Bảng TaiKhoan: 5 tài khoản với vaiTro = Admin, Giangvien, Sinhvien
+INSERT INTO TaiKhoan (tenDangNhap, matKhau, hoTen, vaiTro, email, soDienThoai, anhDaiDien, trangThai, ngayTao, ngayCapNhat)
+VALUES
+  -- Admin
+  ('admin_quang',      'Adm!n2025$',    N'Nguyễn Văn Quang',    'Admin',     'admin.quang@university.edu.vn',         '0901122334', 'admin_quang.jpg',   'HoatDong', '2025-01-10 10:00:00', '2025-05-15 14:30:00'),
+  -- Giảng viên
+  ('giangvien_huong',  'GV#2024pass',    N'Trần Thị Hương',      'Giangvien', 'thu.huong@faculty.university.edu.vn',    '0912233445', 'giangvien_huong.jpg','HoatDong', '2024-08-20 09:00:00', '2025-04-20 11:45:00'),
+  ('giangvien_khanh',  'Teach@2024',     N'Lê Văn Khánh',        'Giangvien', 'van.khanh@faculty.university.edu.vn',    '0913344556', 'giangvien_khanh.jpg','HoatDong', '2024-09-05 13:20:00', '2025-03-10 16:10:00'),
+  -- Sinh viên
+  ('sv_minh',          'Sv!2024#',       N'Phạm Thị Minh',       'Sinhvien',  'pham.minh@student.university.edu.vn',     '0914455667', 'sv_minh.jpg',         'HoatDong', '2024-09-10 08:30:00', '2025-02-28 12:00:00'),
+  ('sv_hoa',           'Student@123',    N'Hoàng Văn Hoa',       'Sinhvien',  'hoang.hoa@student.university.edu.vn',    '0915566778', 'sv_hoa.jpg',          'HoatDong', '2024-10-01 10:15:00', '2025-03-05 09:45:00');
+
+-- Bảng OTP: 5 bản ghi với thời gian hết hạn 1 phút sau khi tạo
+INSERT INTO OTP (idTaiKhoan, otp_code, ngayHetHan, ngayTao)
+VALUES
+  (1, 'A1B2C3', DATEADD(MINUTE, 1, '2025-06-01 07:30:00'), '2025-06-01 07:30:00'),
+  (2, 'D4E5F6', DATEADD(MINUTE, 1, '2025-05-20 08:45:00'), '2025-05-20 08:45:00'),
+  (3, 'G7H8I9', DATEADD(MINUTE, 1, '2025-04-10 10:20:00'), '2025-04-10 10:20:00'),
+  (4, 'J1K2L3', DATEADD(MINUTE, 1, '2025-03-15 13:30:00'), '2025-03-15 13:30:00'),
+  (5, 'M4N5O6', DATEADD(MINUTE, 1, '2025-02-05 16:10:00'), '2025-02-05 16:10:00');
+
+
+-- 3. Bảng Khoa: 1 dòng về Công nghệ thông tin
+INSERT INTO Khoa (tenKhoa, moTa, ngayTao, ngayCapNhat)
+VALUES
+  (N'Công nghệ thông tin', 
+   N'Khoa Công nghệ thông tin đào tạo các ngành: Khoa học máy tính, Mạng máy tính, Trí tuệ nhân tạo, Công nghệ phần mềm, Hệ thống thông tin. Chương trình bao gồm lý thuyết và thực hành, hướng tới kỹ năng nghề nghiệp.', 
+   '2024-01-05 08:00:00', '2025-05-01 10:00:00');
+
+-- 4. Bảng BoMon: 5 bộ môn thuộc Khoa idKhoa = 1
+INSERT INTO BoMon (tenBoMon, moTa, idKhoa, ngayTao, ngayCapNhat)
+VALUES
+  (N'Khoa học máy tính',           N'Nghiên cứu thuật toán, cấu trúc dữ liệu, lý thuyết tính toán.',    1, '2024-02-10 09:00:00', '2025-04-15 11:00:00'),
+  (N'Mạng máy tính',              N'Giao thức, kiến trúc mạng, an ninh mạng, mạng không dây.',         1, '2024-03-12 10:30:00', '2025-03-20 14:20:00'),
+  (N'Trí tuệ nhân tạo',           N'Machine learning, deep learning, xử lý ngôn ngữ tự nhiên, robotics.',1, '2024-04-18 11:45:00', '2025-02-28 09:10:00'),
+  (N'Công nghệ phần mềm',         N'Phát triển phần mềm, quản lý dự án, kiểm thử, DevOps.',             1, '2024-05-22 08:20:00', '2025-01-30 15:30:00'),
+  (N'Hệ thống thông tin',         N'Thiết kế hệ thống thông tin doanh nghiệp, ERP, CRM, quản trị dữ liệu.',1, '2024-06-30 13:00:00', '2025-03-12 10:50:00');
+
+-- 5. Bảng HocPhan: 5 học phần, idBoMon = 1..5
+INSERT INTO HocPhan (tenHocPhan, moTa, trangThai, idBoMon, ngayTao, ngayCapNhat)
+VALUES
+  (N'Lập trình cơ bản',            N'Giới thiệu ngôn ngữ C, cấu trúc chương trình, biến, điều kiện, vòng lặp.',   'Active', 1, '2024-08-01 08:00:00', '2025-04-01 09:00:00'),
+  (N'Nguyên lý mạng máy tính',      N'Mô hình OSI, TCP/IP, thiết bị mạng, chuyển mạch, định tuyến cơ bản.',       'Active', 2, '2024-08-05 09:30:00', '2025-03-15 10:15:00'),
+  (N'Học máy cơ bản',               N'Thuật toán hồi quy, phân lớp, clustering cơ bản; thực hành trên Python.',  'Active', 3, '2024-08-10 11:00:00', '2025-02-28 11:45:00'),
+  (N'Phân tích thiết kế phần mềm',  N'UML, design patterns, quy trình phát triển, kiểm thử phần mềm.',         'Active', 4, '2024-08-15 13:20:00', '2025-03-05 14:00:00'),
+  (N'Hệ thống thông tin doanh nghiệp', N'ERP, CRM, tích hợp hệ thống, quản trị dữ liệu.',                         'Active', 5, '2024-08-20 15:10:00', '2025-04-10 16:30:00');
+
+-- 6. Bảng BaiGiang: 5 bài giảng do Giangvien (idTaiKhoan = 2 hoặc 3) soạn
+INSERT INTO BaiGiang (tieuDe, moTa, ngayTao, ngayCapNhat, idTaiKhoan)
+VALUES
+  (N'Giới thiệu lập trình C cơ bản',       N'Khái niệm biến, kiểu dữ liệu, nhập xuất cơ bản trong C.',       '2024-09-01 08:00:00', '2025-02-01 09:00:00', 2),
+  (N'Mô hình OSI và TCP/IP',              N'Phân tích chi tiết 7 lớp OSI, so sánh với TCP/IP.',           '2024-09-10 10:00:00', '2025-03-01 11:30:00', 3),
+  (N'Giới thiệu Scikit-Learn cho học máy', N'Hướng dẫn cài đặt và chạy thuật toán hồi quy trên Scikit-Learn.',  '2024-09-15 14:00:00', '2025-01-20 15:00:00', 2),
+  (N'UML: Class và Sequence Diagram',     N'Cách vẽ và phân tích Class Diagram, Sequence Diagram trong dự án phần mềm.',  '2024-09-20 09:30:00', '2025-02-10 10:45:00', 3),
+  (N'ERD và thiết kế cơ sở dữ liệu',      N'Hướng dẫn xây dựng ERD, chuẩn hóa dữ liệu, quan hệ 1-n, n-n.',   '2024-09-25 16:00:00', '2025-03-05 17:10:00', 2);
+
+-- 7. Bảng Chuong: 5 chương, idBaiGiang = 1..5
+INSERT INTO Chuong (tenChuong,  ngayTao, ngayCapNhat, idBaiGiang)
+VALUES
+  (N'Chương 1: Cơ bản về C',              '2024-09-02 08:00:00', '2025-02-05 09:00:00', 1),
+  (N'Chương 1: Kiến trúc OSI',            '2024-09-11 10:00:00', '2025-03-02 11:30:00', 2),
+  (N'Chương 1: Cài đặt Scikit-Learn',     '2024-09-16 14:00:00', '2025-01-22 15:00:00', 3),
+  (N'Chương 1: Class Diagram cơ bản',     '2024-09-21 09:30:00', '2025-02-12 10:45:00', 4),
+  (N'Chương 1: Nguyên tắc ERD',           '2024-09-26 16:00:00', '2025-03-06 17:10:00', 5);
+
+-- 8. Bảng Bai: 5 bài, idChuong = 1..5
+INSERT INTO Bai (tieuDeBai, noiDungText, ngayTao,ngayCapNhat, idChuong)
+VALUES
+  (N'Hướng dẫn cài đặt môi trường C', 
+    N'Bài hướng dẫn chi tiết cách cài GCC, thiết lập IDE Code::Blocks hoặc VS Code cho C.', 
+     '2024-09-03 08:30:00','2024-09-03 08:30:00', 1),
+  (N'OSI Layers 1-3 chi tiết', 
+    N'Layer 1-3: Physical, Data Link, Network; thiết bị và ví dụ thực tế.', 
+     '2024-09-12 10:15:00','2024-09-12 10:15:00', 2),
+  (N'Chạy mô hình hồi quy trong Python', 
+    N'Ví dụ: sử dụng Scikit-Learn với dataset mẫu; phân tích kết quả.', 
+     '2024-09-17 14:20:00','2024-09-17 14:20:00', 3),
+  (N'Vẽ Class Diagram cho quản lý thư viện', 
+    N'Hướng dẫn từng bước: xác định lớp, thuộc tính, phương thức, quan hệ.', 
+    '2024-09-22 09:45:00','2024-09-22 09:45:00', 4),
+  (N'Xây dựng ERD cho hệ thống bán hàng', 
+    N'Phân tích yêu cầu, xác định thực thể, quan hệ, chuẩn hóa đến 3NF.', 
+     '2024-09-27 16:15:00','2024-09-27 16:15:00', 5);
+
+-- 9. Bảng LopHocPhan: 5 lớp, idHocPhan = 1..5, idTaiKhoan giảng viên (2 hoặc 3), idBaiGiang = 1..5
+INSERT INTO LopHocPhan (tenLop, moTa, idHocPhan, idTaiKhoan, idBaiGiang, ngayTao, ngayCapNhat)
+VALUES
+  ('LTCB23-01',  N'Lớp Lập trình cơ bản K23 sáng Thứ Hai', 1, 2, 1, '2024-08-20 08:00:00', '2025-04-01 09:00:00'),
+  ('MNM23-02',   N'Lớp Mạng máy tính K23 chiều Thứ Ba', 2, 3, 2, '2024-08-22 10:00:00', '2025-03-15 10:15:00'),
+  ('HMC23-03',   N'Lớp Học máy cơ bản K23 sáng Thứ Tư', 3, 2, 3, '2024-08-24 11:00:00', '2025-02-28 11:45:00'),
+  ('PTPM23-04',  N'Lớp Phân tích thiết kế phần mềm K23 chiều', 4, 3, 4, '2024-08-26 13:00:00', '2025-03-05 14:00:00'),
+  ('HTTT23-05',  N'Lớp Hệ thống thông tin doanh nghiệp K23', 5, 2, 5, '2024-08-28 15:00:00', '2025-04-10 16:30:00');
+
+-- 10. Bảng LopHocPhan_SinhVien: 5 bản ghi, mỗi bản ghi gán một sinh viên (idTaiKhoan = 4,5) vào lớp
+--    Có thể lặp lại một sinh viên trong nhiều lớp
+INSERT INTO LopHocPhan_SinhVien (idLopHocPhan, idTaiKhoan, ThongBaoDaDocIds)
+VALUES
+  (1, 4, '1'),  -- sv_minh vào LTCB23-01
+  (1, 5, '1'),  -- sv_hoa vào LTCB23-01
+  (2, 4, '2'),  -- sv_minh vào MNM23-02
+  (3, 5, '3'),  -- sv_hoa vào HMC23-03
+  (4, 4, '4');  -- sv_minh vào PTPM23-04
+-- (Chưa có sinh viên cho lớp thứ 5 trong ví dụ này)
+
+-- 11. Bảng ThongBao: 5 thông báo do giảng viên (idTaiKhoan = 2 hoặc 3) gửi đến các lớp (idLopHocPhan 1..5)
+INSERT INTO ThongBao (noiDung, ngayTao, ngayCapNhat, idTaiKhoan, idLopHocPhan)
+VALUES
+  (N'Thông báo: Buổi LAB Lập trình cơ bản sẽ bắt đầu lúc 8h30 Thứ Hai.',    '2025-02-15 07:00:00', '2025-02-15 07:00:00', 2, 1),
+  (N'Thông báo: Nộp báo cáo nguyên lý mạng trước 20/03/2025.',                 '2025-03-01 12:00:00', '2025-03-01 12:00:00', 3, 2),
+  (N'Thông báo: Workshop Học máy miễn phí vào 25/03/2025.',                   '2025-03-10 09:00:00', '2025-03-10 09:00:00', 2, 3),
+  (N'Thông báo: Nộp bài tập thiết kế phần mềm trước 05/04/2025.',             '2025-03-20 14:00:00', '2025-03-20 14:00:00', 3, 4),
+  (N'Thông báo: Buổi demo dự án Hệ thống thông tin vào 10/04/2025.',          '2025-03-25 16:00:00', '2025-03-25 16:00:00', 2, 5);
+
+-- 12. Bảng BinhLuan: 5 bình luận, mix bình luận lên bài và lên thông báo, có reply
+--    Giả định idBai = 1..5, idThongBao = 1..5, idTaiKhoan là 2,3 (giảng viên) hoặc 4,5 (sinh viên)
+INSERT INTO BinhLuan (noiDung, ngayTao, idTaiKhoan, idBinhLuanCha, idBai, idThongBao, idLopHocPhan)
+VALUES
+  -- Bình luận lên bài 1 bởi sinh viên
+  (N'Thầy/chị ơi, em gặp lỗi khi biên dịch chương trình, mong được hỗ trợ.', '2025-02-16 09:15:00', 4, NULL, 1, NULL, 1),
+  -- Giảng viên trả lời bình luận trên bài 1
+  (N'Bạn thử kiểm tra lại đường dẫn thư viện và dùng gcc -Wall để xem cảnh báo.', '2025-02-16 10:00:00', 2, 1, 1, NULL, 1),
+  -- Bình luận lên thông báo 2 bởi sinh viên
+  (N'Em đã nộp báo cáo qua email, thầy/chị kiểm tra giúp ạ.', '2025-03-02 13:30:00', 4, NULL, NULL, 2, 2),
+  -- Bình luận reply lên bình luận thứ 3 (giảng viên phản hồi)
+  (N'Đã nhận, em theo dõi email để biết kết quả phản hồi.', '2025-03-02 14:00:00', 3, 3, NULL, 2, 2),
+  -- Bình luận lên bài 3 bởi sinh viên khác
+  (N'Em muốn tham gia workshop, thầy/chị cho xin link đăng ký với ạ.', '2025-03-11 11:20:00', 5, NULL, 3, NULL, 3);
