@@ -19,11 +19,13 @@ namespace Lecture_web.Areas.Admin.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ExcelService _excelService;
+        private readonly IEmailService _emailService;
 
-        public QuanLyNguoiDungController(ApplicationDbContext context)
+        public QuanLyNguoiDungController(ApplicationDbContext context, IEmailService emailService)
         {
             _context = context;
             _excelService = new ExcelService();
+            _emailService = emailService;
         }
 
 
@@ -70,7 +72,7 @@ namespace Lecture_web.Areas.Admin.Controllers
 
         // Thêm dữ liệu
         [HttpPost]
-        public IActionResult AddUserAjax(TaiKhoanModels model, IFormFile AnhDaiDien)
+        public async Task<IActionResult> AddUserAjax(TaiKhoanModels model, IFormFile AnhDaiDien)
         {
             // Bỏ validate field file nếu không bắt buộc
             ModelState.Remove("AnhDaiDien");
@@ -128,6 +130,23 @@ namespace Lecture_web.Areas.Admin.Controllers
 
                 _context.TaiKhoan.Add(model);
                 _context.SaveChanges();
+
+                // Gửi email thông báo tài khoản mới
+                try
+                {
+                    await _emailService.SendNewAccountNotificationAsync(
+                        model.Email, 
+                        model.TenDangNhap, 
+                        model.MatKhau, 
+                        model.HoTen
+                    );
+                }
+                catch (Exception ex)
+                {
+                    // Log lỗi gửi email nhưng không ảnh hưởng đến việc tạo tài khoản
+                    // Có thể thêm logging ở đây
+                }
+
                 return Json(new { success = true });
             }
             else
@@ -325,7 +344,7 @@ namespace Lecture_web.Areas.Admin.Controllers
 
         // Confirm and import users
         [HttpPost]
-        public IActionResult ConfirmImportUsers([FromBody] List<ExcelService.ExcelUserData> users)
+        public async Task<IActionResult> ConfirmImportUsers([FromBody] List<ExcelService.ExcelUserData> users)
         {
             if (users == null || !users.Any())
             {
@@ -374,6 +393,22 @@ namespace Lecture_web.Areas.Admin.Controllers
 
                     _context.TaiKhoan.Add(newUser);
                     successCount++;
+
+                    // Gửi email thông báo tài khoản mới
+                    try
+                    {
+                        await _emailService.SendNewAccountNotificationAsync(
+                            newUser.Email, 
+                            newUser.TenDangNhap, 
+                            newUser.MatKhau, 
+                            newUser.HoTen
+                        );
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log lỗi gửi email nhưng không ảnh hưởng đến việc import
+                        errors.Add($"Đã tạo tài khoản '{userData.TenDangNhap}' nhưng không gửi được email thông báo");
+                    }
                 }
                 catch (Exception ex)
                 {
