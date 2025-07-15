@@ -118,12 +118,7 @@ namespace Lecture_web.Areas.User.Controllers
             }
         }
 
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult Test()
-        {
-            return Json(new { success = true, message = "ThongBao Controller is working!", timestamp = DateTime.Now });
-        }
+
 
         [HttpPost]
         public async Task<IActionResult> CleanUpNotifications()
@@ -152,55 +147,7 @@ namespace Lecture_web.Areas.User.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddSampleNotifications(int idLopHocPhan)
-        {
-            try
-            {
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
-                {
-                    return Json(new { success = false, message = "Không thể xác định người dùng" });
-                }
 
-                var sampleNotifications = new List<ThongBaoModels>
-                {
-                    new ThongBaoModels
-                    {
-                        NoiDung = "**Thông báo về lịch học**\n\nLịch học tuần này sẽ chuyển sang phòng B203. Các bạn chú ý đến đúng giờ!",
-                        NgayTao = DateTime.Now.AddDays(-2),
-                        NgayCapNhat = DateTime.Now.AddDays(-2),
-                        IdTaiKhoan = userId,
-                        IdLopHocPhan = idLopHocPhan
-                    },
-                    new ThongBaoModels
-                    {
-                        NoiDung = "**Nhắc nhở nộp bài tập**\n\nNhớ nộp bài tập chương 1 trước ngày 10/06. Nếu có thắc mắc liên hệ trợ giảng.",
-                        NgayTao = DateTime.Now.AddDays(-1),
-                        NgayCapNhat = DateTime.Now.AddDays(-1),
-                        IdTaiKhoan = userId,
-                        IdLopHocPhan = idLopHocPhan
-                    },
-                    new ThongBaoModels
-                    {
-                        NoiDung = "**Lưu ý về việc chia sẻ tài liệu**\n\nCác nhóm lưu ý, không share tài liệu đồ án nhóm mình cho các nhóm khác. Thầy đã cố gắng tạo các tài liệu khác nhau giữa các nhóm.",
-                        NgayTao = DateTime.Now,
-                        NgayCapNhat = DateTime.Now,
-                        IdTaiKhoan = userId,
-                        IdLopHocPhan = idLopHocPhan
-                    }
-                };
-
-                _context.ThongBao.AddRange(sampleNotifications);
-                await _context.SaveChangesAsync();
-
-                return Json(new { success = true, message = $"Đã thêm {sampleNotifications.Count} thông báo mẫu" });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = $"Lỗi khi thêm thông báo mẫu: {ex.Message}" });
-            }
-        }
 
         [HttpGet]
         public async Task<IActionResult> GetNotifications(int idLopHocPhan, int page = 1, int pageSize = 10)

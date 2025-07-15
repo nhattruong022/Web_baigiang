@@ -220,6 +220,11 @@ body {
     background-color: #34495e;
 }
 
+.nav-links li.active {
+    background-color: #34495e;
+    border-radius: 5px;
+}
+
 .nav-links .submenu {
     display: none;
     list-style: none;
