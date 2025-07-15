@@ -491,6 +491,24 @@ namespace Lecture_web.Areas.User.Controllers
             {
                 return BadRequest(new { message = "Không tìm thấy bài hợp lệ để xóa." });
             }
+
+            var commentList = await _context.BinhLuan
+                .Where(bl => bl.IdBai != null && ids.Contains(bl.IdBai.Value))
+                .ToListAsync();
+
+            // Lấy luôn reply của những comment đó
+            var commentIds = commentList.Select(c => c.IdBinhLuan).ToList();
+            var replyList = await _context.BinhLuan
+                .Where(bl => bl.IdBinhLuanCha != null && commentIds.Contains(bl.IdBinhLuanCha.Value))
+                .ToListAsync();
+
+            // Xóa reply trước
+            if (replyList.Any())
+                _context.BinhLuan.RemoveRange(replyList);
+
+            // Xóa comment gốc
+            if (commentList.Any())
+                _context.BinhLuan.RemoveRange(commentList);
             var ImageDrop = bai
                 .Select(b => new {
                     IdChuong = b.IdChuong,
