@@ -45,11 +45,7 @@ namespace Lecture_web.Areas.User.Controllers
             ViewBag.CurrentUser = currentUser;
             ViewBag.CurrentUserId = currentUserId;
 
-            // DEBUG: Log ID được truyền vào
-            Console.WriteLine($"=== CHITIET HOCPHAN DEBUG ===");
-            Console.WriteLine($"Received idLopHocPhan parameter: {idLopHocPhan}");
-            Console.WriteLine($"User role: {userRole}");
-            Console.WriteLine($"Current user: {currentUser?.HoTen}, Avatar: {currentUser?.AnhDaiDien}");
+            
 
             try
             {
@@ -70,7 +66,7 @@ namespace Lecture_web.Areas.User.Controllers
                 else
                 {
                     // Vai trò khác không có quyền truy cập
-                    Console.WriteLine($"ERROR: Invalid user role: {userRole}");
+        
                     return Unauthorized();
                 }
 
@@ -89,11 +85,7 @@ namespace Lecture_web.Areas.User.Controllers
 
                 ViewBag.AllLopHocPhan = allLopHocPhan;
 
-                Console.WriteLine($"Found {allLopHocPhan.Count} total lớp học phần in dropdown");
-                foreach (var item in allLopHocPhan.Take(5))
-                {
-                    Console.WriteLine($"  LHP: ID={item.IdLopHocPhan}, TenLop={item.TenLop}, HocPhan={item.TenHocPhan}");
-                }
+
 
                 // Kiểm tra nếu có idLopHocPhan được chỉ định
                 if (idLopHocPhan.HasValue)
@@ -102,8 +94,7 @@ namespace Lecture_web.Areas.User.Controllers
                     var hasAccess = allLopHocPhan.Any(lhp => lhp.IdLopHocPhan == idLopHocPhan.Value);
                     if (!hasAccess)
                     {
-                        Console.WriteLine($"ERROR: User {currentUserId} ({userRole}) does not have access to class {idLopHocPhan}");
-                        Console.WriteLine($"User's accessible classes: {string.Join(", ", allLopHocPhan.Select(lhp => lhp.IdLopHocPhan))}");
+                        
                         return Forbid(); // HTTP 403 - Forbidden
                     }
                 }
@@ -113,7 +104,7 @@ namespace Lecture_web.Areas.User.Controllers
                 
                 if (targetLopHocPhanId == 0)
                 {
-                    Console.WriteLine($"ERROR: No accessible classes found for user {currentUserId} ({userRole})");
+        
                     ViewBag.ErrorMessage = userRole == "Giangvien" ? 
                         "Bạn chưa tạo lớp học nào. Vui lòng tạo lớp học trước." :
                         "Bạn chưa tham gia lớp học nào. Vui lòng liên hệ giảng viên để được mời vào lớp.";
@@ -123,7 +114,7 @@ namespace Lecture_web.Areas.User.Controllers
                     return View();
                 }
                 
-                Console.WriteLine($"Target LopHocPhan ID determined: {targetLopHocPhanId} (from parameter: {idLopHocPhan})");
+    
 
                 // Lấy thông tin lớp học phần từ accessible classes
                 var lopHocPhan = await accessibleClasses
@@ -174,98 +165,17 @@ namespace Lecture_web.Areas.User.Controllers
                     .OrderBy(c => c.NgayTao)
                     .ToListAsync();
 
-                // DEBUG: Kiểm tra dữ liệu chương và bài
-                Console.WriteLine($"=== CHUONG & BAI DEBUG ===");
-                Console.WriteLine($"lopHocPhan.IdLopHocPhan: {lopHocPhan.IdLopHocPhan}");
-                Console.WriteLine($"lopHocPhan.TenLop: {lopHocPhan.TenLop}");
-                Console.WriteLine($"lopHocPhan.IdBaiGiang: {lopHocPhan.IdBaiGiang}");
-                Console.WriteLine($"Query: SELECT * FROM Chuong WHERE IdBaiGiang = {lopHocPhan.IdBaiGiang}");
-                Console.WriteLine($"Found {chuongs.Count} chuongs for IdBaiGiang={lopHocPhan.IdBaiGiang}");
                 
-                // Kiểm tra tất cả Chuong trong database có IdBaiGiang gì
-                var allChuongsInDb = await _context.Chuong.Select(c => new { c.IdChuong, c.TenChuong, c.IdBaiGiang }).ToListAsync();
-                Console.WriteLine($"=== ALL CHUONGS IN DATABASE ===");
-                foreach (var c in allChuongsInDb)
-                {
-                    Console.WriteLine($"  DB Chuong: ID={c.IdChuong}, TenChuong='{c.TenChuong}', IdBaiGiang={c.IdBaiGiang}");
-                }
                 
-                foreach (var chuong in chuongs)
-                {
-                    Console.WriteLine($"  Chuong: ID={chuong.IdChuong}, TenChuong='{chuong.TenChuong}', Bais={chuong.Bais.Count}");
-                    foreach (var bai in chuong.Bais.Take(3))
-                    {
-                        Console.WriteLine($"    Bai: ID={bai.IdBai}, TieuDe='{bai.TieuDeBai}'");
-                    }
-                }
 
-                // Nếu không có dữ liệu thực, tạo dữ liệu demo
+
+                // Nếu không có dữ liệu thực, trả về danh sách rỗng
                 if (!chuongs.Any())
                 {
-                    Console.WriteLine($"No chuongs found, creating demo data...");
-                    var demoChuongs = new[]
-                    {
-                        new
-                        {
-                            IdChuong = 1,
-                            TenChuong = "Chương 1: Cơ bản về C",
-                            NgayTao = DateTime.Now,
-                            IdBaiGiang = (int)lopHocPhan.IdBaiGiang,
-                            Bais = new[]
-                            {
-                                new
-                                {
-                                    IdBai = 1,
-                                    TieuDeBai = "Hướng dẫn cài đặt môi trường C",
-                                    NoiDungText = "Bài hướng dẫn chi tiết cách cài GCC, thiết lập IDE...",
-                                    NgayTao = DateTime.Now,
-                                    IdChuong = 1
-                                },
-                                new
-                                {
-                                    IdBai = 2,
-                                    TieuDeBai = "Cú pháp cơ bản của C",
-                                    NoiDungText = "Học về biến, kiểu dữ liệu, toán tử trong C...",
-                                    NgayTao = DateTime.Now.AddDays(1),
-                                    IdChuong = 1
-                                }
-                            }.ToList()
-                        },
-                        new
-                        {
-                            IdChuong = 2,
-                            TenChuong = "Chương 2: Kiến trúc OSI",
-                            NgayTao = DateTime.Now.AddDays(7),
-                            IdBaiGiang = (int)lopHocPhan.IdBaiGiang,
-                            Bais = new[]
-                            {
-                                new
-                                {
-                                    IdBai = 3,
-                                    TieuDeBai = "7 lớp của mô hình OSI",
-                                    NoiDungText = "Giới thiệu 7 lớp: Physical, Data Link, Network...",
-                                    NgayTao = DateTime.Now.AddDays(8),
-                                    IdChuong = 2
-                                }
-                            }.ToList()
-                        }
-                    }.ToList();
-                    
-                    // Gán lại cho chuongs
-                    chuongs = demoChuongs;
-                    Console.WriteLine($"Created {chuongs.Count} demo chuongs");
+                    Console.WriteLine($"No chuongs found for IdBaiGiang={lopHocPhan.IdBaiGiang}");
                 }
 
-                // DEBUG: Kiểm tra raw data trước
-                var rawStudentRecords = await _context.LopHocPhan_SinhVien
-                    .Where(lhp_sv => lhp_sv.IdLopHocPhan == targetLopHocPhanId)
-                    .ToListAsync();
-                
-                Console.WriteLine($"Raw LopHocPhan_SinhVien records for class {targetLopHocPhanId}: {rawStudentRecords.Count}");
-                foreach (var record in rawStudentRecords.Take(5))
-                {
-                    Console.WriteLine($"  Record: IdLopHocPhan={record.IdLopHocPhan}, IdTaiKhoan={record.IdTaiKhoan}");
-                }
+
 
                 // Lấy tổng số sinh viên trong lớp để tính phân trang
                 var totalStudents = await _context.LopHocPhan_SinhVien
@@ -316,52 +226,9 @@ namespace Lecture_web.Areas.User.Controllers
                 ViewBag.PageSize = pageSize;
                 ViewBag.ChangePageFunc = "changeStudentPage";
                 
-                // DEBUG: In ra JSON sẽ được gửi sang View
-                Console.WriteLine($"=== ViewBag.Chuongs JSON ===");
-                try 
-                {
-                    var jsonString = System.Text.Json.JsonSerializer.Serialize(chuongs, new System.Text.Json.JsonSerializerOptions 
-                    { 
-                        PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
-                        WriteIndented = true 
-                    });
-                    Console.WriteLine(jsonString);
-                }
-                catch (Exception jsonEx)
-                {
-                    Console.WriteLine($"JSON Serialize Error: {jsonEx.Message}");
-                }
-                Console.WriteLine($"=== END ViewBag.Chuongs JSON ===");
+
                 
-                // Debug log để kiểm tra sinh viên
-                Console.WriteLine($"=== STUDENT DEBUG FOR CLASS {targetLopHocPhanId} ===");
-                Console.WriteLine($"Found {studentsInClass.Count} students in class");
-                
-                if (studentsInClass.Any())
-                {
-                    Console.WriteLine("Students list:");
-                    foreach (var student in studentsInClass)
-                    {
-                        Console.WriteLine($"  - ID: {student.IdTaiKhoan}, Name: {student.HoTen}, Email: {student.Email}, Role: {student.VaiTro}");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("No students found in this class!");
-                    
-                    // Debug: Kiểm tra có record nào trong LopHocPhan_SinhVien cho lớp này không
-                    var allRecords = await _context.LopHocPhan_SinhVien
-                        .Where(lhp_sv => lhp_sv.IdLopHocPhan == targetLopHocPhanId)
-                        .ToListAsync();
-                    Console.WriteLine($"Raw LopHocPhan_SinhVien records for class {targetLopHocPhanId}: {allRecords.Count}");
-                    
-                    foreach (var record in allRecords)
-                    {
-                        Console.WriteLine($"  - LHP_SV: IdLopHocPhan={record.IdLopHocPhan}, IdTaiKhoan={record.IdTaiKhoan}");
-                    }
-                }
-                
-                Console.WriteLine($"=== END STUDENT DEBUG ===");
+
                 
                 return View();
             }
@@ -385,71 +252,35 @@ namespace Lecture_web.Areas.User.Controllers
         {
             try
             {
-                Console.WriteLine($"=== SEARCH STUDENTS DEBUG ===");
-                Console.WriteLine($"SearchTerm: '{searchTerm}'");
-                Console.WriteLine($"SearchType: '{searchType}'");
-                
                 if (string.IsNullOrWhiteSpace(searchTerm))
                 {
-                    Console.WriteLine($"SearchTerm is null or whitespace");
                     return Json(new { success = false, message = "Từ khóa tìm kiếm không được để trống" });
                 }
 
                 var query = _context.TaiKhoan
                     .Where(tk => tk.VaiTro == "Sinhvien" && tk.TrangThai == "HoatDong");
 
-                Console.WriteLine($"Base query: SELECT * FROM TaiKhoan WHERE VaiTro = 'Sinhvien' AND TrangThai = 'HoatDong'");
-
                 // Tìm kiếm theo loại
                 switch (searchType.ToLower())
                 {
                     case "email":
                         query = query.Where(tk => tk.Email.Contains(searchTerm));
-                        Console.WriteLine($"Added email filter: Email LIKE '%{searchTerm}%'");
                         break;
                     case "name":
                         query = query.Where(tk => tk.HoTen.Contains(searchTerm));
-                        Console.WriteLine($"Added name filter: HoTen LIKE '%{searchTerm}%'");
                         break;
                     case "username":
                         query = query.Where(tk => tk.TenDangNhap.Contains(searchTerm));
-                        Console.WriteLine($"Added username filter: TenDangNhap LIKE '%{searchTerm}%'");
                         break;
                     case "phone":
                         query = query.Where(tk => tk.SoDienThoai.Contains(searchTerm));
-                        Console.WriteLine($"Added phone filter: SoDienThoai LIKE '%{searchTerm}%'");
                         break;
                     default: // "all"
                         query = query.Where(tk => tk.Email.Contains(searchTerm) || 
                                                  tk.HoTen.Contains(searchTerm) ||
                                                  tk.TenDangNhap.Contains(searchTerm) ||
                                                  (tk.SoDienThoai != null && tk.SoDienThoai.Contains(searchTerm)));
-                        Console.WriteLine($"Added 'all' filter: searching in Email, HoTen, TenDangNhap, SoDienThoai");
                         break;
-                }
-
-                // First, let's check total students in database
-                var totalStudents = await _context.TaiKhoan
-                    .Where(tk => tk.VaiTro == "Sinhvien")
-                    .CountAsync();
-                Console.WriteLine($"Total students in database: {totalStudents}");
-
-                var activeStudents = await _context.TaiKhoan
-                    .Where(tk => tk.VaiTro == "Sinhvien" && tk.TrangThai == "HoatDong")
-                    .CountAsync();
-                Console.WriteLine($"Active students in database: {activeStudents}");
-
-                // Log some sample data
-                var sampleStudents = await _context.TaiKhoan
-                    .Where(tk => tk.VaiTro == "Sinhvien" && tk.TrangThai == "HoatDong")
-                    .Take(5)
-                    .Select(tk => new { tk.TenDangNhap, tk.HoTen, tk.Email })
-                    .ToListAsync();
-                
-                Console.WriteLine($"Sample students:");
-                foreach (var s in sampleStudents)
-                {
-                    Console.WriteLine($"  - Username: {s.TenDangNhap}, Name: {s.HoTen}, Email: {s.Email}");
                 }
 
                 var students = await query
@@ -467,18 +298,10 @@ namespace Lecture_web.Areas.User.Controllers
                     .Take(20)
                     .ToListAsync();
 
-                Console.WriteLine($"Found {students.Count} students matching search criteria");
-                foreach (var s in students.Take(3))
-                {
-                    Console.WriteLine($"  - Result: ID={s.IdTaiKhoan}, Username={s.TenDangNhap}, Name={s.HoTen}, Email={s.Email}");
-                }
-
                 return Json(new { success = true, data = students });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"ERROR in SearchStudents: {ex.Message}");
-                Console.WriteLine($"StackTrace: {ex.StackTrace}");
                 return Json(new { success = false, message = $"Lỗi tìm kiếm: {ex.Message}" });
             }
         }
@@ -587,24 +410,17 @@ namespace Lecture_web.Areas.User.Controllers
                     return Json(new { success = false, message = "Sinh viên không có trong lớp này" });
                 }
 
-                // Lấy thông tin sinh viên để log
-                var student = await _context.TaiKhoan
-                    .FirstOrDefaultAsync(tk => tk.IdTaiKhoan == idTaiKhoan);
-
-                Console.WriteLine($"Removing student {student?.HoTen} (ID: {idTaiKhoan}) from class {idLopHocPhan}");
-
                 // Xóa khỏi lớp
                 _context.LopHocPhan_SinhVien.Remove(membership);
                 await _context.SaveChangesAsync();
 
                 return Json(new { 
                     success = true, 
-                    message = $"Đã xóa sinh viên {student?.HoTen} khỏi lớp"
+                    message = "Đã xóa sinh viên khỏi lớp"
                 });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error removing student from class: {ex.Message}");
                 return Json(new { success = false, message = $"Lỗi xóa sinh viên khỏi lớp: {ex.Message}" });
             }
         }
@@ -617,10 +433,6 @@ namespace Lecture_web.Areas.User.Controllers
         {
             try
             {
-                // Debug log để kiểm tra dữ liệu đầu vào
-                var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-                Console.WriteLine($"DEBUG: idLopHocPhan={idLopHocPhan}, số sinh viên cần mời={idTaiKhoans?.Length ?? 0}, currentUserId={currentUserId}");
-                
                 if (idTaiKhoans == null || idTaiKhoans.Length == 0)
                 {
                     return Json(new { success = false, message = "Vui lòng chọn ít nhất một sinh viên để mời" });
@@ -634,8 +446,6 @@ namespace Lecture_web.Areas.User.Controllers
                 {
                     return Json(new { success = false, message = "Không tìm thấy lớp học phần" });
                 }
-                
-                Console.WriteLine($"DEBUG: LopHocPhan found - IdTaiKhoan={lopHocPhan.IdTaiKhoan}, TenLop={lopHocPhan.TenLop}");
 
                 // Lấy thông tin tất cả sinh viên được chọn
                 var students = await _context.TaiKhoan
@@ -644,16 +454,12 @@ namespace Lecture_web.Areas.User.Controllers
                                 tk.TrangThai == "HoatDong")
                     .ToListAsync();
 
-                Console.WriteLine($"DEBUG: Found {students.Count} valid students from {idTaiKhoans.Length} requested IDs");
-
                 // Kiểm tra các sinh viên đã tham gia lớp chưa
                 var existingMembers = await _context.LopHocPhan_SinhVien
                     .Where(lhp_sv => lhp_sv.IdLopHocPhan == idLopHocPhan && 
                                     idTaiKhoans.Contains(lhp_sv.IdTaiKhoan))
                     .Select(lhp_sv => lhp_sv.IdTaiKhoan)
                     .ToListAsync();
-
-                Console.WriteLine($"DEBUG: Found {existingMembers.Count} students already in class");
 
                 // Lọc ra những sinh viên chưa tham gia lớp
                 var studentsToInvite = students
@@ -664,8 +470,6 @@ namespace Lecture_web.Areas.User.Controllers
                 {
                     return Json(new { success = false, message = "Tất cả sinh viên đã tham gia lớp học này rồi" });
                 }
-
-                Console.WriteLine($"DEBUG: Will invite {studentsToInvite.Count} students");
 
                 var successfulInvites = new List<string>();
                 var failedInvites = new List<string>();
@@ -707,24 +511,20 @@ namespace Lecture_web.Areas.User.Controllers
                         {
                             await _emailService.SendEmailAsync(student.Email, $"Lời mời tham gia lớp {lopHocPhan.TenLop}", emailBody);
                             successfulInvites.Add($"{student.HoTen} ({student.Email})");
-                            Console.WriteLine($"DEBUG: Email sent successfully to {student.Email}");
                         }
                         catch (Exception emailEx)
                         {
-                            Console.WriteLine($"DEBUG: Email sending failed for {student.Email}: {emailEx.Message}");
                             successfulInvites.Add($"{student.HoTen} ({student.Email}) - Email failed");
                         }
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"DEBUG: Failed to invite {student.Email}: {ex.Message}");
                         failedInvites.Add($"{student.HoTen} ({student.Email}): {ex.Message}");
                     }
                 }
 
                 // Lưu tất cả invitations vào database
                 await _context.SaveChangesAsync();
-                Console.WriteLine($"DEBUG: All invitations saved to database");
 
                 // Tạo message kết quả
                 var resultMessage = $"Đã gửi lời mời thành công cho {successfulInvites.Count} sinh viên";
@@ -753,8 +553,6 @@ namespace Lecture_web.Areas.User.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"DEBUG: Exception in InviteStudents: {ex.Message}");
-                Console.WriteLine($"DEBUG: Stack trace: {ex.StackTrace}");
                 return Json(new { success = false, message = $"Lỗi gửi lời mời: {ex.Message}" });
             }
         }
@@ -933,73 +731,9 @@ namespace Lecture_web.Areas.User.Controllers
             }
         }
 
-        // TEST ACTION - để test API tìm kiếm
-        [HttpGet]
-        public async Task<IActionResult> DebugAccess()
-        {
-            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
-            var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
-            // Lấy teacher classes
-            object teacherClasses;
-            if (userRole == "Giangvien")
-            {
-                teacherClasses = await _context.LopHocPhan.Where(lhp => lhp.IdTaiKhoan == currentUserId)
-                    .Select(lhp => new { lhp.IdLopHocPhan, lhp.TenLop }).ToListAsync();
-            }
-            else
-            {
-                teacherClasses = new List<object>();
-            }
 
-            // Lấy student classes
-            object studentClasses;
-            if (userRole == "Sinhvien")
-            {
-                studentClasses = await _context.LopHocPhan_SinhVien.Where(sv => sv.IdTaiKhoan == currentUserId)
-                    .Select(sv => new { sv.IdLopHocPhan }).ToListAsync();
-            }
-            else
-            {
-                studentClasses = new List<object>();
-            }
 
-            var result = new
-            {
-                UserId = currentUserId,
-                UserRole = userRole,
-                RequestedClass = Request.Query["idLopHocPhan"].ToString(),
-                AllClasses = await _context.LopHocPhan.Select(lhp => new { lhp.IdLopHocPhan, lhp.TenLop, lhp.IdTaiKhoan }).ToListAsync(),
-                TeacherClasses = teacherClasses,
-                StudentClasses = studentClasses
-            };
-
-            return Json(result);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> TestSearch()
-        {
-            try
-            {
-                Console.WriteLine("=== TESTING SEARCH MANUALLY ===");
-                
-                // Test với "sv01"
-                var result = await SearchStudents("sv01", "all");
-                Console.WriteLine("Search result for 'sv01' completed");
-                
-                // Test với một phần họ tên
-                var result2 = await SearchStudents("Trương", "name");
-                Console.WriteLine("Search result for 'Trương' (name) completed");
-                
-                return Json(new { message = "Test completed, check console logs" });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error in TestSearch: {ex.Message}");
-                return Json(new { error = ex.Message });
-            }
-        }
 
         // API: Thêm bình luận hoặc reply
         [HttpPost]

@@ -1,47 +1,79 @@
 @using System.Security.Claims
 @{
 var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
-}
-<nav class="sidebar">
-  <div class="logo" style="display: flex; align-items: center; gap: 12px; justify-content: center;">
-    <img src="~/images/logo.png" alt="Logo" class="logo-img" style="margin-bottom: 0; width: 48px; height: 48px;">
-    <h1 style="margin: 0; font-size: 1.6rem;">E-Learning</h1>
-  </div>
+var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
+var currentAction = ViewContext.RouteData.Values["Action"]?.ToString();
+var currentArea = ViewContext.RouteData.Values["Area"]?.ToString();
 
-  <ul class="nav-links">
-    @if (userRole == "Admin")
-    {
-    <li><a href="@Url.Action("Index", "Dashboard" , new { area="Admin" })"><i class="fas fa-tachometer-alt"></i><span>Tổng quan</span></a></li>
-    <li><a href="@Url.Action("Index", "QuanLyNguoiDung" , new { area="Admin" })"><i class="fas fa-user-cog"></i><span>Quản lý tài khoản người dùng</span></a></li>
-    <li><a href="@Url.Action("Index", "QuanLyHocPhan" , new { area="Admin" })"><i class="fas fa-book-open"></i><span>Quản lý học phần</span></a></li>
-    <li><a href="@Url.Action("Index", "QuanLyKhoa" , new { area="Admin" })"><i class="fas fa-university"></i><span>Quản lý khoa</span></a></li>
-    <li><a href="@Url.Action("Index", "QuanLyBoMon" , new { area="Admin" })"><i class="fas fa-sitemap"></i><span>Quản lý bộ môn</span></a></li>
-    }
-    else if (userRole == "Giangvien" )
-    {
-    <li>
-      <a href="/User/LopHoc/Index">
-        <i class="fas fa-home"></i>
-        <span>Quản lý lớp học phần</span>
-      </a>
-    </li>
-     }
-    else if (userRole == "Sinhvien")
-    {
-            <li>
-                <a href="/User/LopHoc/Index">
-                    <i class="fas fa-home"></i>
-                    <span>Lớp học của tôi</span>
-                </a>
-            </li>
-            @await Component.InvokeAsync("ListLopHocListMenu")
-    }
-        @if (userRole == "Giangvien")
-    {
-    <li><a href="/User/QuanLyBaiGiang/Index"><i class="fas fa-book"></i><span>Quản lý bài giảng</span></a></li>
-            @await Component.InvokeAsync("ListLopHocListMenu")
-    @* <li><a href="/User/QuanLyChuong/Index"><i class="fas fa-book"></i><span>Quản lý chương</span></a></li>
-    <li><a href="/User/QuanLyBai/Index"><i class="fas fa-book"></i><span>Quản lý bài</span></a></li> *@
-    }
-  </ul>
-</nav>
+// Helper function to check if current page matches menu item
+Func<string, string, string, bool> IsActive = (controller, action, area) => {
+  return currentController == controller && currentAction == action && currentArea == area;
+  };
+  }
+  <nav class="sidebar">
+    <div class="logo" style="display: flex; align-items: center; gap: 12px; justify-content: center;">
+      <img src="~/images/logo.png" alt="Logo" class="logo-img" style="margin-bottom: 0; width: 48px; height: 48px;">
+      <h1 style="margin: 0; font-size: 1.6rem;">E-Learning</h1>
+    </div>
+
+    <ul class="nav-links">
+      @if (userRole == "Admin")
+      {
+      <li class="@(IsActive("Dashboard", "Index" , "Admin" ) ? "active" : "" )">
+        <a href="@Url.Action("Index", "Dashboard" , new { area="Admin" })">
+          <i class="fas fa-tachometer-alt"></i><span>Tổng quan</span>
+        </a>
+      </li>
+      <li class="@(IsActive("QuanLyNguoiDung", "Index" , "Admin" ) ? "active" : "" )">
+        <a href="@Url.Action("Index", "QuanLyNguoiDung" , new { area="Admin" })">
+          <i class="fas fa-user-cog"></i><span>Quản lý tài khoản người dùng</span>
+        </a>
+      </li>
+      <li class="@(IsActive("QuanLyHocPhan", "Index" , "Admin" ) ? "active" : "" )">
+        <a href="@Url.Action("Index", "QuanLyHocPhan" , new { area="Admin" })">
+          <i class="fas fa-book-open"></i><span>Quản lý học phần</span>
+        </a>
+      </li>
+      <li class="@(IsActive("QuanLyKhoa", "Index" , "Admin" ) ? "active" : "" )">
+        <a href="@Url.Action("Index", "QuanLyKhoa" , new { area="Admin" })">
+          <i class="fas fa-university"></i><span>Quản lý khoa</span>
+        </a>
+      </li>
+      <li class="@(IsActive("QuanLyBoMon", "Index" , "Admin" ) ? "active" : "" )">
+        <a href="@Url.Action("Index", "QuanLyBoMon" , new { area="Admin" })">
+          <i class="fas fa-sitemap"></i><span>Quản lý bộ môn</span>
+        </a>
+      </li>
+      }
+      else if (userRole == "Giangvien" )
+      {
+      <li class="@(currentController == "LopHoc" && currentArea=="User" ? "active" : "" )">
+        <a href="/User/LopHoc/Index">
+          <i class="fas fa-home"></i>
+          <span>Quản lý lớp học phần</span>
+        </a>
+      </li>
+      }
+      else if (userRole == "Sinhvien")
+      {
+      <li class="@(currentController == "LopHoc" && currentArea=="User" ? "active" : "" )">
+        <a href="/User/LopHoc/Index">
+          <i class="fas fa-home"></i>
+          <span>Lớp học của tôi</span>
+        </a>
+      </li>
+      @await Component.InvokeAsync("ListLopHocListMenu")
+      }
+      @if (userRole == "Giangvien")
+      {
+      <li class="@(currentController == "QuanLyBaiGiang" && currentArea=="User" ? "active" : "" )">
+        <a href="/User/QuanLyBaiGiang/Index">
+          <i class="fas fa-book"></i><span>Quản lý bài giảng</span>
+        </a>
+      </li>
+      @await Component.InvokeAsync("ListLopHocListMenu")
+      @* <li><a href="/User/QuanLyChuong/Index"><i class="fas fa-book"></i><span>Quản lý chương</span></a></li>
+      <li><a href="/User/QuanLyBai/Index"><i class="fas fa-book"></i><span>Quản lý bài</span></a></li> *@
+      }
+    </ul>
+  </nav>
