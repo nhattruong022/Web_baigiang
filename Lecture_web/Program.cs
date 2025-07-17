@@ -32,13 +32,6 @@ builder.Services.AddScoped<Lecture_web.Service.ConvertWordToHTML>();
 builder.Services.AddSignalR();
 
 
-var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
-
-
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenAnyIP(Int32.Parse(port));
-});
 
 
 var app = builder.Build();
