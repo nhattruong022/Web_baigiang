@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: lecture-web-app
+    env: docker
+    plan: free
+    dockerfilePath: ./Lecture_web/Dockerfile
+    dockerContext: .
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://0.0.0.0:$PORT
+      - key: ConnectionStrings__DefaultConnection
+        value: Server=YOUR_SQL_SERVER_HOST;Database=YOUR_DATABASE;User Id=YOUR_USERNAME;Password=YOUR_PASSWORD;TrustServerCertificate=True;
+      - key: EMAIL_CONFIGURATION__EMAIL
+        value: nhattruongp78@gmail.com
+      - key: EMAIL_CONFIGURATION__PASSWORD
+        value: etxaionnqfvkftyu
+      - key: EMAIL_CONFIGURATION__HOST
+        value: smtp.gmail.com
+      - key: EMAIL_CONFIGURATION__PORT
+        value: 587
+    healthCheckPath: /
+    autoDeploy: true 
