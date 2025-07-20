@@ -162,6 +162,7 @@ namespace Lecture_web.Areas.User.Controllers
                 .Select(b => new { b.IdBaiGiang, b.TieuDe })
                 .ToListAsync();
             var listHP = await _context.HocPhan
+                .Where(h=> h.TrangThai == "Active")
                 .Select(h => new { h.IdHocPhan, h.TenHocPhan })
                 .ToListAsync();
 
